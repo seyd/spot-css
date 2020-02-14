@@ -1,2 +1,2 @@
-# spot-css
-SPOT CSS Framework { Single Place Of Truth CSS Methodology }
+# SPOT CSS
+## SPOT CSS Framework { Single Place Of Truth CSS Methodology }

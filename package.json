@@ -1,0 +1,50 @@
+{
+  "name": "spot-css",
+  "version": "1.0.0",
+  "description": "SPOT CSS Framework { Single Place Of Truth CSS Methodology }",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test",
+    "test:watch": "gulp test:watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seyd/spot-css.git"
+  },
+  "keywords": [
+    "spot",
+    "single place of truth",
+    "css",
+    "scss",
+    "sass",
+    "framework",
+    "methodology",
+    "method",
+    "approach",
+    "responsive",
+    "frontend",
+    "front-end",
+    "styling",
+    "web"
+  ],
+  "author": "Johnny Seyd (johnnyseyd@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seyd/spot-css/issues"
+  },
+  "homepage": "https://github.com/seyd/spot-css#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "cli-color": "^2.0.0",
+    "del": "^5.1.0",
+    "event-stream": "^4.0.1",
+    "file-exists": "^5.0.1",
+    "gulp": "^4.0.2",
+    "gulp-diff": "^1.0.0",
+    "gulp-flatmap": "^1.0.2",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "node-sass": "^4.13.1",
+    "sass": "^1.25.0"
+  }
+}
