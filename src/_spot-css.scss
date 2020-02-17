@@ -40,6 +40,7 @@ $spot-current-components: ();
         $spot-registered-components: append($spot-registered-components, $component-selector, 'comma') !global;
     }
 
+    // @feature Components can be nested one into another.
     // store current component selector (into stack)
     $spot-current-components: append($spot-current-components, $component-selector, 'space') !global;
 
