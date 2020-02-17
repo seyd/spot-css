@@ -1,0 +1,13 @@
+top-component {
+  /* top-component */
+  /* top-component */
+}
+
+top-component sub-component {
+  /* top-component sub-component */
+}
+
+/*  */
+top-component-2 > sub-component-2 {
+  /* top-component-2 > sub-component-2 */
+}

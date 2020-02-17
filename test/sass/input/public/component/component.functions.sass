@@ -1,0 +1,16 @@
+@import "./src/spot-css"
+
+// testing component() function
++component("top-component")
+    /* #{ component() } */
+
+    +component("sub-component")
+        /* #{ component() } */
+
+    /* #{ component() } */
+
+/* #{ component() } */
+
++component("top-component-2")
+    +component("> sub-component-2")
+        /* #{ component() } */

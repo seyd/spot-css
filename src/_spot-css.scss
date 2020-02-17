@@ -5,3 +5,82 @@
 //
 // Usage:
 //    @import "./path/to/spot-css";
+
+
+$SPOT_ERROR_PREFIX: "SPOT CSS: ";
+
+// map of registered components
+$spot-registered-components: ();
+
+// current component or stack of current components (if multiple are nested)
+$spot-current-components: ();
+
+// @description Main top-level mixin to define component.
+// @param $selector: single selector
+@mixin component($selector) {
+    @if not $selector or $selector=="" {
+        @error $SPOT_ERROR_PREFIX + "component/no selector - selector was expected but nothing passed.";
+    }
+
+    $selectors: selector-parse($selector);
+    @if length($selectors)>1 {
+        @error $SPOT_ERROR_PREFIX + "component/single selector - given selector is not a single selector ('"+$selector+"').";
+    }
+    
+    $component-selector: $selector;
+
+    $already-registered: index($spot-registered-components, $component-selector)!=null;
+
+    // @feature It checks if same component is defined multiple times. It is not allowed because SIngle Place of Truth.
+    @if $already-registered {
+        @error $SPOT_ERROR_PREFIX + "component/already registered - given selector is already registered as component ('"+$component-selector+"').";
+    }
+    @else {
+        // store component selector if is not stored yet
+        $spot-registered-components: append($spot-registered-components, $component-selector, 'comma') !global;
+    }
+
+    // store current component selector (into stack)
+    $spot-current-components: append($spot-current-components, $component-selector, 'space') !global;
+
+    #{$component-selector} {
+        @content;
+    }
+
+    // remove current component selector (from stack)
+    $spot-current-components: pop($spot-current-components) !global;
+}
+
+// @return Current component selector.
+@function component() {
+    @return #{$spot-current-components}; 
+}
+
+
+// HELPER Functions ----------------------------------------------------
+
+@function first($list) {
+    @return nth($list, 1);
+}
+
+@function last($list) {
+    @return nth($list, length($list));
+}
+
+// @description Complementary to append() function.
+@function prepend($list, $value) {
+    @return join($value, $list);
+}
+
+// @description Remove the last item in the list (opposite of append() function).
+// @returns new list, not last item (to do so use last() function)
+@function pop($list) {
+    $result: ();
+    $len: length($list);
+    @if $len>1 {
+        @for $i from 1 through $len - 1 {
+            $result: append($result, nth($list, $i));
+        }
+    }
+    @return $result;
+}

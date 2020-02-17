@@ -3,11 +3,13 @@ var TEST_PATH = 'test/sass',
     SOURCE_PATH = 'input',
     EXPECTED_OUTPUT_PATH = 'expected-output',
     OUTPUT_PATH = 'generated-output',
+    FWK_ERROR_PREFIX = 'SPOT CSS: ',
+
     FULL_SOURCE_PATH = CURRENT_PATH + TEST_PATH + '/' + SOURCE_PATH,
     FULL_EXPECTED_OUTPUT_PATH = CURRENT_PATH + TEST_PATH + '/' + EXPECTED_OUTPUT_PATH,
-    FULL_OUTPUT_PATH = CURRENT_PATH + TEST_PATH + '/' + OUTPUT_PATH;
-
-var gulp = require('gulp'),
+    FULL_OUTPUT_PATH = CURRENT_PATH + TEST_PATH + '/' + OUTPUT_PATH,
+    
+    gulp = require('gulp'),
     sass = require('gulp-sass'),
     fs = require('fs'),
     es = require('event-stream'),
@@ -80,7 +82,11 @@ gulp.task('test',
 );
 
 gulp.task('watch', function() {
-    return gulp.watch([FULL_SOURCE_PATH + '/**/*.s[ac]ss', FULL_EXPECTED_OUTPUT_PATH + '/**/*.css'], gulp.series('test'));
+    return gulp.watch([
+        FULL_SOURCE_PATH + '/**/*.s[ac]ss', 
+        FULL_EXPECTED_OUTPUT_PATH + '/**/*.css', 
+        './src/**.s[ac]ss'
+    ], gulp.series('test'));
 });
 
 gulp.task('test:watch', gulp.series('test', 'watch'));
@@ -89,10 +95,13 @@ gulp.task('test:watch', gulp.series('test', 'watch'));
 
 function throwSassError(error) {
     var originalFile = error.message.split('\n')[0],
-        targetFile = originalFile.replace(SOURCE_PATH, OUTPUT_PATH).replace(/\.s[ac]ss$/, '.css'),
-        isFwkError = error.messageOriginal.indexOf('SPOT CSS:')===0,
+        sourceFile = error.message.match(/from line \d+ of (.*)/)[1],
+        targetFile = (sourceFile || originalFile).replace(SOURCE_PATH, OUTPUT_PATH).replace(/\.s[ac]ss$/, '.css'),
+        isFwkError = error.messageOriginal.indexOf(FWK_ERROR_PREFIX)===0,
         message = isFwkError ? error.messageOriginal.split(' - ')[0] : error.messageFormatted;
-
+    // console.log('----------->>>>>'+targetFile);
+    // console.log(error.message.match(/from line \d+ of (.*)/)[1])
+    // console.dir(error);
     if (isFwkError) {
         // write expected (SPOT CSS framework) error to target file
         fs.mkdir(getPathWithoutFileName(targetFile), { recursive: true }, function(err, cb) {

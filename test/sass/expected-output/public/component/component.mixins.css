@@ -1,0 +1,11 @@
+my-component {
+  property: value;
+}
+
+.class-component {
+  property: value;
+}
+
+.context .component {
+  property: value;
+}
