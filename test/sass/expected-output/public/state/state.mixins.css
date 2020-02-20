@@ -1,0 +1,15 @@
+my-component:hover {
+  property: value;
+}
+
+my-component:hover > .inner {
+  property: value-x;
+}
+
+my-component > .inner sub-component:hover {
+  property: sub-value;
+}
+
+my-component > .inner sub-component sub-sub-component:hover {
+  property: sub-sub-value;
+}

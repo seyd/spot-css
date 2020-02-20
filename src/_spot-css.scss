@@ -69,6 +69,12 @@ $spot-registered-aliases: [];
     @return #{$spot-current-components}; 
 }
 
+// @return Current single component selector (the last one if nested).
+@function current-single-component() {
+    @return #{last($spot-current-components)}; 
+}
+
+
 // @private
 // @description Create unique string for combination $component + $identifier.
 // @return Unique string identifier
@@ -221,7 +227,7 @@ $spot-registered-aliases: [];
                             $extended-selector: $extension;
                         }
                         @else {
-                            $extended-selector: extend(&, $component, $extension);
+                            $extended-selector: extend(&, current-single-component(), $extension);
                         }
                         $selectors: append($selectors, $extended-selector, 'comma');
                     }                
@@ -234,15 +240,14 @@ $spot-registered-aliases: [];
         }
         // if not alias - just $identifier
         @else {
-            @if $modifiers!=null and map-has-key($modifiers, $identifier) and selector-contains(&, $component) {
-                // $extension: map-get($modifiers, $identifier);
+            @if $modifiers!=null and map-has-key($modifiers, $identifier) {
                 $extension: $identifier;
                 $extended-selector: '';                
                 @if str-index($extension, '&') {
                     $extended-selector: $extension;
                 }
                 @else {
-                    $extended-selector: extend(&, $component, $extension);
+                    $extended-selector: extend(&, current-single-component(), $extension);
                 }
                 $selectors: append($selectors, $extended-selector, 'comma');
             }
@@ -321,7 +326,32 @@ $spot-registered-aliases: [];
     }   
 }
 
-
+@mixin child-element($args...) {
+    @if length($args)==0 {
+        @error $SPOT_ERROR_PREFIX + "child-element/no selectors - at least one child selector is expected.";
+    }
+    $selectors: (); 
+    @each $selector in $args {
+        $parts: selector-parse($selector);
+        // @feature Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
+        @if length($parts)>1 {
+            @error $SPOT_ERROR_PREFIX + "child-element/single selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
+        }        
+        // all child selectors must start with >
+        @if str-index(str-trim-left($selector), '>')!=1 {
+            $selector: '> '+$selector;
+        }
+        // @feature Guarding that only first (one) level child selector is passed.
+        // Value 2 because also starting '>' is counted
+        @if length-of-simple-selector($selector)>2 {
+            @error $SPOT_ERROR_PREFIX + "child-element/multilevel selector - given selector is not a single selector ('"+$selector+"'). Just use more child-element mixins nested.";
+        }   
+        $selectors: append($selectors, $selector, 'comma');
+    }
+    #{$selectors} {
+        @content;
+    }
+}
 
 // @not tested
 // @private
@@ -336,7 +366,13 @@ $spot-registered-aliases: [];
 }
 
 // @not tested
-@function extend($selector, $something, $extension: null) {    
+@function extend($selector, $something, $extension: null) {
+    // for each selector (if more selectors in $selector) check if extended selector is present
+    @each $single-selector in $selector {
+        @if str-index($single-selector+'', $something+'')==null {
+            @error 'Extend function has failed! Subselector "'+$something+'" was not found in selector "'+$single-selector+'".';
+        }
+    }  
     @if $extension==null {
       @return $selector+$something;
     } @else {
@@ -404,3 +440,34 @@ $spot-registered-aliases: [];
     
     @return $string;
   }
+
+@function str-trim-left($s) {
+    @while (str-index($s, ' ')==1) {
+        $i: str-index($s, ' ');
+        $s: "#{str-slice($s, 0, $i - 1)}#{str-slice($s, $i + 1)}";
+    }
+    @return $s;
+}
+
+@function str-trim-right($s) {
+    @while (str-slice($s, str-length($s))==' ') {
+        $i: str-index($s, ' ');
+        $s: "#{str-slice($s, 0, $i - 1)}#{str-slice($s, $i + 1)}";
+    }
+    @return $s;
+}
+
+@function str-trim($s) {
+    @return str-trim-left(str-trim-right($s));
+}
+
+// It has to be simple selector (not contain comma separated selectors)
+// @return How many selector levels given selector contains.
+// @example:
+//  'a.link' => 1 
+//  'a.link span' => 2
+//  'a.link + span' => 3
+//  '> a.link' => 2
+@function length-of-simple-selector($selector) {
+    @return length(nth(selector-parse($selector),1));
+}

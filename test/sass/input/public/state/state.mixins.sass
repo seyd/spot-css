@@ -1,0 +1,32 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +state(':hover')        
+        +state('.active')
+
+    +state(':hover')
+        property: value
+    
+    // ----------------------------------------------
+    +child-element('.inner')
+        +state(':hover')
+            property: value-x
+
+        // ----------------------------------------------
+        +component("sub-component")
+            +register
+                +state(':hover')        
+
+            +state(':hover')
+                property: sub-value
+
+            // ----------------------------------------------
+            +component("sub-sub-component")
+                +register
+                    +state(':hover')        
+
+                +state(':hover')
+                    property: sub-sub-value
+

@@ -1,0 +1,43 @@
+my-component {
+  property: value;
+}
+
+my-component > .wrapper {
+  property: value;
+}
+
+my-component > .wrapper-a, my-component > .wrapper-b {
+  property: value;
+}
+
+my-component > .wrapper-x, my-component > .wrapper-y, my-component > .wrapper-z {
+  property: value;
+}
+
+my-component > .wrapper-c {
+  property: value-c;
+}
+
+my-component > .wrapper-c > .wrapper-d {
+  property: value-d;
+}
+
+my-component > .wrapper-2 {
+  property: value;
+}
+
+my-component > .wrapper-3 {
+  property: value;
+}
+
+my-component > .wrapper-4 {
+  property: value;
+}
+
+my-component > .wrapper-5 {
+  property: value;
+}
+
+my-component > div.wrapper {
+  property: value;
+}

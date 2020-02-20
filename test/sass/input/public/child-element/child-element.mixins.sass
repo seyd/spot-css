@@ -1,0 +1,46 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    property: value
+
+    +child-element(".wrapper")
+        property: value
+    
+
+    // multiple child elements
+    +child-element(".wrapper-a", ".wrapper-b")
+        property: value
+
+    +child-element(".wrapper-x", ".wrapper-y", ".wrapper-z")
+        property: value
+
+
+    // sub sub element
+    +child-element(".wrapper-c")
+        property: value-c
+        
+        +child-element(".wrapper-d")
+            property: value-d
+
+
+    // detecting > at start - do not prepend another >
+    +child-element("> .wrapper-2")
+        property: value
+
+    +child-element(">.wrapper-3")
+        property: value
+
+    +child-element(" >.wrapper-4")
+        property: value
+
+    +child-element(" > .wrapper-5")
+        property: value
+
+
+    // complex selector (but single selector)
+    +child-element("div.wrapper")
+        property: value
+
+
+    
