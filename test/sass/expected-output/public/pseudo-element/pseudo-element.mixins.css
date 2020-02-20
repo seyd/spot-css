@@ -1,0 +1,11 @@
+my-component-1.active::before, my-component-1.active::after {
+  property: value;
+}
+
+my-component-2.active::before {
+  property: value-b;
+}
+
+my-component-3.active::after {
+  property: value-a;
+}

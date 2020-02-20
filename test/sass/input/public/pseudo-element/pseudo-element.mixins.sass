@@ -1,0 +1,32 @@
+@import "./src/spot-css"
+
++component("my-component-1")
+    +register
+        +state('.active')
+
+    // ----------------------------------------------
+    +pseudo-element('before', 'after')
+        +state('.active')
+            property: value
+
+
+// ----------------------------------------------
++component("my-component-2")
+    +register
+        +state('.active')
+
+    // ----------------------------------------------
+    +pseudo-element('before')
+        +state('.active')
+            property: value-b
+
+
+// ----------------------------------------------
++component("my-component-3")
+    +register
+        +state('.active')
+
+    // ----------------------------------------------
+    +pseudo-element('after')
+        +state('.active')
+            property: value-a
