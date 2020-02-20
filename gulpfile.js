@@ -91,17 +91,21 @@ gulp.task('watch', function() {
 
 gulp.task('test:watch', gulp.series('test', 'watch'));
 
+// copy generated to expected (sync of directories)
+gulp.task('test:sync', function(){
+    return gulp.src(FULL_OUTPUT_PATH + '/**/*.css')
+        .pipe(gulp.dest(FULL_EXPECTED_OUTPUT_PATH));
+});
+
 // ---------------------------------------------------------------------
 
-function throwSassError(error) {
+function throwSassError(error) {    
     var originalFile = error.message.split('\n')[0],
-        sourceFile = error.message.match(/from line \d+ of (.*)/)[1],
+        sourceFile = (error.message.match(new RegExp('from line \\d+ of ('+TEST_PATH + '\\/' + SOURCE_PATH + '.*)[,$]')) || error.message.match(/from line \d+ of (.*)/))[1],
         targetFile = (sourceFile || originalFile).replace(SOURCE_PATH, OUTPUT_PATH).replace(/\.s[ac]ss$/, '.css'),
         isFwkError = error.messageOriginal.indexOf(FWK_ERROR_PREFIX)===0,
         message = isFwkError ? error.messageOriginal.split(' - ')[0] : error.messageFormatted;
-    // console.log('----------->>>>>'+targetFile);
-    // console.log(error.message.match(/from line \d+ of (.*)/)[1])
-    // console.dir(error);
+    
     if (isFwkError) {
         // write expected (SPOT CSS framework) error to target file
         fs.mkdir(getPathWithoutFileName(targetFile), { recursive: true }, function(err, cb) {
