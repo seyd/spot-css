@@ -235,6 +235,15 @@ var reporter = function reporter(opts) {
   };
   
   function formatLine(part, i) {
+    // if original content, make it shorter (and more than 6 lines)
+    if (!part.added && !part.removed && part.count>6) {
+        var lines = part.value.split('\n'),
+            first3 = lines.slice(0,3),
+            last3 = lines.slice(-3);
+        // show just 3 first lines and 3 last lines
+        part.value = first3.join('\n')+'\n\n'+clc.cyanBright('...(cropped '+(lines.length-6)+' lines)...')+'\n\n'+last3.join('\n'); 
+        part.count = 3+3+3;
+    }
     var indent = '    ';
     return (!i ? indent : '') + part.value.split('\n').map(function(ln) {
       return clc.black(clc[colorLine(part)](ln));
