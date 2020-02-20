@@ -1,7 +1,7 @@
 {
   "name": "spot-css",
   "version": "1.0.0",
-  "description": "SPOT CSS Framework { Single Place Of Truth CSS Methodology }",
+  "description": "SPOT CSS Framework { Single Place Of Truth Methodology }",
   "main": "index.js",
   "scripts": {
     "test": "gulp test",
