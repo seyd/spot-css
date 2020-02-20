@@ -15,6 +15,18 @@ $spot-registered-components: ();
 // current component or stack of current components (if multiple are nested)
 $spot-current-components: ();
 
+// flag of register mode
+$spot-is-register-mode: false;
+
+// map of registered modifiers
+$spot-registered-modifiers: ();
+
+// list of registered identifiers for guarding unique (per component)
+$spot-registered-identifiers: [];
+
+// list of registered aliases of identifiers for guarding unique 
+$spot-registered-aliases: [];
+
 // @description Main top-level mixin to define component.
 // @param $selector: single selector
 @mixin component($selector) {
@@ -57,6 +69,303 @@ $spot-current-components: ();
     @return #{$spot-current-components}; 
 }
 
+// @private
+// @description Create unique string for combination $component + $identifier.
+// @return Unique string identifier
+@function _get-component-identifier($component, $identifier) {
+    @return $component+'---'+$identifier;
+}
+
+// @private
+// @description Create unique string for combination $component + $modifier.
+// @return Unique string modifier
+@function _get-component-modifier($component, $modifier) {
+    @return $component+'___'+$modifier;
+}
+
+@mixin register {
+    @if component()=='' {
+        @error $SPOT_ERROR_PREFIX + "register/no component - the mixin register must be used inside a component.";
+    }
+    $spot-is-register-mode: true !global;
+    @content;
+    $spot-is-register-mode: false !global;
+}
+
+// @private
+// @param $modifier-name: 'state' | 'variation' | 'context' | 'browser-specific' | 'responsive'
+// @param $identifier: selector extension
+ @mixin _register-modifiers($modifier-name, $identifier, $args...) { 
+    @if component()=='' {
+        @error $SPOT_ERROR_PREFIX + "register/no component - the mixin register { "+$modifier-name+"("+$identifier+") } must be used inside a component selector.";
+    }
+    // if selector contains '?' (e.g. '[type="?"]') character, $args must be provided as expected values
+    // expample arguments: ('state', '[type="?"]', 'primary', 'secondary')
+    @if str-index($identifier, '?') or str-index($identifier, '{') {
+
+        // if context-like modifier then placeholder '?' is not supported
+        @if str-index($modifier-name, '&') {
+            @error $SPOT_ERROR_PREFIX + "register/placeholder in context - the mixin register { "+$modifier-name+"("+$identifier+") } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param}.";
+        }
+
+        $len: length($args);
+        @if $len==0 {
+            @error $SPOT_ERROR_PREFIX + "register/missing values - the mixin register { "+$modifier-name+"("+$identifier+") } uses '?' as value placeholder but no values were provided.";
+        }
+        @else {
+            $alias: $identifier;
+            $placeholder-start: str-index($identifier, '?') or str-index($identifier, '{');
+            $placeholder-end: str-index($identifier, '?') or str-index($identifier, '}');
+            // register modifier for each given value individualy
+            @for $i from 1 through $len {                 
+                $selector: str-slice($identifier, 1, $placeholder-start - 1) + nth($args, $i) + str-slice($identifier, $placeholder-end + 1 );
+                @include _register-individual-modifier($modifier-name, $selector, $alias, $do-not-check-alias: $i!=1); // check alias only for first modifier
+            }
+        }
+    }
+    // if selector does not contains "?" character, $args must be not provided (as expected values)
+    @else {
+        // if extra values and not context-like modifier (it accepts extra $alias param)
+        @if $args!=null and length($args)!=0 and not str-index($modifier-name, '&') {
+            @error $SPOT_ERROR_PREFIX + "register/extra values - the mixin register { "+$modifier-name+"("+$identifier+") } doesn't use '?' as value placeholder but extra values were provided.";
+        }
+        @else {
+            // register modifier
+            @include _register-individual-modifier($modifier-name, $identifier, $args...);
+        }
+    }
+}
+
+// @private
+// @param $modifier-name: 'state' | 'variation' | 'context' | 'browser-specific' | 'responsive'
+// @param $identifier: selector extension
+@mixin _register-individual-modifier($modifier-name, $identifier, $alias: '', $do-not-check-alias: false) {    
+
+    // backup
+    $original-identifier: $identifier;    
+
+    $identifier: _add-default-ampersand-if-context($modifier-name, $identifier);
+    $alias_with_ampersand: _add-default-ampersand-if-context($modifier-name, $alias);
+    $current-component: component(); 
+
+    // create unique identifier of component+identifier
+    $component-with-identifier: _get-component-identifier($current-component, $identifier);
+
+    // create unique modifier of component+modifier-name (without ' &' appendix)
+    $component-with-modifier: str-replace(_get-component-modifier($current-component, $modifier-name), ' &', '');
+
+    // @feature Guarding duplicity of modifiers
+    @if index($spot-registered-identifiers, $component-with-identifier) {
+        @error $SPOT_ERROR_PREFIX + "register/duplicate modifier - trying to register already registered modifier '"+$original-identifier+"' for component "+$current-component+".";
+    }
+
+    // @feature Guarding duplicity of modifiers with aliases
+    @if index($spot-registered-aliases, _get-component-identifier($current-component, $original-identifier)) {
+        @error $SPOT_ERROR_PREFIX + "register/duplicate modifier with alias - trying to register modifier '"+$original-identifier+"' but there is already registered modifier with same alias for component "+$current-component+".";
+    }
+
+    // store unique identifier
+    $spot-registered-identifiers: append($spot-registered-identifiers, $component-with-identifier) !global;
+
+    @if $alias and $alias!='' and not $do-not-check-alias {
+        // @feature Guarding duplicity of alias with modifiers
+        @if index($spot-registered-identifiers, _get-component-identifier($current-component, $alias_with_ampersand)) {
+            @error $SPOT_ERROR_PREFIX + "register/duplicate alias with modifier - trying to register alias '"+$alias+"' but there is already registered same modifier for component "+$current-component+".";
+        }
+
+        // create unique identifier of component+identifier
+        $component-with-alias: _get-component-identifier($current-component, $alias);
+    
+        // @feature Guarding duplicity of modifiers aliases
+        @if index($spot-registered-aliases, $component-with-alias) {
+            @error $SPOT_ERROR_PREFIX + "register/duplicate modifier alias - trying to register already registered modifier alias '"+$alias+"' for component "+$current-component+".";
+        }
+
+        // store unique alias
+        $spot-registered-aliases: append($spot-registered-aliases, $component-with-alias) !global;    
+    }
+    
+    // create empty map if does not existes yet
+    @if not map-has-key($spot-registered-modifiers, $component-with-modifier) {
+        $spot-registered-modifiers: map-merge($spot-registered-modifiers, ($component-with-modifier: ())) !global;
+    }
+    // get current map for given modifier
+    $new-modifier: map-get($spot-registered-modifiers, $component-with-modifier);
+    // add new modifier identifier
+    $new-modifier: map-merge($new-modifier, ($identifier: (alias: $alias)));
+    // merge it back to complex map
+    $spot-registered-modifiers: map-merge($spot-registered-modifiers, ($component-with-modifier: $new-modifier)) !global; 
+}
+
+// @private
+@mixin _apply-modifier($modifier-name, $args...) {
+    $selectors: (); 
+    $component: component();
+
+    @each $identifier in $args {
+        $original-identifier: $identifier;
+        $identifier: _add-default-ampersand-if-context($modifier-name, $identifier);
+        $component-with-identifier: _get-component-identifier($component, $identifier);
+        $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
+        $modifiers: map-get($spot-registered-modifiers, $component-with-modifier);
+        $is-alias: index($spot-registered-aliases, str-replace($component-with-identifier, ' &', ''));
+        @if $is-alias {
+            @if $modifiers {
+                // find all modifiers with this alias
+                @each $modifier in $modifiers {
+                    $alias: map-get(nth($modifier, 2), 'alias');
+                    @if $original-identifier==$alias {
+                        $extension: nth($modifier, 1);
+                        $extended-selector: '';
+                        @if str-index($extension, '&') {
+                            $extended-selector: $extension;
+                        }
+                        @else {
+                            $extended-selector: extend(&, $component, $extension);
+                        }
+                        $selectors: append($selectors, $extended-selector, 'comma');
+                    }                
+                }
+            }
+            @if length($selectors)==0 {
+                // @feature Forcing to register all modifiers at first
+                @error $SPOT_ERROR_PREFIX + "register/wrong modifier type - the modifier '"+$identifier+"' is not registered in component '"+&+"' as "+$modifier-name+". Check it out!";
+            }
+        }
+        // if not alias - just $identifier
+        @else {
+            @if $modifiers!=null and map-has-key($modifiers, $identifier) and selector-contains(&, $component) {
+                // $extension: map-get($modifiers, $identifier);
+                $extension: $identifier;
+                $extended-selector: '';                
+                @if str-index($extension, '&') {
+                    $extended-selector: $extension;
+                }
+                @else {
+                    $extended-selector: extend(&, $component, $extension);
+                }
+                $selectors: append($selectors, $extended-selector, 'comma');
+            }
+            @else {
+                // @feature Forcing to register all modifiers at first
+                @error $SPOT_ERROR_PREFIX + "register/unknown modifier - the "+$modifier-name+" '"+$identifier+"' is not registered in component '"+&+"'. Use mixin register-state() at first!";
+            }
+        }
+    }        
+    @at-root #{$selectors} {
+        @content;
+    }
+}
+
+@mixin state($args...) {
+    @if $spot-is-register-mode {        
+        @include _register-modifiers('state', $args...);
+    }
+    @else {
+        @include _apply-modifier('state', $args...) {        
+            @content;
+        }
+    }   
+}
+
+// @not tested
+@mixin variation($args...) {
+    @if $spot-is-register-mode {        
+        @include _register-modifiers('variation', $args...);
+    }
+    @else {
+        @include _apply-modifier('variation', $args...) {        
+            @content;
+        }
+    }   
+}
+
+@mixin context($args...) {
+    @if $spot-is-register-mode {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _register-modifiers('context &', $args...);
+    }
+    @else {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _apply-modifier('context &', $args...) {        
+            @content;
+        }
+    }   
+}
+
+// @not tested
+@mixin browser($args...) {
+    @if $spot-is-register-mode {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _register-modifiers('browser &', $args...);
+    }
+    @else {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _apply-modifier('browser &', $args...) {        
+            @content;
+        }
+    }   
+}
+
+// @not tested
+@mixin responsive($args...) {
+    @if $spot-is-register-mode {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _register-modifiers('responsive &', $args...);
+    }
+    @else {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _apply-modifier('responsive &', $args...) {        
+            @content;
+        }
+    }   
+}
+
+
+
+// @not tested
+// @private
+@function _add-default-ampersand-if-context($modifier-name, $identifier) {
+    @if str-index($modifier-name, '&') and not str-index($identifier, '&') {
+        // when selector does not define '&' implicitly, it add it on the end of selector by default
+        @return $identifier + ' &';
+    }
+    @else {
+        @return $identifier;
+    }
+}
+
+// @not tested
+@function extend($selector, $something, $extension: null) {    
+    @if $extension==null {
+      @return $selector+$something;
+    } @else {
+      // if more selector in $extension, breaks it and replace each individual
+      // it makes from ($something: '.item', $extenssion: '':first-child, :last-child') => $new-extension: 'item:first-child, item:last-child'
+      $parts: selector-parse($extension);
+      $new-extension: ();
+      @each $partial-selector in $parts {
+          $partial-selector: selector-replace($partial-selector, $partial-selector, $something + $partial-selector);
+          $new-extension: append($new-extension, $partial-selector, 'comma');
+      }
+      // now it is safe to use selector-replace
+      @return selector-replace($selector, $something, $new-extension+''); // +'' = convert to string
+  }
+}
+
+// @not tested
+// test if selector contains simple subselector
+@function selector-contains($selector, $simple-sub-selector) {
+    $selectors: selector-parse($selector);
+    @each $single-selector in $selectors {
+        @each $part-selector in $single-selector {
+            @if is-superselector($simple-sub-selector, $part-selector) {
+                @return true;
+            }
+        }
+    }
+    @return false;
+}
 
 // HELPER Functions ----------------------------------------------------
 
@@ -85,3 +394,13 @@ $spot-current-components: ();
     }
     @return $result;
 }
+
+@function str-replace($string, $search, $replace: '') {
+    $index: str-index($string, $search);
+    
+    @if $index {
+      @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    }
+    
+    @return $string;
+  }

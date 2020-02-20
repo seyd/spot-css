@@ -1,0 +1,11 @@
+parent-component my-component {
+  property: value;
+}
+
+direct-parent-component > my-component {
+  property: value;
+}
+
+super-direct-parent-component > * > my-component {
+  property: value;
+}

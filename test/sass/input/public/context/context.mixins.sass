@@ -1,0 +1,26 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +context('parent-component')        
+        +context('direct-parent-component >')
+        +context('super-direct-parent-component > * > &') // with ampersand
+        +context('html.mobile')
+        +context('html.layout-portrait')
+
+    +context('parent-component')
+        property: value
+    
+    +context('direct-parent-component >')
+        property: value
+
+    +context('super-direct-parent-component > * > &')
+        property: value
+
+    // t has to combine contexts into one: html.mobile.layout-portrait
+    // @TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // +context('html.mobile')
+    //     +context('html.layout-portrait')
+    //         property: value
+

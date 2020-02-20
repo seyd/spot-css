@@ -1,0 +1,7 @@
+parent-component my-component {
+  property: value;
+}
+
+html.special my-component {
+  property: special-value;
+}

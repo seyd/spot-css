@@ -1,0 +1,9 @@
+@import "./src/spot-css"
+
++component("next-component")
+    +register
+        +state('[level="?"]', '1', '2', '3')
+
+    // bad modifier - it has to be state
+    +variation('[level="?"]')
+        property: value

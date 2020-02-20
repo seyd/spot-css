@@ -1,0 +1,23 @@
+my-component:hover {
+  property: value;
+}
+
+your-component:hover {
+  property: value;
+}
+
+next-component[type="primary"] {
+  property: value;
+}
+
+next-component[type="primary"], next-component[type="secondary"] {
+  property: value;
+}
+
+next-component[level="1"], next-component[level="2"], next-component[level="3"] {
+  property: value;
+}
+
+another-component.primary:hover, another-component.secondary:hover {
+  property: value;
+}

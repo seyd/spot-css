@@ -1,0 +1,13 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +context('parent-component')
+        +context('html.special', 'special') // alias
+
+    +context('parent-component')
+        property: value
+
+    +context('special') // alias
+        property: special-value

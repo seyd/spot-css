@@ -1,0 +1,7 @@
+@import "./src/spot-css"
+
++component("my-component")
+    +register
+        +context('context-1', 'my-alias')
+        // duplicate alias with selector (modifier)
+        +context('context-2', 'context-1')

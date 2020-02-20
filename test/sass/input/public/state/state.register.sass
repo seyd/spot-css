@@ -1,0 +1,49 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +state(':hover')
+
+    +state(':hover')
+        property: value
+
+
+// enable create same states on another component
++component("your-component")
+    +register
+        +state(':hover')
+
+    +state(':hover')
+        property: value
+
+
++component("next-component")
+    +register
+        +state('[type="?"]', 'primary', 'secondary')
+        +state('[level="?"]', '1', '2', '3')
+
+    +state('[type="primary"]')
+        property: value
+
+    // this has to generate all value combinations:
+    //  next-component[type="primary"], next-component[type="secondary"]
+    +state('[type="?"]')
+        property: value
+    
+    // this has to generate all value combinations:
+    //  next-component[level="1"], next-component[level="2"], next-component[level="3"]
+    +state('[level="?"]')
+        property: value
+
+
++component("another-component")
+    +register
+        // named placeholder
+        +state('{priority}', '.primary', '.secondary')
+        +state(':hover')
+
+    // named placeholder
+    +state('{priority}')
+        +state(':hover')
+            property: value
