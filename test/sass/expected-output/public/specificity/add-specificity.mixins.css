@@ -1,0 +1,55 @@
+div a:not(_) {
+  property: value;
+}
+
+div a:not(_):not(_) {
+  property: value;
+}
+
+div a:not(_)::before {
+  property: value;
+}
+
+div a:not(_)::before {
+  property: value;
+}
+
+div a:not(_)::before {
+  property: value;
+}
+
+html div a:not(_)::before {
+  property: value;
+}
+
+div a:not(_)::after {
+  property: value;
+}
+
+div a:not(_)::after {
+  property: value;
+}
+
+html div a:not(_)::after {
+  property: value;
+}
+
+div a:not(._) {
+  property: value;
+}
+
+div a:not(._):not(._) {
+  property: value;
+}
+
+div a:not(#_) {
+  property: value;
+}
+
+div a:not(#_):not(#_) {
+  property: value;
+}
+
+div a:not(_):not(._):not(#_) {
+  property: value;
+}

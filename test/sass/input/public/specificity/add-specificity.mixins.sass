@@ -1,0 +1,62 @@
+@import "./src/spot-css"
+
+div a
+
+  // element
+  +add-element-specificity(1)
+    property: value
+
+  +add-element-specificity(2)
+    property: value
+
+  +pseudo-element('before')
+    +add-element-specificity(1)
+        property: value
+  
+  //before
+  &:before
+    +add-element-specificity(1)
+        property: value
+
+  &::before
+    +add-element-specificity(1)
+        property: value
+
+  html &
+    +pseudo-element('before')
+      +add-element-specificity(1)
+          property: value
+
+  // after
+  &:after
+    +add-element-specificity(1)
+        property: value
+        
+  &::after
+    +add-element-specificity(1)
+        property: value
+
+  html &
+    +pseudo-element('after')
+      +add-element-specificity(1)
+          property: value
+
+  // class
+  +add-class-specificity(1)
+    property: value
+
+  +add-class-specificity(2)
+    property: value
+
+  // id
+  +add-id-specificity(1)
+    property: value
+
+  +add-id-specificity(2)
+    property: value
+
+  // mixed
+  +add-element-specificity(1)
+    +add-class-specificity(1)
+      +add-id-specificity(1)
+        property: value

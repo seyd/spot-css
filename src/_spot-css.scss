@@ -305,6 +305,82 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     }
 }
 
+
+/// Tests if given selector contains pseudo element 'before' or 'after'.
+/// @access public
+/// @param { String } $selector - single selector
+/// @return { Bool } True if contains pseudo element
+@function contains-pseudo-element($selector) {
+    $last-selector: nth($selector, length($selector));
+    @return str-index($last-selector, ':before')!=null or str-index($last-selector, ':after')!=null;
+}
+
+
+/// Add selector specificity at element level.
+/// @access public
+/// @param { Number } $n - How many levels to add (1..n)
+/// @content
+/// @output Stronger selector(s) with given inner content.
+@mixin add-element-specificity($n) {
+    @at-root #{add-element-specificity(&, $n)} {
+        @content;
+    }
+}
+
+
+/// Add selector specificity at class level.
+/// @access public
+/// @param { Number } $n - How many levels to add (1..n)
+/// @content
+/// @output Stronger selector(s) with given inner content.
+@mixin add-class-specificity($n) {
+    @at-root #{add-class-specificity(&, $n)} {
+        @content;
+    }
+}
+
+
+/// Add selector specificity at id level.
+/// @access public
+/// @param { Number } $n - How many levels to add (1..n)
+/// @content
+/// @output Stronger selector(s) with given inner content.
+@mixin add-id-specificity($n) {
+    @at-root #{add-id-specificity(&, $n)} {
+        @content;
+    }
+}
+
+
+/// Add selector specificity at element level.
+/// @access public
+/// @param { String } $selector - Selector(s)
+/// @param { Number } $n - How many levels to add (1..n)
+/// @return Stronger selector(s).
+@function add-element-specificity($selector, $n) {
+    @return _add-selector-specificity($selector, $n, '_');
+}
+
+
+/// Add selector specificity at class level.
+/// @access public
+/// @param { String } $selector - Selector(s)
+/// @param { Number } $n - How many levels to add (1..n)
+/// @return Stronger selector(s).
+@function add-class-specificity($selector, $n) {
+    @return _add-selector-specificity($selector, $n, '._');
+}
+
+
+/// Add selector specificity at id level.
+/// @access public
+/// @param { String } $selector - Selector(s)
+/// @param { Number } $n - How many levels to add (1..n)
+/// @return Stronger selector(s).
+@function add-id-specificity($selector, $n) {
+    @return _add-selector-specificity($selector, $n, '#_');
+}
+
  
 /// Returns the specificity map or value of given simple/complex/multiple selector(s).
 ///
@@ -478,6 +554,11 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 //  '> a.link' => 2
 @function length-of-simple-selector($selector) {
     @return length(nth(selector-parse($selector),1));
+}
+
+
+@function to-string($value) {
+    @return inspect($value);
 }
 
 
@@ -764,6 +845,34 @@ $_registered-aliases: [];
     @else {
         @return $identifier;
     }
+}
+
+
+// add selector specificity at `given` level
+@function _add-selector-specificity($selector, $n, $not-what-mark) {
+    $selectors: selector-parse($selector);
+    $output: ();
+    $addon: '';
+    @for $i from 1 to $n+1 {
+        $addon: $addon + ':not(' + $not-what-mark + ')';
+    }
+    // for each selector (if more selectors in $selector)
+    @each $single-selector in $selectors {
+        $single-selector: to-string($single-selector);
+        @if str-index($single-selector, ':before')!=null {
+            $single-selector: str-replace(str-replace($single-selector, '::before', ''), ':before', '');
+            $single-selector: $single-selector + $addon + '::before';
+        }
+        @else if str-index($single-selector, ':after')!=null {
+            $single-selector: str-replace(str-replace($single-selector, '::after', ''), ':after', '');
+            $single-selector: $single-selector + $addon + '::after';
+        }
+        @else {
+            $single-selector: $single-selector + $addon;
+        }
+        $output: append($output, $single-selector, 'comma');
+    }
+    @return #{$output};
 }
 
  
