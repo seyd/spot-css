@@ -1,34 +1,29 @@
-// SPOT CSS Framework
-// { Single Place Of Truth CSS Methodology }
-//
-// Source: https://github.com/seyd/spot-css
+/// SPOT CSS Framework
+/// { Single Place Of Truth CSS Methodology }
+///
+/// @author Johnny Seyd (johnnyseyd@gmail.com)
+/// @link https://github.com/seyd/spot-css
+///
+$SPOT-CSS-FRAMEWORK: '1.0';
 //
 // Usage:
 //    @import "./path/to/spot-css";
 
 
-$SPOT_ERROR_PREFIX: "SPOT CSS: ";
-
-// map of registered components
-$spot-registered-components: ();
-
-// current component or stack of current components (if multiple are nested)
-$spot-current-components: ();
-
-// flag of register mode
-$spot-is-register-mode: false;
-
-// map of registered modifiers
-$spot-registered-modifiers: ();
-
-// list of registered identifiers for guarding unique (per component)
-$spot-registered-identifiers: [];
-
-// list of registered aliases of identifiers for guarding unique 
-$spot-registered-aliases: [];
-
-// @description Main top-level mixin to define component.
-// @param $selector: single selector
+/// Main top-level mixin to define component.
+///
+/// 1) It checks if same component is defined multiple times. It is not allowed because Single Place Of Truth.
+///
+/// 2) Components can be nested one into another.
+///
+/// @group Component
+/// @access public
+/// @param { String } $selector - single selector of component
+/// @content
+/// @throw SPOT CSS: component/no selector - selector was expected but nothing passed.
+/// @throw SPOT CSS: component/single selector - given selector is not a single selector ({selector}).
+/// @throw SPOT CSS: component/already registered - given selector is already registered as component ({selector}).
+/// @output Given selector with given content.
 @mixin component($selector) {
     @if not $selector or $selector=="" {
         @error $SPOT_ERROR_PREFIX + "component/no selector - selector was expected but nothing passed.";
@@ -41,67 +36,454 @@ $spot-registered-aliases: [];
     
     $component-selector: $selector;
 
-    $already-registered: index($spot-registered-components, $component-selector)!=null;
+    $already-registered: index($_registered-components, $component-selector)!=null;
 
-    // @feature It checks if same component is defined multiple times. It is not allowed because SIngle Place of Truth.
+    // 1)
     @if $already-registered {
         @error $SPOT_ERROR_PREFIX + "component/already registered - given selector is already registered as component ('"+$component-selector+"').";
     }
     @else {
         // store component selector if is not stored yet
-        $spot-registered-components: append($spot-registered-components, $component-selector, 'comma') !global;
+        $_registered-components: append($_registered-components, $component-selector, 'comma') !global;
     }
 
-    // @feature Components can be nested one into another.
+    // 2)
     // store current component selector (into stack)
-    $spot-current-components: append($spot-current-components, $component-selector, 'space') !global;
+    $_current-components: append($_current-components, $component-selector, 'space') !global;
 
     #{$component-selector} {
         @content;
     }
 
     // remove current component selector (from stack)
-    $spot-current-components: pop($spot-current-components) !global;
+    $_current-components: pop($_current-components) !global;
 }
 
-// @return Current component selector.
+
+/// @group Component
+/// @access public
+/// @return { String } Current component selector.
 @function component() {
-    @return #{$spot-current-components}; 
+    @return #{$_current-components}; 
 }
 
-// @return Current single component selector (the last one if nested).
+
+/// @group Component
+/// @access public
+/// @return { String } Current single component selector (the last one if nested).
 @function current-single-component() {
-    @return #{last($spot-current-components)}; 
+    @return #{last($_current-components)}; 
 }
 
 
-// @private
-// @description Create unique string for combination $component + $identifier.
-// @return Unique string identifier
-@function _get-component-identifier($component, $identifier) {
-    @return $component+'---'+$identifier;
-}
-
-// @private
-// @description Create unique string for combination $component + $modifier.
-// @return Unique string modifier
-@function _get-component-modifier($component, $modifier) {
-    @return $component+'___'+$modifier;
-}
-
+/// Main top-level mixin to define component.
+/// @group Component
+/// @access public
+/// @content
+/// @throw SPOT CSS: register/no component - the mixin register must be used inside a component.
+/// @output Given selector with given content.
 @mixin register {
     @if component()=='' {
         @error $SPOT_ERROR_PREFIX + "register/no component - the mixin register must be used inside a component.";
     }
-    $spot-is-register-mode: true !global;
+    $_is-register-mode: true !global;
     @content;
-    $spot-is-register-mode: false !global;
+    $_is-register-mode: false !global;
 }
 
-// @private
-// @param $modifier-name: 'state' | 'variation' | 'context' | 'browser-specific' | 'responsive'
-// @param $identifier: selector extension
- @mixin _register-modifiers($modifier-name, $identifier, $args...) { 
+
+/// This mixins works in 2 modes:
+///
+/// 1) when used in register mixin, it will register variation in current component.
+///
+/// 2) when used outside of register mixin, it will apply given variation(s) to current component selector.
+///
+/// @group Component
+/// @access public
+/// @param { String } $args... - In register mode it require variation selector (and all values when placeholder '?' is used in variation selector) OR when not in regiter mode selector extension(s) = variation names
+/// @content
+/// @throw In register mode see errors of mixin _register-modifiers and mixin _register-individual-modifier OR when not in regiter mode see errors of mixin _apply-modifier
+/// @output In register mode outputs nothing OR when not in regiter mode it will output selector extended by given variation(s) with given content.
+@mixin variation($args...) {
+    @if $_is-register-mode {        
+        @include _register-modifiers('variation', $args...);
+    }
+    @else {
+        @include _apply-modifier('variation', $args...) {        
+            @content;
+        }
+    }   
+}
+
+
+/// Same as mixin <b>variation</b> but different semantic naming.
+/// @see {mixin} variation
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @content
+@mixin state($args...) {
+    @if $_is-register-mode {        
+        @include _register-modifiers('state', $args...);
+    }
+    @else {
+        @include _apply-modifier('state', $args...) {        
+            @content;
+        }
+    }   
+}
+
+
+/// This mixins works in 2 modes:
+///
+/// 1) when used in register mixin, it will register context in current component.
+///
+/// 2) when used outside of register mixin, it will apply given context(s) to current component selector.
+///
+/// @group Component
+/// @access public
+/// @param { String } $args... - In register mode it require context selector and optional alias OR when not in regiter mode selector extension(s) = context names
+/// @content
+/// @throw In register mode see errors of mixin _register-modifiers and mixin _register-individual-modifier OR when not in regiter mode see errors of mixin _apply-modifier
+/// @output In register mode outputs nothing OR when not in regiter mode it will output selector extended by given context(s) with given content.
+@mixin context($args...) {
+    @if $_is-register-mode {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _register-modifiers('context &', $args...);
+    }
+    @else {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _apply-modifier('context &', $args...) {        
+            @content;
+        }
+    }   
+}
+
+
+/// Same as mixin <b>context</b> but different semantic naming.
+/// @see {mixin} context
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @content
+@mixin browser($args...) {
+    @if $_is-register-mode {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _register-modifiers('browser &', $args...);
+    }
+    @else {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _apply-modifier('browser &', $args...) {        
+            @content;
+        }
+    }   
+}
+
+/// Same as mixin <b>context</b> but different semantic naming.
+/// @see {mixin} context
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @content
+@mixin responsive($args...) {
+    @if $_is-register-mode {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _register-modifiers('responsive &', $args...);
+    }
+    @else {
+        // ' &' appendix signalize different mode of  composint selector
+        @include _apply-modifier('responsive &', $args...) {        
+            @content;
+        }
+    }   
+}
+
+
+/// Declares direct child block in current component selector.
+/// @group Component
+/// @access public
+/// @param { String } $args... - One or more selectors of direct childs. Each selector as a single selector in separate argument.
+/// @content
+/// @throw SPOT CSS: child-element/no selectors - at least one child selector is expected.
+/// @throw SPOT CSS: child-element/single selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
+/// @throw SPOT CSS: child-element/multilevel selector - given selector is not a single selector ('selector'). Just use more child-element mixins nested.
+/// @output Given selector with given content.
+///
+/// @todo check if current selector does not have on the end '>' already...
+@mixin child-element($args...) {
+    @if length($args)==0 {
+        @error $SPOT_ERROR_PREFIX + "child-element/no selectors - at least one child selector is expected.";
+    }
+    $selectors: (); 
+    @each $selector in $args {
+        $parts: selector-parse($selector);
+        // @feature Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
+        @if length($parts)>1 {
+            @error $SPOT_ERROR_PREFIX + "child-element/single selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
+        }        
+        // all child selectors must start with >
+        @if str-index(str-trim-left($selector), '>')!=1 {
+            $selector: '> '+$selector;
+        }
+        // @feature Guarding that only first (one) level child selector is passed.
+        // Value 2 because also starting '>' is counted
+        @if length-of-simple-selector($selector)>2 {
+            @error $SPOT_ERROR_PREFIX + "child-element/multilevel selector - given selector is not a single selector ('"+$selector+"'). Just use more child-element mixins nested.";
+        }   
+        $selectors: append($selectors, $selector, 'comma');
+    }
+    #{$selectors} {
+        @content;
+    }
+}
+
+/// @todo implement same as child-element but without '>' selector
+@mixin every-sub-element($args...) {
+
+}
+
+
+/// Declares pseudo element(s) of current component selector.
+/// @group Component
+/// @access public
+/// @param { String } $first - pseudo selector 'before' or 'after' (also prefixes ':' and ':: are accepted)
+/// @param { String } $second - pseudo selector 'before' or 'after' (also prefixes ':' and ':: are accepted)
+/// @content
+/// @throw SPOT CSS: pseudo-element/no selectors - at least one pseudo selector is expected ('before' or 'after').
+/// @throw SPOT CSS: pseudo-element/invalid selector - only valid values are 'before' or 'after' (if both, pass it as separate arguments).
+/// @throw SPOT CSS: pseudo-element/invalid selectors - only valid values are 'before' or 'after' (if both, pass it as separate arguments).
+/// @output Given selector with given content.
+@mixin pseudo-element($first: '', $second: '') {
+    @if not $first or $first=='' {
+        @error $SPOT_ERROR_PREFIX + "pseudo-element/no selectors - at least one pseudo selector is expected ('before' or 'after').";
+    }
+    $selectors: ();
+    // replace all colons (':' and '::')
+    $first: str-trim(str-replace($first, ':', ''));
+    $second: str-trim(str-replace($second, ':', ''));
+
+    @if $first!='before' and $first!='after' {
+        @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid selector - only valid values are 'before' or 'after' (if both, pass it as separate arguments).";
+    }
+
+    @if $second and $second!='' and $second!='before' and $second!='after' {
+        @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid selectors - only valid values are 'before' or 'after' (if both, pass it as separate arguments).";
+    }
+
+    @if not $second or $second=='' {
+        &::#{$first} {
+            @content;
+        }
+    }
+    @else {
+        &::#{$first}, &::#{$second} {
+            @content;
+        }
+    }
+}
+
+
+
+// ------------------------------------------------------------------------------------------------
+// --- HELPERS ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+
+
+/// @todo tests
+@function extend($selector, $something, $extension) {
+    // for each selector (if more selectors in $selector) check if extended selector is present
+    @each $single-selector in $selector {
+        @if str-index($single-selector+'', $something+'')==null {
+            @error 'Extend function has failed! Subselector "'+$something+'" was not found in selector "'+$single-selector+'".';
+        }
+    }  
+    // if more selector in $extension, breaks it and replace each individual
+    // it makes from ($something: '.item', $extenssion: '':first-child, :last-child') => $new-extension: 'item:first-child, item:last-child'
+    $parts: selector-parse($extension);
+    $new-extension: ();
+    @each $partial-selector in $parts {
+        $partial-selector: selector-replace($partial-selector, $partial-selector, $something + $partial-selector);
+        $new-extension: append($new-extension, $partial-selector, 'comma');
+    }
+    // now it is safe to use selector-replace
+    @return selector-replace($selector, $something, $new-extension+''); // +'' = convert to string
+}
+
+
+/// @todo tests
+// test if selector contains simple subselector
+@function selector-contains($selector, $simple-sub-selector) {
+    $selectors: selector-parse($selector);
+    @each $single-selector in $selectors {
+        @each $part-selector in $single-selector {
+            @if is-superselector($simple-sub-selector, $part-selector) {
+                @return true;
+            }
+        }
+    }
+    @return false;
+}
+
+
+@function first($list) {
+    @return nth($list, 1);
+}
+
+
+@function last($list) {
+    @return nth($list, length($list));
+}
+
+
+// @description Complementary to append() function.
+@function prepend($list, $value) {
+    @return join($value, $list);
+}
+
+
+// @description Remove the last item in the list (opposite of append() function).
+// @returns new list, not last item (to do so use last() function)
+@function pop($list) {
+    $result: ();
+    $len: length($list);
+    @if $len>1 {
+        @for $i from 1 through $len - 1 {
+            $result: append($result, nth($list, $i));
+        }
+    }
+    @return $result;
+}
+
+
+@function str-replace($string, $search, $replace: '') {
+    $index: str-index($string, $search);
+    
+    @if $index {
+      @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    }
+    
+    @return $string;
+  }
+
+
+@function str-trim-left($s) {
+    @while (str-index($s, ' ')==1) {
+        $i: str-index($s, ' ');
+        $s: "#{str-slice($s, 0, $i - 1)}#{str-slice($s, $i + 1)}";
+    }
+    @return $s;
+}
+
+
+@function str-trim-right($s) {
+    @while (str-slice($s, str-length($s))==' ') {
+        $i: str-index($s, ' ');
+        $s: "#{str-slice($s, 0, $i - 1)}#{str-slice($s, $i + 1)}";
+    }
+    @return $s;
+}
+
+
+@function str-trim($s) {
+    @return str-trim-left(str-trim-right($s));
+}
+
+
+// It has to be simple selector (not contain comma separated selectors)
+// @return How many selector levels given selector contains.
+// @example:
+//  'a.link' => 1 
+//  'a.link span' => 2
+//  'a.link + span' => 3
+//  '> a.link' => 2
+@function length-of-simple-selector($selector) {
+    @return length(nth(selector-parse($selector),1));
+}
+
+
+
+// ------------------------------------------------------------------------------------------------
+// --- PRIVATE ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+
+
+
+/// Prefix of the SPOT CSS Framework errors.
+/// @access private
+/// @type String
+$SPOT_ERROR_PREFIX: "SPOT CSS: ";
+
+
+/// Map of registered components.
+/// @group Component
+/// @access private
+/// @type Map
+$_registered-components: ();
+
+
+/// Current component or stack of current components (if multiple are nested).
+/// @group Component
+/// @access private
+/// @type Map
+$_current-components: ();
+
+/// Flag of register mode - if parser enters mixin register.
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-register-mode: false;
+
+
+/// Map of registered modifiers, e.g. state, variation, context, ...
+/// @group Component
+/// @access private
+/// @type Map
+$_registered-modifiers: ();
+
+
+/// List of registered identifiers for guarding uniqueness (per component).
+/// @group Component
+/// @access private
+/// @type List
+$_registered-identifierss: [];
+
+
+/// List of registered aliases of identifiers for guarding uniqueness (per component).
+/// @group Component
+/// @access private
+/// @type List
+$_registered-aliases: [];
+
+
+/// Create unique string for combination $component + $identifier.
+/// @group Component
+/// @access private
+/// @return { String } Unique string identifier.
+@function _get-component-identifier($component, $identifier) {
+    @return $component+'---'+$identifier;
+}
+
+
+/// Create unique string for combination $component + $modifier.
+/// @group Component
+/// @access private
+/// @return { String } Unique string modifier.
+@function _get-component-modifier($component, $modifier) {
+    @return $component+'___'+$modifier;
+}
+
+
+/// Reusable mixin for registering states, variations, contexts, browsers, responsive...
+/// @group Component
+/// @access private
+/// @param { String } $modifier-name - 'state' | 'variation' | 'context' | 'browser' | 'responsive'
+/// @param { String } $identifier - selector extension
+/// @param { String } $args... - extra arguments for input values for placeholder '?' or alias name when context-like modifier ('context' | 'browser' | 'responsive')
+/// @throw SPOT CSS: register/placeholder in context - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param).
+/// @throw SPOT CSS: register/missing values - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but no values were provided.
+/// @throw SPOT CSS: register/extra values - the mixin register { modifier-name(identifier) } doesn't use '?' as value placeholder but extra values were provided.
+/// @output Nothing.
+@mixin _register-modifiers($modifier-name, $identifier, $args...) { 
     @if component()=='' {
         @error $SPOT_ERROR_PREFIX + "register/no component - the mixin register { "+$modifier-name+"("+$identifier+") } must be used inside a component selector.";
     }
@@ -111,7 +493,7 @@ $spot-registered-aliases: [];
 
         // if context-like modifier then placeholder '?' is not supported
         @if str-index($modifier-name, '&') {
-            @error $SPOT_ERROR_PREFIX + "register/placeholder in context - the mixin register { "+$modifier-name+"("+$identifier+") } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param}.";
+            @error $SPOT_ERROR_PREFIX + "register/placeholder in context - the mixin register { "+$modifier-name+"("+$identifier+") } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param).";
         }
 
         $len: length($args);
@@ -142,11 +524,20 @@ $spot-registered-aliases: [];
     }
 }
 
-// @private
-// @param $modifier-name: 'state' | 'variation' | 'context' | 'browser-specific' | 'responsive'
-// @param $identifier: selector extension
-@mixin _register-individual-modifier($modifier-name, $identifier, $alias: '', $do-not-check-alias: false) {    
 
+/// Reusable mixin for registering state, variation, context, browser or responsive.
+/// @group Component
+/// @access private
+/// @param { String } $modifier-name - 'state' | 'variation' | 'context' | 'browser' | 'responsive'
+/// @param { String } $identifier - selector extension
+/// @param { String } $alias - alias name when context-like modifier ('context' | 'browser' | 'responsive')
+/// @param { Bool } $do-not-check-alias - flag to skip duplicity check for aliases
+/// @throw SPOT CSS: register/duplicate modifier - trying to register already registered modifier 'identifier' for component 'component'.
+/// @throw SPOT CSS: register/duplicate modifier with alias - trying to register modifier 'identifier' but there is already registered modifier with same alias for component 'component'.
+/// @throw SPOT CSS: register/duplicate alias with modifier - trying to register alias 'alias' but there is already registered same modifier for component 'component'.
+/// @throw SPOT CSS: register/duplicate modifier alias - trying to register already registered modifier alias 'alias' for component 'component'.
+/// @output Nothing.
+@mixin _register-individual-modifier($modifier-name, $identifier, $alias: '', $do-not-check-alias: false) {    
     // backup
     $original-identifier: $identifier;    
 
@@ -161,49 +552,58 @@ $spot-registered-aliases: [];
     $component-with-modifier: str-replace(_get-component-modifier($current-component, $modifier-name), ' &', '');
 
     // @feature Guarding duplicity of modifiers
-    @if index($spot-registered-identifiers, $component-with-identifier) {
-        @error $SPOT_ERROR_PREFIX + "register/duplicate modifier - trying to register already registered modifier '"+$original-identifier+"' for component "+$current-component+".";
+    @if index($_registered-identifierss, $component-with-identifier) {
+        @error $SPOT_ERROR_PREFIX + "register/duplicate modifier - trying to register already registered modifier '"+$original-identifier+"' for component '"+$current-component+"'.";
     }
 
     // @feature Guarding duplicity of modifiers with aliases
-    @if index($spot-registered-aliases, _get-component-identifier($current-component, $original-identifier)) {
-        @error $SPOT_ERROR_PREFIX + "register/duplicate modifier with alias - trying to register modifier '"+$original-identifier+"' but there is already registered modifier with same alias for component "+$current-component+".";
+    @if index($_registered-aliases, _get-component-identifier($current-component, $original-identifier)) {
+        @error $SPOT_ERROR_PREFIX + "register/duplicate modifier with alias - trying to register modifier '"+$original-identifier+"' but there is already registered modifier with same alias for component '"+$current-component+"'.";
     }
 
     // store unique identifier
-    $spot-registered-identifiers: append($spot-registered-identifiers, $component-with-identifier) !global;
+    $_registered-identifierss: append($_registered-identifierss, $component-with-identifier) !global;
 
     @if $alias and $alias!='' and not $do-not-check-alias {
         // @feature Guarding duplicity of alias with modifiers
-        @if index($spot-registered-identifiers, _get-component-identifier($current-component, $alias_with_ampersand)) {
-            @error $SPOT_ERROR_PREFIX + "register/duplicate alias with modifier - trying to register alias '"+$alias+"' but there is already registered same modifier for component "+$current-component+".";
+        @if index($_registered-identifierss, _get-component-identifier($current-component, $alias_with_ampersand)) {
+            @error $SPOT_ERROR_PREFIX + "register/duplicate alias with modifier - trying to register alias '"+$alias+"' but there is already registered same modifier for component '"+$current-component+"'.";
         }
 
         // create unique identifier of component+identifier
         $component-with-alias: _get-component-identifier($current-component, $alias);
     
         // @feature Guarding duplicity of modifiers aliases
-        @if index($spot-registered-aliases, $component-with-alias) {
-            @error $SPOT_ERROR_PREFIX + "register/duplicate modifier alias - trying to register already registered modifier alias '"+$alias+"' for component "+$current-component+".";
+        @if index($_registered-aliases, $component-with-alias) {
+            @error $SPOT_ERROR_PREFIX + "register/duplicate modifier alias - trying to register already registered modifier alias '"+$alias+"' for component '"+$current-component+"'.";
         }
 
         // store unique alias
-        $spot-registered-aliases: append($spot-registered-aliases, $component-with-alias) !global;    
+        $_registered-aliases: append($_registered-aliases, $component-with-alias) !global;    
     }
     
     // create empty map if does not existes yet
-    @if not map-has-key($spot-registered-modifiers, $component-with-modifier) {
-        $spot-registered-modifiers: map-merge($spot-registered-modifiers, ($component-with-modifier: ())) !global;
+    @if not map-has-key($_registered-modifiers, $component-with-modifier) {
+        $_registered-modifiers: map-merge($_registered-modifiers, ($component-with-modifier: ())) !global;
     }
     // get current map for given modifier
-    $new-modifier: map-get($spot-registered-modifiers, $component-with-modifier);
+    $new-modifier: map-get($_registered-modifiers, $component-with-modifier);
     // add new modifier identifier
     $new-modifier: map-merge($new-modifier, ($identifier: (alias: $alias)));
     // merge it back to complex map
-    $spot-registered-modifiers: map-merge($spot-registered-modifiers, ($component-with-modifier: $new-modifier)) !global; 
+    $_registered-modifiers: map-merge($_registered-modifiers, ($component-with-modifier: $new-modifier)) !global; 
 }
 
-// @private
+
+/// Reusable mixin for applying states, variations, contexts, browsers, responsive...
+/// @group Component
+/// @access private
+/// @param { String } $modifier-name - 'state' | 'variation' | 'context' | 'browser' | 'responsive'
+/// @param { String } $args... - selector extension(s)
+/// @content
+/// @throw SPOT CSS: register/wrong modifier type - the modifier 'identifier' is not registered in component 'current selector' as 'modifier-name'. Check it out!
+/// @throw SPOT CSS: register/unknown modifier - the 'modifier-name' 'identifier' is not registered in component 'current selector'. Use mixin register-state() at first!
+/// @output Selector extended by given extensions with given content.
 @mixin _apply-modifier($modifier-name, $args...) {
     $selectors: (); 
     $component: component();
@@ -213,8 +613,8 @@ $spot-registered-aliases: [];
         $identifier: _add-default-ampersand-if-context($modifier-name, $identifier);
         $component-with-identifier: _get-component-identifier($component, $identifier);
         $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
-        $modifiers: map-get($spot-registered-modifiers, $component-with-modifier);
-        $is-alias: index($spot-registered-aliases, str-replace($component-with-identifier, ' &', ''));
+        $modifiers: map-get($_registered-modifiers, $component-with-modifier);
+        $is-alias: index($_registered-aliases, str-replace($component-with-identifier, ' &', ''));
         @if $is-alias {
             @if $modifiers {
                 // find all modifiers with this alias
@@ -262,130 +662,9 @@ $spot-registered-aliases: [];
     }
 }
 
-@mixin state($args...) {
-    @if $spot-is-register-mode {        
-        @include _register-modifiers('state', $args...);
-    }
-    @else {
-        @include _apply-modifier('state', $args...) {        
-            @content;
-        }
-    }   
-}
 
-// @not tested
-@mixin variation($args...) {
-    @if $spot-is-register-mode {        
-        @include _register-modifiers('variation', $args...);
-    }
-    @else {
-        @include _apply-modifier('variation', $args...) {        
-            @content;
-        }
-    }   
-}
-
-@mixin context($args...) {
-    @if $spot-is-register-mode {
-        // ' &' appendix signalize different mode of  composint selector
-        @include _register-modifiers('context &', $args...);
-    }
-    @else {
-        // ' &' appendix signalize different mode of  composint selector
-        @include _apply-modifier('context &', $args...) {        
-            @content;
-        }
-    }   
-}
-
-// @not tested
-@mixin browser($args...) {
-    @if $spot-is-register-mode {
-        // ' &' appendix signalize different mode of  composint selector
-        @include _register-modifiers('browser &', $args...);
-    }
-    @else {
-        // ' &' appendix signalize different mode of  composint selector
-        @include _apply-modifier('browser &', $args...) {        
-            @content;
-        }
-    }   
-}
-
-// @not tested
-@mixin responsive($args...) {
-    @if $spot-is-register-mode {
-        // ' &' appendix signalize different mode of  composint selector
-        @include _register-modifiers('responsive &', $args...);
-    }
-    @else {
-        // ' &' appendix signalize different mode of  composint selector
-        @include _apply-modifier('responsive &', $args...) {        
-            @content;
-        }
-    }   
-}
-
-@mixin child-element($args...) {
-    @if length($args)==0 {
-        @error $SPOT_ERROR_PREFIX + "child-element/no selectors - at least one child selector is expected.";
-    }
-    $selectors: (); 
-    @each $selector in $args {
-        $parts: selector-parse($selector);
-        // @feature Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
-        @if length($parts)>1 {
-            @error $SPOT_ERROR_PREFIX + "child-element/single selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
-        }        
-        // all child selectors must start with >
-        @if str-index(str-trim-left($selector), '>')!=1 {
-            $selector: '> '+$selector;
-        }
-        // @feature Guarding that only first (one) level child selector is passed.
-        // Value 2 because also starting '>' is counted
-        @if length-of-simple-selector($selector)>2 {
-            @error $SPOT_ERROR_PREFIX + "child-element/multilevel selector - given selector is not a single selector ('"+$selector+"'). Just use more child-element mixins nested.";
-        }   
-        $selectors: append($selectors, $selector, 'comma');
-    }
-    #{$selectors} {
-        @content;
-    }
-}
-
-// @param $first: 'before' | 'after' (or ':before', '::before', ':after', '::after')
-// @param $last:  'before' | 'after' (or ':before', '::before', ':after', '::after')
-@mixin pseudo-element($first: '', $second: '') {
-    @if not $first or $first=='' {
-        @error $SPOT_ERROR_PREFIX + "pseudo-element/no selectors - at least one pseudo selector is expected ('before' or 'after').";
-    }
-    $selectors: ();
-    // replace all colons (':' and '::')
-    $first: str-trim(str-replace($first, ':', ''));
-    $second: str-trim(str-replace($second, ':', ''));
-
-    @if $first!='before' and $first!='after' {
-        @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid selector - only valid values are 'before' or 'after' (if both, pass it as separate arguments).";
-    }
-
-    @if $second and $second!='' and $second!='before' and $second!='after' {
-        @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid selectors - only valid values are 'before' or 'after' (if both, pass it as separate arguments).";
-    }
-
-    @if not $second or $second=='' {
-        &::#{$first} {
-            @content;
-        }
-    }
-    @else {
-        &::#{$first}, &::#{$second} {
-            @content;
-        }
-    }
-}
-
-// @not tested
-// @private
+/// @todo tests
+/// @access private
 @function _add-default-ampersand-if-context($modifier-name, $identifier) {
     @if str-index($modifier-name, '&') and not str-index($identifier, '&') {
         // when selector does not define '&' implicitly, it add it on the end of selector by default
@@ -394,107 +673,4 @@ $spot-registered-aliases: [];
     @else {
         @return $identifier;
     }
-}
-
-// @not tested
-@function extend($selector, $something, $extension) {
-    // for each selector (if more selectors in $selector) check if extended selector is present
-    @each $single-selector in $selector {
-        @if str-index($single-selector+'', $something+'')==null {
-            @error 'Extend function has failed! Subselector "'+$something+'" was not found in selector "'+$single-selector+'".';
-        }
-    }  
-    // if more selector in $extension, breaks it and replace each individual
-    // it makes from ($something: '.item', $extenssion: '':first-child, :last-child') => $new-extension: 'item:first-child, item:last-child'
-    $parts: selector-parse($extension);
-    $new-extension: ();
-    @each $partial-selector in $parts {
-        $partial-selector: selector-replace($partial-selector, $partial-selector, $something + $partial-selector);
-        $new-extension: append($new-extension, $partial-selector, 'comma');
-    }
-    // now it is safe to use selector-replace
-    @return selector-replace($selector, $something, $new-extension+''); // +'' = convert to string
-}
-
-// @not tested
-// test if selector contains simple subselector
-@function selector-contains($selector, $simple-sub-selector) {
-    $selectors: selector-parse($selector);
-    @each $single-selector in $selectors {
-        @each $part-selector in $single-selector {
-            @if is-superselector($simple-sub-selector, $part-selector) {
-                @return true;
-            }
-        }
-    }
-    @return false;
-}
-
-// HELPER Functions ----------------------------------------------------
-
-@function first($list) {
-    @return nth($list, 1);
-}
-
-@function last($list) {
-    @return nth($list, length($list));
-}
-
-// @description Complementary to append() function.
-@function prepend($list, $value) {
-    @return join($value, $list);
-}
-
-// @description Remove the last item in the list (opposite of append() function).
-// @returns new list, not last item (to do so use last() function)
-@function pop($list) {
-    $result: ();
-    $len: length($list);
-    @if $len>1 {
-        @for $i from 1 through $len - 1 {
-            $result: append($result, nth($list, $i));
-        }
-    }
-    @return $result;
-}
-
-@function str-replace($string, $search, $replace: '') {
-    $index: str-index($string, $search);
-    
-    @if $index {
-      @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
-    }
-    
-    @return $string;
-  }
-
-@function str-trim-left($s) {
-    @while (str-index($s, ' ')==1) {
-        $i: str-index($s, ' ');
-        $s: "#{str-slice($s, 0, $i - 1)}#{str-slice($s, $i + 1)}";
-    }
-    @return $s;
-}
-
-@function str-trim-right($s) {
-    @while (str-slice($s, str-length($s))==' ') {
-        $i: str-index($s, ' ');
-        $s: "#{str-slice($s, 0, $i - 1)}#{str-slice($s, $i + 1)}";
-    }
-    @return $s;
-}
-
-@function str-trim($s) {
-    @return str-trim-left(str-trim-right($s));
-}
-
-// It has to be simple selector (not contain comma separated selectors)
-// @return How many selector levels given selector contains.
-// @example:
-//  'a.link' => 1 
-//  'a.link span' => 2
-//  'a.link + span' => 3
-//  '> a.link' => 2
-@function length-of-simple-selector($selector) {
-    @return length(nth(selector-parse($selector),1));
 }
