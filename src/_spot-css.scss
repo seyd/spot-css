@@ -576,7 +576,13 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 // --- HELPERS ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 
-
+// Extends selector in the actual selector path
+// ($something: '.item', $extenssion: '':first-child, :last-child') => $new-extension: 'item:first-child, item:last-child'
+@mixin extend($something, $extension) {
+    @at-root #{extend(&, $something, $extension)} {
+        @content;
+    }
+}
 
 /// @todo tests
 @function extend($selector, $something, $extension) {
