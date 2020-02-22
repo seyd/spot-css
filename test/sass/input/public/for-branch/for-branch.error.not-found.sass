@@ -1,0 +1,13 @@
+@import "./src/spot-css"
+
+
++component('my-component')
+  +register
+    +variation('.apple')
+    +variation('.orange')
+  
+  +variation('.apple', '.orange')
+    property: value
+
+    +for-branch('.bannana')
+      property: other-value

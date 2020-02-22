@@ -1,0 +1,23 @@
+my-component.apple, my-component.orange {
+  property: value;
+}
+
+my-component.apple {
+  property: other-value-1;
+}
+
+my-component.orange {
+  property: other-value-2;
+}
+
+my-component.apple > span, my-component.orange > span {
+  property: value;
+}
+
+my-component.apple > span {
+  property: other-value-1;
+}
+
+my-component.orange > span {
+  property: other-value-2;
+}

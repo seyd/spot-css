@@ -1,0 +1,29 @@
+@import "./src/spot-css"
+
+
++component('my-component')
+  +register
+    +variation('.apple')
+    +variation('.orange')
+  
+  // ----------------------------------------------
+  +variation('.apple', '.orange')
+    property: value
+
+    +for-branch('.apple')
+      property: other-value-1
+
+    +for-branch('.orange')
+      property: other-value-2
+
+  // ----------------------------------------------
+  +child-element('span')
+
+      +variation('.apple', '.orange')
+        property: value
+
+        +for-branch('.apple')
+          property: other-value-1
+
+        +for-branch('.orange')
+          property: other-value-2

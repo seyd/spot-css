@@ -529,6 +529,48 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 }
 
 
+/// Filter given selector with given sub-selectors.
+/// Every selector which does not contain any of given args will be excluded.
+/// @access public
+/// @param { String } $args... - Selector(s) to override
+/// @content
+/// @output Filtered selector(s) with given inner content.
+@mixin for-branch($args...) {
+    @at-root #{for-branch(&, $args...)} {
+        @content;
+    }
+}
+
+
+/// Filter given selector with given sub-selectors.
+/// Every selector which does not contain any of given args will be excluded.
+/// @access public
+/// @param { String } $current-selector - Selector(s) to be strengthen
+/// @param { String } $args... - Selector(s) to override
+/// @return Filtered selector(s).
+@function for-branch($selector, $args...) {
+    $selectors: selector-parse($selector);
+    $output: (); 
+    $found: false;
+    @each $selector in $selectors {
+        $match: false;
+        @each $branch in $args {
+            @if str-index(to-string($selector), $branch) {
+                $match: true;
+                $found: true;
+            }
+        }
+        @if $match {
+            $output: append($output, $selector, 'comma');
+        }
+    }
+    @if not $found {
+        @error $SPOT_ERROR_PREFIX + "for-branch/not found - given branch selector was not found at the end of current selector ('"+$selector+"').";
+    }
+    @return #{$output};
+}
+
+
 
 // ------------------------------------------------------------------------------------------------
 // --- HELPERS ------------------------------------------------------------------------------------
