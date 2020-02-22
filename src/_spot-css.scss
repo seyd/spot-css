@@ -280,7 +280,6 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     @if not $first or $first=='' {
         @error $SPOT_ERROR_PREFIX + "pseudo-element/no selectors - at least one pseudo selector is expected ('before' or 'after').";
     }
-    $selectors: ();
     // replace all colons (':' and '::')
     $first: str-trim(str-replace($first, ':', ''));
     $second: str-trim(str-replace($second, ':', ''));
@@ -381,6 +380,51 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     @return _add-selector-specificity($selector, $n, '#_');
 }
 
+
+/// Add selector specificity to override given specificity.
+/// It will make same selector specificity plus one extra element specificity to override it.
+/// @access public
+/// @param { String } $selector - Selector(s)
+/// @param { Number } $id-specificity - Specificity of selector on id level
+/// @param { Number } $id-specificity - Specificity of selector on id level
+/// @return Stronger selector(s).
+@function override-selector-specificity($selector, $id-specificity, $class-specificity, $element-specificity) {
+    // Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
+    $parts: selector-parse($selector);
+    @if length($parts)>1 {
+        @error $SPOT_ERROR_PREFIX + "override-selector-specificity/single selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
+    } 
+    $specificity: specificity($selector);
+    $id-spec: nth($specificity, 1);
+    $class-spec: nth($specificity, 2);
+    $element-spec: nth($specificity, 3);
+
+    // minimize useless selector strength
+    @if $id-spec > $id-specificity {
+        @return $selector;
+    }
+    @if $id-spec == $id-specificity and $class-spec > $class-specificity {
+        @return $selector;
+    }
+    @if $id-spec == $id-specificity and $class-spec == $class-specificity and $element-spec > $element-specificity {
+        @return $selector;
+    }
+
+    // element specificity is incremented to make stronger selector 
+    $element-specificity: $element-specificity + 1;
+
+    @if $id-specificity > $id-spec {
+        $selector: add-id-specificity($selector, $id-specificity - $id-spec);
+    }
+    @if $class-specificity > $class-spec {
+        $selector: add-class-specificity($selector, $class-specificity - $class-spec);
+    }
+    @if $element-specificity > $element-spec {
+        $selector: add-element-specificity($selector, $element-specificity - $element-spec);
+    }
+    @return $selector;
+}
+
  
 /// Returns the specificity map or value of given simple/complex/multiple selector(s).
 ///
@@ -435,10 +479,61 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 }
 
 
+/// Override current selector over given selector.
+/// @access public
+/// @param { String } $args... - Selector(s) to override
+/// @content
+/// @output Stronger selector(s) with given inner content.
+@mixin override($args...) {
+    @at-root #{override(&, $args...)} {
+        @content;
+    }
+}
+
+
+/// Override current selector over given selector.
+/// @access public
+/// @param { String } $current-selector - Selector(s) to be strengthen
+/// @param { String } $args... - Selector(s) to override
+/// @return Stronger selector(s).
+@function override($current-selector, $args...) {
+    // find strongest specificity in $args
+    $strongest-specificity: 0;
+    $strongest-selector: null;
+    @each $selector in $args {
+        $parts: selector-parse($selector);
+        // @feature Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
+        @if length($parts)>1 {
+            @error $SPOT_ERROR_PREFIX + "override/single selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
+        }        
+        $specificity: specificity($selector, true);
+        @if $specificity > $strongest-specificity {
+            $strongest-specificity: $specificity;
+            $strongest-selector: $selector;
+        }
+    }
+    // calculate specificity of the strongest selector
+    $specificity: specificity($strongest-selector);
+    $id-specificity: nth($specificity, 1);
+    $class-specificity: nth($specificity, 2);
+    $element-specificity: nth($specificity, 3);
+   
+    // for each selector
+    $selectors: selector-parse($current-selector);
+    $output: (); 
+    @each $selector in $selectors {
+        $selector: override-selector-specificity($selector, $id-specificity, $class-specificity, $element-specificity);
+        $output: append($output, $selector, 'comma');
+    }
+    @return #{$output};
+}
+
+
 
 // ------------------------------------------------------------------------------------------------
 // --- HELPERS ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+
 
 
 /// @todo tests

@@ -99,9 +99,10 @@ gulp.task('test:sync', function(){
 
 // ---------------------------------------------------------------------
 
-function throwSassError(error) {    
+function throwSassError(error) {
+     
     var originalFile = error.message.split('\n')[0],
-        sourceFile = (error.message.match(new RegExp('from line \\d+ of ('+TEST_PATH + '\\/' + SOURCE_PATH + '.*)[,$]')) || error.message.match(/from line \d+ of (.*)/))[1],
+        sourceFile = (error.message.match(new RegExp('from line \\d+ of ('+TEST_PATH + '/' + SOURCE_PATH + '[^,$\n]*)')) || error.message.match(/from line \d+ of (.*)/))[1],
         targetFile = (sourceFile || originalFile).replace(SOURCE_PATH, OUTPUT_PATH).replace(/\.s[ac]ss$/, '.css'),
         isFwkError = error.messageOriginal.indexOf(FWK_ERROR_PREFIX)===0,
         message = isFwkError ? error.messageOriginal.split(' - ')[0] : error.messageFormatted;

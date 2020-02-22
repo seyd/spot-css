@@ -1,0 +1,20 @@
+@import "./src/spot-css"
+
+
+div span
+  +override('div.main a.primary')
+    property: value
+
+  +override('#some-id')
+    property: value
+
+  +override('#some-id', 'div.main #form .invalid input')
+    property: value
+
+#my-id
+  +override('#some-id')
+    property: value
+
+  &::before
+    +override('div.main .invalid input') // no need to make stronger selector
+      property: value

@@ -1,0 +1,19 @@
+div span:not(._):not(._):not(_) {
+  property: value;
+}
+
+div span:not(#_) {
+  property: value;
+}
+
+div span:not(#_):not(._):not(._):not(_) {
+  property: value;
+}
+
+#my-id:not(_) {
+  property: value;
+}
+
+#my-id::before {
+  property: value;
+}
