@@ -305,6 +305,59 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     }
 }
 
+ 
+/// Returns the specificity map or value of given simple/complex/multiple selector(s).
+///
+/// (Utility to calculate (and display) specificity or specificity map of any valid simple/compound/complex selector.)
+/// @author David Khourshid (https://twitter.com/davidkpiano)
+/// @access public
+/// @param {List | String} $initial-selector - selector returned by '&'
+/// @param {Bool} $integer (false) - output specificity as integer? (default: false)
+/// @return {Map | Number} specificity map or specificity value represented as integer
+@function specificity($initial-selector, $integer: false) {
+    $initial-selector: _str-replace-batch(#{$initial-selector}, ('+', '>', '~'));
+    $selectors: selector-parse($initial-selector);
+    $specificities-map: ();
+    
+    @each $selector in $selectors {
+        $parts: ();
+        $selector-specificity-map: (a: 0, b: 0, c: 0);
+        
+        @each $simple-selectors in $selector {
+            @each $simple-selector in simple-selectors($simple-selectors) {
+                $parts: append($parts, $simple-selector);
+            }
+        }
+        
+        @each $part in $parts {
+            $specificity-type: _specificity-type($part);
+            @if $specificity-type {
+                $selector-specificity-map: map-merge($selector-specificity-map, (#{$specificity-type}: map-get($selector-specificity-map, $specificity-type) + 1));
+            }
+        }
+        
+        $specificities-map: map-merge($specificities-map, (_specificity-value($selector-specificity-map): $selector-specificity-map));
+    }
+    
+    $specificity-value: max(map-keys($specificities-map)...);
+    $specificity-map: map-values(map-get($specificities-map, $specificity-value));
+    
+    @return if($integer, $specificity-value, $specificity-map);
+}
+
+
+/// Outputs specificity in your CSS as (invalid) properties.
+/// Please, don't use this mixin in production.
+///
+/// (Utility to calculate (and display) specificity or specificity map of any valid simple/compound/complex selector.)
+/// @author David Khourshid (https://twitter.com/davidkpiano)
+/// @access public
+/// @output specificity (map as string), specificity-value (specificity value as integer)
+@mixin specificity() {
+  specificity: specificity(&);
+  specificity-value: specificity(&, true);
+}
+
 
 
 // ------------------------------------------------------------------------------------------------
@@ -425,6 +478,17 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 //  '> a.link' => 2
 @function length-of-simple-selector($selector) {
     @return length(nth(selector-parse($selector),1));
+}
+
+
+@function pow($number, $exponent) {
+    $value: 1;
+    @if $exponent > 0 {
+        @for $i from 1 through $exponent {
+        $value: $value * $number;
+        }
+    }
+    @return $value;
 }
 
 
@@ -700,4 +764,103 @@ $_registered-aliases: [];
     @else {
         @return $identifier;
     }
+}
+
+ 
+/// SCSS Specificity Calculator
+///
+/// Replaces a batch of substrings (needles) in a string (haystack)
+/// with a single replacement string.
+///
+/// (Utility to calculate (and display) specificity or specificity map of any valid simple/compound/complex selector.)
+/// @author David Khourshid (https://twitter.com/davidkpiano)
+/// @access private
+/// @param {String} $haystack - string to perform search and replacement on
+/// @param {List | String} $needles - string or list of strings to replace globally
+/// @param {String} $replacement ('') - replacement string to replace needles
+/// @return {String} replaced string
+@function _str-replace-batch($haystack, $needles, $replacement: '') {
+    $instances: false;
+    
+    @if not type_of($needles) == list { $needles: ($needles); }
+    
+    @while ($instances == false) or ($instances > 0) {
+        $instances: 0;
+        
+        @each $needle in $needles {
+            $needle-index: str-index($haystack, $needle);
+            $instances: $instances + if($needle-index, 1, 0);
+            
+            @if $needle-index {
+                $haystack: str-slice($haystack, 1, $needle-index - 1) + str-slice($haystack, $needle-index + str-length($needle), -1);
+                $haystack: str-insert($haystack, $replacement, $needle-index);
+            }
+        }
+    }
+    
+    @return $haystack;
+}
+ 
+
+/// Signifies what specificity type the simple selector is.
+/// a - IDs
+/// b - class selectors, attribute selectors, pseudo-classes
+/// c - type (element) selectors, pseudo-elements
+///
+/// (Utility to calculate (and display) specificity or specificity map of any valid simple/compound/complex selector.)
+/// @author David Khourshid (https://twitter.com/davidkpiano)
+/// @access private
+/// @param {String} $simple-selector - a single simple selector
+/// @return {String} specificity type of simple selector - 'a', 'b', 'c', or false
+@function _specificity-type($simple-selector) {
+    $types: (
+        c: (':before', ':after', ':first-line', ':first-letter', ':selection'),
+        b: ('.', '[', ':'),
+        a: ('#')
+    );
+    
+    $simple-selector: _str-replace-batch($simple-selector, '::', ':');
+    
+    @if str-index($simple-selector, ':not(') == 1 {
+        $simple-selector: str-slice($simple-selector, 6, -2);
+    }
+    
+    @each $type-key, $type-tokens in $types {
+        @each $token in $type-tokens {
+            @if str-index($simple-selector, $token) == 1 {
+                @return $type-key;
+            }
+        }
+    }
+    
+    // Ignore the universal selector
+    @if str-index($simple-selector, '*') == 1 {
+        @return false;
+    }
+    
+    // Simple selector is type selector (element)
+    @return c;
+}
+
+ 
+/// Returns the specificity value (in the specified base).
+/// Base is set to 256 (16^2) to accurately represent historical 6-digit
+/// hexadecimal representation of specificity in most browsers, though this
+/// limitation has been "resolved" in some browsers (try base 65536 for those).
+///
+/// (Utility to calculate (and display) specificity or specificity map of any valid simple/compound/complex selector.)
+/// @author David Khourshid (https://twitter.com/davidkpiano)
+/// @access private
+/// @param {Map} $specificity-map - map of frequency of each type (a, b, c) in complex selector
+/// @param {Number} $base (256) - base used to calculate specificity value (default: 256)
+/// @return {Number} specificity value of given specificity map as base 10 integer
+@function _specificity-value($specificity-map, $base: 256) {
+    $exponent-map: (a: 2, b: 1, c: 0);
+    $specificity: 0;
+    
+    @each $specificity-type, $specificity-value in $specificity-map {
+        $specificity: $specificity + ($specificity-value * pow($base, map-get($exponent-map, $specificity-type)));
+    }
+    
+    @return $specificity;
 }

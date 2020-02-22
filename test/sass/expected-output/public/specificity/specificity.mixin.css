@@ -1,0 +1,152 @@
+* {
+  specificity: 0, 0, 0;
+  specificity-value: 0;
+}
+
+li {
+  specificity: 0, 0, 1;
+  specificity-value: 1;
+}
+
+li:first-line {
+  specificity: 0, 0, 2;
+  specificity-value: 2;
+}
+
+ul li {
+  specificity: 0, 0, 2;
+  specificity-value: 2;
+}
+
+ul ol + li {
+  specificity: 0, 0, 3;
+  specificity-value: 3;
+}
+
+h1 + *[rel=up] {
+  specificity: 0, 1, 1;
+  specificity-value: 257;
+}
+
+ul ol li.red {
+  specificity: 0, 1, 3;
+  specificity-value: 259;
+}
+
+li.red.level {
+  specificity: 0, 2, 1;
+  specificity-value: 513;
+}
+
+p {
+  specificity: 0, 0, 1;
+  specificity-value: 1;
+}
+
+div p {
+  specificity: 0, 0, 2;
+  specificity-value: 2;
+}
+
+.sith {
+  specificity: 0, 1, 0;
+  specificity-value: 256;
+}
+
+div p.sith {
+  specificity: 0, 1, 2;
+  specificity-value: 258;
+}
+
+#sith {
+  specificity: 1, 0, 0;
+  specificity-value: 65536;
+}
+
+body #darkside .sith p {
+  specificity: 1, 1, 2;
+  specificity-value: 65794;
+}
+
+* {
+  specificity: 0, 0, 0;
+  specificity-value: 0;
+}
+
+LI {
+  specificity: 0, 0, 1;
+  specificity-value: 1;
+}
+
+UL LI {
+  specificity: 0, 0, 2;
+  specificity-value: 2;
+}
+
+UL OL + LI {
+  specificity: 0, 0, 3;
+  specificity-value: 3;
+}
+
+H1 + *[REL=up] {
+  specificity: 0, 1, 1;
+  specificity-value: 257;
+}
+
+UL OL LI.red {
+  specificity: 0, 1, 3;
+  specificity-value: 259;
+}
+
+LI.red.level {
+  specificity: 0, 2, 1;
+  specificity-value: 513;
+}
+
+#x34y {
+  specificity: 1, 0, 0;
+  specificity-value: 65536;
+}
+
+#s12:not(FOO) {
+  specificity: 1, 0, 1;
+  specificity-value: 65537;
+}
+
+/* The highest specificity is the one that's displayed */
+#super_high_specificity, .sorta[low="specificity"] {
+  specificity: 1, 0, 0;
+  specificity-value: 65536;
+}
+
+/* It even works with nested selectors! */
+.first .second[disabled]:hover .third > #fourth ~ div ul > li:first-child + li.active {
+  specificity: 1, 7, 4;
+  specificity-value: 67332;
+}
+
+/* Here's why in some browsers, 256 classes can override a single ID! */
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h {
+  specificity: 0, 256, 0;
+  specificity-value: 65536;
+}
+
+#h {
+  specificity: 1, 0, 0;
+  specificity-value: 65536;
+}

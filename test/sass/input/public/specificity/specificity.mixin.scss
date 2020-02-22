@@ -1,0 +1,62 @@
+@import "./src/spot-css";
+
+
+* { @include specificity; }
+li { @include specificity; }
+li:first-line { @include specificity; }
+ul li { @include specificity; }
+ul ol+li { @include specificity; }
+h1 + *[rel=up] { @include specificity; }
+ul ol li.red { @include specificity; }
+li.red.level { @include specificity; }
+p { @include specificity; }
+div p { @include specificity; }
+.sith { @include specificity; }
+div p.sith { @include specificity; }
+#sith { @include specificity; }
+body #darkside .sith p { @include specificity; }
+
+* { @include specificity; }
+LI { @include specificity; }
+UL LI { @include specificity; }
+UL OL+LI { @include specificity; }
+H1 + *[REL=up] { @include specificity; }
+UL OL LI.red { @include specificity; }
+LI.red.level { @include specificity; }
+#x34y { @include specificity; }
+#s12:not(FOO) { @include specificity; }
+
+/* The highest specificity is the one that's displayed */
+#super_high_specificity, .sorta[low="specificity"] {
+  @include specificity;
+}
+
+/* It even works with nested selectors! */
+.first {
+  .second[disabled]:hover {
+    .third > #fourth ~ div ul > li:first-child + li.active {
+      @include specificity;
+    }
+  }
+}
+
+/* Here's why in some browsers, 256 classes can override a single ID! */
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h.h
+{ @include specificity; }
+
+#h { @include specificity; }
