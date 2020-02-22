@@ -1,0 +1,29 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    property: value
+
+    +sub-element(".wrapper")
+        property: value
+    
+
+    // multiple child elements
+    +sub-element(".wrapper-a", ".wrapper-b")
+        property: value
+
+    +sub-element(".wrapper-x", ".wrapper-y", ".wrapper-z")
+        property: value
+
+
+    // sub sub element
+    +sub-element(".wrapper-c")
+        property: value-c
+        
+        +sub-element(".wrapper-d")
+            property: value-d
+
+
+    // complex selector (but single selector)
+    +sub-element("div.wrapper")
+        property: value

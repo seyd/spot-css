@@ -208,8 +208,6 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 /// @throw SPOT CSS: child-element/single selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
 /// @throw SPOT CSS: child-element/multilevel selector - given selector is not a single selector ('selector'). Just use more child-element mixins nested.
 /// @output Given selector with given content.
-///
-/// @todo check if current selector does not have on the end '>' already...
 @mixin child-element($args...) {
     @if length($args)==0 {
         @error $SPOT_ERROR_PREFIX + "child-element/no selectors - at least one child selector is expected.";
@@ -237,9 +235,34 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     }
 }
 
-/// @todo implement same as child-element but without '>' selector
-@mixin every-sub-element($args...) {
 
+/// Declares any other then child block in current component selector. 
+/// It is same as child-element mixin, but it does not force direct child selector (>) and
+/// it could contain multilevel selectors also (e.g. 'div a.disabled span').
+/// Note: It is strongly recomended to use <b>child-element</b> mixin everytime it is possible!
+/// @group Component
+/// @access public
+/// @param { String } $args... - One or more selectors. Each selector as a single selector in separate argument.
+/// @content
+/// @throw SPOT CSS: sub-element/no selectors - at least one selector is expected.
+/// @throw SPOT CSS: sub-element/single selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
+/// @output Given selector with given content.
+@mixin sub-element($args...) {
+    @if length($args)==0 {
+        @error $SPOT_ERROR_PREFIX + "sub-element/no selectors - at least one selector is expected.";
+    }
+    $selectors: (); 
+    @each $selector in $args {
+        $parts: selector-parse($selector);
+        // @feature Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
+        @if length($parts)>1 {
+            @error $SPOT_ERROR_PREFIX + "sub-element/single selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
+        }        
+        $selectors: append($selectors, $selector, 'comma');
+    }
+    #{$selectors} {
+        @content;
+    }
 }
 
 
