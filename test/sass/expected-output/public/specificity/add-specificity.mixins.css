@@ -53,3 +53,7 @@ div a:not(#_):not(#_) {
 div a:not(_):not(._):not(#_) {
   property: value;
 }
+
+div .a:not(_), div .b:not(_) {
+  property: value;
+}

@@ -60,3 +60,11 @@ div a
     +add-class-specificity(1)
       +add-id-specificity(1)
         property: value
+
+
+// multiple selectors
+div .a, div .b
+
+  // element
+  +add-element-specificity(1)
+    property: value
