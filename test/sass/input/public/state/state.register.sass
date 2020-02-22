@@ -21,10 +21,15 @@
 +component("next-component")
     +register
         +state('[type="?"]', 'primary', 'secondary')
-        +state('[level="?"]', '1', '2', '3')
 
     +state('[type="primary"]')
         property: value
+
+
++component("next-component-2")
+    +register
+        +state('[type="?"]', 'primary', 'secondary')
+        +state('[level="?"]', '1', '2', '3')
 
     // this has to generate all value combinations:
     //  next-component[type="primary"], next-component[type="secondary"]

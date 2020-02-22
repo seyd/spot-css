@@ -1,0 +1,14 @@
+@import "./src/spot-css"
+
++component("my-component")
+    +register
+        +state('.active')
+
+    +state('.active')
+        property: value
+
+    +child-element('.wrapper')
+        property: another-value
+
+    +state('.active')
+        property: value-1

@@ -1,0 +1,16 @@
+@import "./src/spot-css"
+
++component("my-component")
+    +register
+        +context('higher-component')
+        +context('higher-component-2')
+
+    +child-element('span')
+        +context('higher-component')
+            property: value
+
+        +context('higher-component-2')
+            property: value-2
+
+        +context('higher-component')
+            property: value-3

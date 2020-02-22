@@ -1,0 +1,14 @@
+@import "./src/spot-css"
+
++component("my-component")
+    +register
+        +state(':hover')
+
+    property: value-1
+
+    +state(':hover')
+        property: value-2
+
+    // duplicate usage of register mixin
+    +register
+        +state(':hover')

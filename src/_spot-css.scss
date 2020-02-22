@@ -81,11 +81,19 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 /// @access public
 /// @content
 /// @throw SPOT CSS: register/no component - the mixin register must be used inside a component.
+/// @throw SPOT CSS: register/already called - the mixin register was already called for component 'component'.
 /// @output Given selector with given content.
 @mixin register {
     @if component()=='' {
         @error $SPOT_ERROR_PREFIX + "register/no component - the mixin register must be used inside a component.";
     }
+
+    // run only once per component
+    @if index($_register-called-on, component()) {
+        @error $SPOT_ERROR_PREFIX + "register/already called - the mixin register was already called for component '"+component()+"'.";
+    }
+    $_register-called-on: append($_register-called-on, component()) !global;
+
     $_is-register-mode: true !global;
     @content;
     $_is-register-mode: false !global;
@@ -179,6 +187,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     }   
 }
 
+
 /// Same as mixin <b>context</b> but different semantic naming.
 /// @see {mixin} context
 /// @group Component
@@ -212,6 +221,11 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     @if length($args)==0 {
         @error $SPOT_ERROR_PREFIX + "child-element/no selectors - at least one child selector is expected.";
     }
+    // store appling sub element in current selector to avoid calling state, variation, etc. after that
+    @if not index($_selectors-with-sub-elements, &) {
+        $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
+    }
+
     $selectors: (); 
     @each $selector in $args {
         $parts: selector-parse($selector);
@@ -251,6 +265,10 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     @if length($args)==0 {
         @error $SPOT_ERROR_PREFIX + "sub-element/no selectors - at least one selector is expected.";
     }
+    // store appling sub element in current selector to avoid calling state, variation, etc. after that
+    @if not index($_selectors-with-sub-elements, &) {
+        $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
+    }
     $selectors: (); 
     @each $selector in $args {
         $parts: selector-parse($selector);
@@ -279,6 +297,10 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 @mixin pseudo-element($first: '', $second: '') {
     @if not $first or $first=='' {
         @error $SPOT_ERROR_PREFIX + "pseudo-element/no selectors - at least one pseudo selector is expected ('before' or 'after').";
+    }
+    // store appling sub element in current selector to avoid calling state, variation, etc. after that
+    @if not index($_selectors-with-sub-elements, &) {
+        $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
     }
     // replace all colons (':' and '::')
     $first: str-trim(str-replace($first, ':', ''));
@@ -387,6 +409,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 /// @param { String } $selector - Selector(s)
 /// @param { Number } $id-specificity - Specificity of selector on id level
 /// @param { Number } $id-specificity - Specificity of selector on id level
+/// @throw SPOT CSS: override-selector-specificity/single selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
 /// @return Stronger selector(s).
 @function override-selector-specificity($selector, $id-specificity, $class-specificity, $element-specificity) {
     // Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
@@ -495,6 +518,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 /// @access public
 /// @param { String } $current-selector - Selector(s) to be strengthen
 /// @param { String } $args... - Selector(s) to override
+/// @throw SPOT CSS: override/single selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
 /// @return Stronger selector(s).
 @function override($current-selector, $args...) {
     // find strongest specificity in $args
@@ -547,6 +571,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 /// @access public
 /// @param { String } $current-selector - Selector(s) to be strengthen
 /// @param { String } $args... - Selector(s) to override
+/// @throw SPOT CSS: for-branch/not found - given branch selector was not found at the end of current selector ('selector').
 /// @return Filtered selector(s).
 @function for-branch($selector, $args...) {
     $selectors: selector-parse($selector);
@@ -576,6 +601,8 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 // --- HELPERS ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 
+
+
 // Extends selector in the actual selector path
 // ($something: '.item', $extenssion: '':first-child, :last-child') => $new-extension: 'item:first-child, item:last-child'
 @mixin extend($something, $extension) {
@@ -583,6 +610,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
         @content;
     }
 }
+
 
 /// @todo tests
 @function extend($selector, $something, $extension) {
@@ -770,6 +798,27 @@ $_registered-identifierss: [];
 $_registered-aliases: [];
 
 
+/// List of calling register mixin for each component.
+/// @group Component
+/// @access private
+/// @type List
+$_register-called-on: [];
+
+/// List of selectors where sub selectors was applied, 
+/// where mixin child-element(), sub-element(), pseudo-element() was called.
+/// @group Component
+/// @access private
+/// @type List
+$_selectors-with-sub-elements: [];
+
+/// List of already used selectors for watching multiple using
+/// of state(), variation(), context(), browser() and responsive().
+/// @group Component
+/// @access private
+/// @type List
+$_already-used-selectors: [];
+
+
 /// Create unique string for combination $component + $identifier.
 /// @group Component
 /// @access private
@@ -794,6 +843,8 @@ $_registered-aliases: [];
 /// @param { String } $modifier-name - 'state' | 'variation' | 'context' | 'browser' | 'responsive'
 /// @param { String } $identifier - selector extension
 /// @param { String } $args... - extra arguments for input values for placeholder '?' or alias name when context-like modifier ('context' | 'browser' | 'responsive')
+/// @throw SPOT CSS: register/invalid selector extension - the mixin register { modifier-name(identifier) } uses invalid selector extension 'identifier'. The extension can start only with one of these characters: '.', '#', '[', ':' (or '?' or '{' when placeholder is used).
+/// @throw SPOT CSS: register/no component - the mixin register { modifier-name(identifier) } must be used inside a component selector.
 /// @throw SPOT CSS: register/placeholder in context - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param).
 /// @throw SPOT CSS: register/missing values - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but no values were provided.
 /// @throw SPOT CSS: register/extra values - the mixin register { modifier-name(identifier) } doesn't use '?' as value placeholder but extra values were provided.
@@ -802,12 +853,24 @@ $_registered-aliases: [];
     @if component()=='' {
         @error $SPOT_ERROR_PREFIX + "register/no component - the mixin register { "+$modifier-name+"("+$identifier+") } must be used inside a component selector.";
     }
+
+    // is context-like (context, browser or responsive) or vriation-like (state or variation)
+    $is-context-like: str-index($modifier-name, '&');
+
+    // for variant-like selector extensions only valid first chars are: . # [ : (or '?' or '{' when placeholder is used)
+    @if not $is-context-like {
+        $first-char: str-slice(str-trim-left($identifier), 1, 1);
+        @if $first-char!='.' and $first-char!='#' and $first-char!='[' and $first-char!=':' and $first-char!='?' and $first-char!='{' {
+            @error $SPOT_ERROR_PREFIX + "register/invalid selector extension - the mixin register { "+$modifier-name+"("+$identifier+") } uses invalid selector extension '"+$identifier+"'. The extension can start only with one of these characters: '.', '#', '[', ':' (or '?' or '{' when placeholder is used).";
+        }
+    }
+
     // if selector contains '?' (e.g. '[type="?"]') character, $args must be provided as expected values
     // expample arguments: ('state', '[type="?"]', 'primary', 'secondary')
     @if str-index($identifier, '?') or str-index($identifier, '{') {
 
         // if context-like modifier then placeholder '?' is not supported
-        @if str-index($modifier-name, '&') {
+        @if $is-context-like {
             @error $SPOT_ERROR_PREFIX + "register/placeholder in context - the mixin register { "+$modifier-name+"("+$identifier+") } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param).";
         }
 
@@ -829,7 +892,7 @@ $_registered-aliases: [];
     // if selector does not contains "?" character, $args must be not provided (as expected values)
     @else {
         // if extra values and not context-like modifier (it accepts extra $alias param)
-        @if $args!=null and length($args)!=0 and not str-index($modifier-name, '&') {
+        @if $args!=null and length($args)!=0 and not $is-context-like {
             @error $SPOT_ERROR_PREFIX + "register/extra values - the mixin register { "+$modifier-name+"("+$identifier+") } doesn't use '?' as value placeholder but extra values were provided.";
         }
         @else {
@@ -916,12 +979,18 @@ $_registered-aliases: [];
 /// @param { String } $modifier-name - 'state' | 'variation' | 'context' | 'browser' | 'responsive'
 /// @param { String } $args... - selector extension(s)
 /// @content
-/// @throw SPOT CSS: register/wrong modifier type - the modifier 'identifier' is not registered in component 'current selector' as 'modifier-name'. Check it out!
-/// @throw SPOT CSS: register/unknown modifier - the 'modifier-name' 'identifier' is not registered in component 'current selector'. Use mixin register-state() at first!
+/// @throw SPOT CSS: modifier/invalid order - the modifier-name 'args' in component 'component' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.
+/// @throw SPOT CSS: modifier/wrong modifier type - the modifier 'identifier' is not registered in component 'current selector' as 'modifier-name'. Check it out!
+/// @throw SPOT CSS: modifier/unknown modifier - the 'modifier-name' 'identifier' is not registered in component 'current selector'. Use mixin register-state() at first!
 /// @output Selector extended by given extensions with given content.
 @mixin _apply-modifier($modifier-name, $args...) {
     $selectors: (); 
     $component: component();
+
+    // store appling sub element in current selector to avoid calling state, variation, etc. after that
+    @if index($_selectors-with-sub-elements, &) {
+        @error $SPOT_ERROR_PREFIX + "modifier/invalid order - the "+$modifier-name+" '"+inspect($args)+"' in component '"+component()+"' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.";
+    }
 
     @each $identifier in $args {
         $original-identifier: $identifier;
@@ -950,7 +1019,7 @@ $_registered-aliases: [];
             }
             @if length($selectors)==0 {
                 // @feature Forcing to register all modifiers at first
-                @error $SPOT_ERROR_PREFIX + "register/wrong modifier type - the modifier '"+$identifier+"' is not registered in component '"+&+"' as "+$modifier-name+". Check it out!";
+                @error $SPOT_ERROR_PREFIX + "modifier/wrong modifier type - the modifier '"+$identifier+"' is not registered in component '"+&+"' as "+$modifier-name+". Check it out!";
             }
         }
         // if not alias - just $identifier
@@ -968,10 +1037,20 @@ $_registered-aliases: [];
             }
             @else {
                 // @feature Forcing to register all modifiers at first
-                @error $SPOT_ERROR_PREFIX + "register/unknown modifier - the "+$modifier-name+" '"+$identifier+"' is not registered in component '"+&+"'. Use mixin register-state() at first!";
+                @error $SPOT_ERROR_PREFIX + "modifier/unknown modifier - the "+$modifier-name+" '"+$identifier+"' is not registered in component '"+&+"'. Use mixin register-state() at first!";
             }
         }
-    }        
+    } 
+    // check all selectors if wasn't used already
+    $i: 0;
+    @each $single-selector in $selectors {
+        $i: $i + 1;
+        @if index($_already-used-selectors, $single-selector) {
+            @error $SPOT_ERROR_PREFIX + "modifier/already used modifier - the "+$modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variation "+$modifier-name+".";
+        }
+        $_already-used-selectors: append($_already-used-selectors, $single-selector) !global;
+    }
+
     @at-root #{$selectors} {
         @content;
     }

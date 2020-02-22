@@ -1,3 +1,7 @@
+my-component {
+  prop: val;
+}
+
 my-component.apple, my-component.orange {
   property: value;
 }

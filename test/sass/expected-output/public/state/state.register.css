@@ -10,11 +10,11 @@ next-component[type="primary"] {
   property: value;
 }
 
-next-component[type="primary"], next-component[type="secondary"] {
+next-component-2[type="primary"], next-component-2[type="secondary"] {
   property: value;
 }
 
-next-component[level="1"], next-component[level="2"], next-component[level="3"] {
+next-component-2[level="1"], next-component-2[level="2"], next-component-2[level="3"] {
   property: value;
 }
 
