@@ -222,7 +222,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
             @error $SPOT_ERROR_PREFIX + "child-element/single selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
         }        
         // all child selectors must start with >
-        @if str-index(str-trim-left($selector), '>')!=1 {
+        @if str-index(str-trim-left($selector), '>')!=1 and str-last-char(#{&})!='>' {
             $selector: '> '+$selector;
         }
         // @feature Guarding that only first (one) level child selector is passed.
@@ -388,6 +388,10 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     @return str-trim-left(str-trim-right($s));
 }
 
+
+@function str-last-char($s) {
+    @return str-slice(str-trim-right($s), -1);
+}
 
 // It has to be simple selector (not contain comma separated selectors)
 // @return How many selector levels given selector contains.

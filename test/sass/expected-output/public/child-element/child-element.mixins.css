@@ -41,3 +41,7 @@ my-component > .wrapper-5 {
 my-component > div.wrapper {
   property: value;
 }
+
+my-component > .wrapper-x {
+  property: value-x;
+}
