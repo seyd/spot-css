@@ -1,0 +1,10 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +context('super-component')
+
+    +context('super-component')
+        +pseudo-element('before') // throw error - not allowed in modifier
+            property: value
+

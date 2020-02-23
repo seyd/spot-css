@@ -1,0 +1,10 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +state('.active')
+
+    +state('.active')
+        +sub-element('span') // throw error - not allowed in modifier
+            property: value
+
