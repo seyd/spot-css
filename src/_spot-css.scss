@@ -102,30 +102,30 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 
 /// This mixins works in 2 modes:
 ///
-/// 1) when used in register mixin, it will register variation in current component.
+/// 1) when used in register mixin, it will register variant in current component.
 ///
-/// 2) when used outside of register mixin, it will apply given variation(s) to current component selector.
+/// 2) when used outside of register mixin, it will apply given variant(s) to current component selector.
 ///
 /// @group Component
 /// @access public
-/// @param { String } $args... - In register mode it require variation selector (and all values when placeholder '?' is used in variation selector) OR when not in regiter mode selector extension(s) = variation names
+/// @param { String } $args... - In register mode it require variant selector (and all values when placeholder '?' is used in variant selector) OR when not in regiter mode selector extension(s) = variant names
 /// @content
 /// @throw In register mode see errors of mixin _register-modifiers and mixin _register-individual-modifier OR when not in regiter mode see errors of mixin _apply-modifier
-/// @output In register mode outputs nothing OR when not in regiter mode it will output selector extended by given variation(s) with given content.
-@mixin variation($args...) {
+/// @output In register mode outputs nothing OR when not in regiter mode it will output selector extended by given variant(s) with given content.
+@mixin variant($args...) {
     @if $_is-register-mode {        
-        @include _register-modifiers('variation', $args...);
+        @include _register-modifiers('variant', $args...);
     }
     @else {
-        @include _apply-modifier('variation', $args...) {        
+        @include _apply-modifier('variant', $args...) {        
             @content;
         }
     }   
 }
 
 
-/// Same as mixin <b>variation</b> but different semantic naming.
-/// @see {mixin} variation
+/// Same as mixin <b>variant</b> but different semantic naming.
+/// @see {mixin} variant
 /// @group Component
 /// @access public
 /// @param { String } $args...
@@ -226,7 +226,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     @if $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "child-element/in modifier - it is not allowed to use child-element in modifier '"+$_current_modifier+"'.";
     }
-    // store appling sub element in current selector to avoid calling state, variation, etc. after that
+    // store appling sub element in current selector to avoid calling state, variant, etc. after that
     @if not index($_selectors-with-sub-elements, &) {
         $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
     }
@@ -275,7 +275,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     @if $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "sub-element/in modifier - it is not allowed to use sub-element in modifier '"+$_current_modifier+"'.";
     }
-    // store appling sub element in current selector to avoid calling state, variation, etc. after that
+    // store appling sub element in current selector to avoid calling state, variant, etc. after that
     @if not index($_selectors-with-sub-elements, &) {
         $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
     }
@@ -313,7 +313,7 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     @if $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "pseudo-element/in modifier - it is not allowed to use pseudo-element in modifier '"+$_current_modifier+"'.";
     }
-    // store appling sub element in current selector to avoid calling state, variation, etc. after that
+    // store appling sub element in current selector to avoid calling state, variant, etc. after that
     @if not index($_selectors-with-sub-elements, &) {
         $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
     }
@@ -793,21 +793,21 @@ $_current-components: ();
 $_is-register-mode: false;
 
 
-/// Flag of modifier mode - if parser enters mixin variation, state, context, browser or responsive.
+/// Flag of modifier mode - if parser enters mixin variant, state, context, browser or responsive.
 /// @group Component
 /// @access private
 /// @type Bool
 $_is-modifier-mode: false;
 
 
-/// Last used modifier name ('variation', 'state', 'context', 'browser' or 'responsive').
+/// Last used modifier name ('variant', 'state', 'context', 'browser' or 'responsive').
 /// @group Component
 /// @access private
 /// @type String
 $_current_modifier: '';
 
 
-/// Map of registered modifiers, e.g. state, variation, context, ...
+/// Map of registered modifiers, e.g. state, variant, context, ...
 /// @group Component
 /// @access private
 /// @type Map
@@ -842,7 +842,7 @@ $_register-called-on: [];
 $_selectors-with-sub-elements: [];
 
 /// List of already used selectors for watching multiple using
-/// of state(), variation(), context(), browser() and responsive().
+/// of state(), variant(), context(), browser() and responsive().
 /// @group Component
 /// @access private
 /// @type List
@@ -867,10 +867,10 @@ $_already-used-selectors: [];
 }
 
 
-/// Reusable mixin for registering states, variations, contexts, browsers, responsive...
+/// Reusable mixin for registering states, variants, contexts, browsers, responsive...
 /// @group Component
 /// @access private
-/// @param { String } $modifier-name - 'state' | 'variation' | 'context' | 'browser' | 'responsive'
+/// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive'
 /// @param { String } $identifier - selector extension
 /// @param { String } $args... - extra arguments for input values for placeholder '?' or alias name when context-like modifier ('context' | 'browser' | 'responsive')
 /// @throw SPOT CSS: register/invalid selector extension - the mixin register { modifier-name(identifier) } uses invalid selector extension 'identifier'. The extension can start only with one of these characters: '.', '#', '[', ':' (or '?' or '{' when placeholder is used).
@@ -884,7 +884,7 @@ $_already-used-selectors: [];
         @error $SPOT_ERROR_PREFIX + "register/no component - the mixin register { "+$modifier-name+"("+$identifier+") } must be used inside a component selector.";
     }
 
-    // is context-like (context, browser or responsive) or vriation-like (state or variation)
+    // is context-like (context, browser or responsive) or vriation-like (state or variant)
     $is-context-like: str-index($modifier-name, '&');
 
     // for variant-like selector extensions only valid first chars are: . # [ : (or '?' or '{' when placeholder is used)
@@ -933,10 +933,10 @@ $_already-used-selectors: [];
 }
 
 
-/// Reusable mixin for registering state, variation, context, browser or responsive.
+/// Reusable mixin for registering state, variant, context, browser or responsive.
 /// @group Component
 /// @access private
-/// @param { String } $modifier-name - 'state' | 'variation' | 'context' | 'browser' | 'responsive'
+/// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive'
 /// @param { String } $identifier - selector extension
 /// @param { String } $alias - alias name when context-like modifier ('context' | 'browser' | 'responsive')
 /// @param { Bool } $do-not-check-alias - flag to skip duplicity check for aliases
@@ -1003,10 +1003,10 @@ $_already-used-selectors: [];
 }
 
 
-/// Reusable mixin for applying states, variations, contexts, browsers, responsive...
+/// Reusable mixin for applying states, variants, contexts, browsers, responsive...
 /// @group Component
 /// @access private
-/// @param { String } $modifier-name - 'state' | 'variation' | 'context' | 'browser' | 'responsive'
+/// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive'
 /// @param { String } $args... - selector extension(s)
 /// @content
 /// @throw SPOT CSS: modifier/invalid order - the modifier-name 'args' in component 'component' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.
@@ -1018,7 +1018,7 @@ $_already-used-selectors: [];
     $component: component();
     $_current_modifier: $modifier-name !global;
 
-    // store appling sub element in current selector to avoid calling state, variation, etc. after that
+    // store appling sub element in current selector to avoid calling state, variant, etc. after that
     @if index($_selectors-with-sub-elements, &) {
         @error $SPOT_ERROR_PREFIX + "modifier/invalid order - the "+$modifier-name+" '"+inspect($args)+"' in component '"+component()+"' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.";
     }
@@ -1077,7 +1077,7 @@ $_already-used-selectors: [];
     @each $single-selector in $selectors {
         $i: $i + 1;
         @if index($_already-used-selectors, $single-selector) {
-            @error $SPOT_ERROR_PREFIX + "modifier/already used modifier - the "+$modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variation "+$modifier-name+".";
+            @error $SPOT_ERROR_PREFIX + "modifier/already used modifier - the "+$modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }
         $_already-used-selectors: append($_already-used-selectors, $single-selector) !global;
     }

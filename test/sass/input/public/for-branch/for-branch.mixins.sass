@@ -3,13 +3,13 @@
 
 +component('my-component')
   +register
-    +variation('.apple')
-    +variation('.orange')
+    +variant('.apple')
+    +variant('.orange')
   
   // ----------------------------------------------
   prop: val
 
-  +variation('.apple', '.orange')
+  +variant('.apple', '.orange')
     property: value
 
     +for-branch('.apple')
@@ -21,7 +21,7 @@
   // ----------------------------------------------
   +child-element('span')
 
-      +variation('.apple', '.orange')
+      +variant('.apple', '.orange')
         property: value
 
         +for-branch('.apple')
