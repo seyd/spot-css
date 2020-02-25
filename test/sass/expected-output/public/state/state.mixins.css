@@ -2,6 +2,10 @@ my-component:hover {
   property: value;
 }
 
+my-component.a, my-component.b {
+  property: value;
+}
+
 my-component:hover > .inner {
   property: value-x;
 }

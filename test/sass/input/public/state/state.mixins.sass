@@ -5,10 +5,15 @@
     +register
         +state(':hover')        
         +state('.active')
+        +state('.a')
+        +state('.b')
 
     +state(':hover')
         property: value
     
+    +state('.a', '.b')
+        property: value
+
     // ----------------------------------------------
     +child-element('.inner')
         +state(':hover')

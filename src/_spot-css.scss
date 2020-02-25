@@ -51,9 +51,19 @@ $SPOT-CSS-FRAMEWORK: '1.0';
     // store current component selector (into stack)
     $_current-components: append($_current-components, $component-selector, 'space') !global;
 
+    // // create map for used modifiers (nested) per component
+    // $_used-modifiers: map-merge($_used-modifiers, (component(): ())) !global;
+    // $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): [])) !global;
+
+    // @debug '-------------------------------';
+    // @debug 'Component: '+component();
+
     #{$component-selector} {
         @content;
     }
+    
+    // @debug map-get($_used-modifiers, component());
+    // @debug map-get($_current-modifiers-stack, component());
 
     // remove current component selector (from stack)
     $_current-components: pop($_current-components) !global;
@@ -124,6 +134,17 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 }
 
 
+/// Return variant name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } variant string identifier.
+@function variant($args...) {
+    /// @todo validate if exist 
+    @return 'variant(' + $args + ')';
+}
+
+
 /// Same as mixin <b>variant</b> but different semantic naming.
 /// @see {mixin} variant
 /// @group Component
@@ -139,6 +160,17 @@ $SPOT-CSS-FRAMEWORK: '1.0';
             @content;
         }
     }   
+}
+
+
+/// Return state name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } State string identifier.
+@function state($args...) {
+    /// @todo validate if exist 
+    @return 'state(' + $args + ')';
 }
 
 
@@ -168,6 +200,17 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 }
 
 
+/// Return context name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } context string identifier.
+@function context($args...) {
+    /// @todo validate if exist 
+    @return 'context(' + $args + ')';
+}
+
+
 /// Same as mixin <b>context</b> but different semantic naming.
 /// @see {mixin} context
 /// @group Component
@@ -188,6 +231,17 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 }
 
 
+/// Return browser name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } browser string identifier.
+@function browser($args...) {
+    /// @todo validate if exist 
+    @return 'browser(' + $args + ')';
+}
+
+
 /// Same as mixin <b>context</b> but different semantic naming.
 /// @see {mixin} context
 /// @group Component
@@ -205,6 +259,17 @@ $SPOT-CSS-FRAMEWORK: '1.0';
             @content;
         }
     }   
+}
+
+
+/// Return responsive name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } responsive string identifier.
+@function responsive($args...) {
+    /// @todo validate if exist 
+    @return 'responsive(' + $args + ')';
 }
 
 
@@ -611,6 +676,37 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 }
 
 
+@mixin already-defined-in($modifiers...) {
+    // do not allow outside of modifier(s)
+    @if not $_is-modifier-mode {
+        @error $SPOT_ERROR_PREFIX + "already-defined-in/outside-modifiers - it is not allowed to use already-defined-in mixin outside of modifiers.";
+    }
+    // at least 2 nested modifiers
+    $current-modifier-stack: map-get($_current-modifiers-stack, component()); // for this component
+    @if length($current-modifier-stack) < 2 {
+        @error $SPOT_ERROR_PREFIX + "already-defined-in/at-least-2-modifiers - it is not allowed to use already-defined-in mixin only in single level modifier.";
+    }
+    // add 'already-defined-in' property into current modifier to the stack
+    $current-modifier-stack: map-get($_current-modifiers-stack, component()); // for this component
+    $modifier-pointer: map-get($_used-modifiers, component());
+    $len: length($current-modifier-stack);
+    $parents: []; 
+    @each $modifier in $current-modifier-stack {
+        $parents: append($parents, $modifier-pointer, 'comma');
+        $modifier-pointer: map-get($modifier-pointer, $modifier);
+    }
+    $map: ('already-defined-in': $modifiers);
+    @while length($parents)>0 {
+        $i: length($parents);
+        $name: nth($current-modifier-stack, $i);
+        $last: nth($parents, $i);
+        $map: map-merge($last, ($name: $map));
+        $parents: nth-delete($parents, -1);
+    }
+    $_used-modifiers: map-merge($_used-modifiers, (component(): $map)) !global;
+}
+
+
 
 // ------------------------------------------------------------------------------------------------
 // --- HELPERS ------------------------------------------------------------------------------------
@@ -759,6 +855,20 @@ $SPOT-CSS-FRAMEWORK: '1.0';
 }
 
 
+/// Remove item from list. Supports also negative index (from the end).
+/// @author Jakob Eriksen (https://gist.github.com/jakob-e)
+@function nth-delete($list, $n) {
+    $result: ();
+    $n: if($n < 0, length($list) + $n + 1, $n);
+    $bracketed: is-bracketed($list);
+    $separator: list-separator($list);
+    @for $i from 1 through length($list){
+        @if $i != $n { $result: append($result, nth($list, $i)); }
+    }
+    @return join((), $result, $separator, $bracketed);
+}
+
+
 
 // ------------------------------------------------------------------------------------------------
 // --- PRIVATE ------------------------------------------------------------------------------------
@@ -834,6 +944,7 @@ $_registered-aliases: [];
 /// @type List
 $_register-called-on: [];
 
+
 /// List of selectors where sub selectors was applied, 
 /// where mixin child-element(), sub-element(), pseudo-element() was called.
 /// @group Component
@@ -841,12 +952,26 @@ $_register-called-on: [];
 /// @type List
 $_selectors-with-sub-elements: [];
 
+
 /// List of already used selectors for watching multiple using
 /// of state(), variant(), context(), browser() and responsive().
 /// @group Component
 /// @access private
 /// @type List
 $_already-used-selectors: [];
+
+
+/// Map of used modifiers (nested) per component, e.g. state, variant, context, ...
+/// @group Component
+/// @access private
+/// @type Map
+$_used-modifiers: ();
+
+/// Map of current modifiers stack per component, e.g. state, variant, context, ...
+/// @group Component
+/// @access private
+/// @type Map
+$_current-modifiers-stack: ();
 
 
 /// Create unique string for combination $component + $identifier.
@@ -1011,7 +1136,7 @@ $_already-used-selectors: [];
 /// @content
 /// @throw SPOT CSS: modifier/invalid-order - the modifier-name 'args' in component 'component' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.
 /// @throw SPOT CSS: modifier/wrong-modifier-type - the modifier 'identifier' is not registered in component 'current selector' as 'modifier-name'. Check it out!
-/// @throw SPOT CSS: modifier/unknown-modifier - the 'modifier-name' 'identifier' is not registered in component 'current selector'. Use mixin register-state() at first!
+/// @throw SPOT CSS: modifier/unknown-modifier - the 'modifier-name' 'identifier' is not registered in component 'current selector'. Use mixin register + state() at first!
 /// @output Selector extended by given extensions with given content.
 @mixin _apply-modifier($modifier-name, $args...) {
     $selectors: (); 
@@ -1023,6 +1148,34 @@ $_already-used-selectors: [];
         @error $SPOT_ERROR_PREFIX + "modifier/invalid-order - the "+$modifier-name+" '"+inspect($args)+"' in component '"+component()+"' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.";
     }
 
+    $current-modifier: $modifier-name + '(' + $args + ')';
+    // add current modifier to the stack
+    $current-modifier-stack: map-get($_current-modifiers-stack, component()); // for this component
+    $current-modifier-stack-backup: $current-modifier-stack;
+    $current-modifier-stack: append($current-modifier-stack, $current-modifier, 'comma');
+    $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): $current-modifier-stack)) !global;
+
+    // log modifier to nested map
+    $modifier-pointer: map-get($_used-modifiers, component());
+    $parents: []; 
+    @each $modifier in $current-modifier-stack {
+        @if not map-has-key($modifier-pointer, $modifier) {
+            $modifier-pointer: map-merge($modifier-pointer, ($modifier: ()));
+        }
+        $parents: append($parents, $modifier-pointer, 'comma');
+        $modifier-pointer: map-get($modifier-pointer, $modifier);
+    }
+    $map: ();
+    @while length($parents)>0 {
+        $i: length($parents);
+        $name: nth($current-modifier-stack, $i);
+        $last: nth($parents, $i);
+        $map: map-merge($last, ($name: $map));
+        $parents: nth-delete($parents, -1);
+    }
+    $_used-modifiers: map-merge($_used-modifiers, (component(): $map)) !global;
+
+    // generate selectors for all args
     @each $identifier in $args {
         $original-identifier: $identifier;
         $identifier: _add-default-ampersand-if-context($modifier-name, $identifier);
@@ -1068,7 +1221,7 @@ $_already-used-selectors: [];
             }
             @else {
                 // @feature Forcing to register all modifiers at first
-                @error $SPOT_ERROR_PREFIX + "modifier/unknown-modifier - the "+$modifier-name+" '"+$identifier+"' is not registered in component '"+&+"'. Use mixin register-state() at first!";
+                @error $SPOT_ERROR_PREFIX + "modifier/unknown-modifier - the "+$modifier-name+" '"+$identifier+"' is not registered in component '"+&+"'. Use mixin register state() at first!";
             }
         }
     } 
@@ -1087,6 +1240,9 @@ $_already-used-selectors: [];
     @at-root #{$selectors} {
         @content;
     }
+
+    // remove current modifier from the stack
+    $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): $current-modifier-stack-backup)) !global;
 
     $_is-modifier-mode: false !global;
 }
@@ -1130,6 +1286,30 @@ $_already-used-selectors: [];
         $output: append($output, $single-selector, 'comma');
     }
     @return #{$output};
+}
+
+
+// see test /private/functions/get-all-combinations.sass
+// recursive
+@function _get-all-combination($args...) {
+    $len: length($args);
+    @if $len==0 {
+        @return []; 
+    }
+    $combinations: [];
+    @for $i from 1 through $len {
+        $comb: [];
+        $comb: append($comb, nth($args, $i), 'comma');
+        $rest: _get-all-combination( nth-delete($args, $i)... );
+        @each $rest-comb in $rest {
+            $combinations: append($combinations, join($comb, $rest-comb), 'comma');
+        }
+        @if length($rest)==0 {
+            $combinations: append($combinations, $comb, 'comma');
+        }
+    }
+
+    @return $combinations;
 }
 
  
