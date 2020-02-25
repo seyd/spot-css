@@ -100,21 +100,25 @@ gulp.task('test:sync', function(){
 // ---------------------------------------------------------------------
 
 function throwSassError(error) {
-     
-    var originalFile = error.message.split('\n')[0],
-        sourceFile = (error.message.match(new RegExp('from line \\d+ of ('+TEST_PATH + '/' + SOURCE_PATH + '[^,$\n]*)')) || error.message.match(/from line \d+ of (.*)/))[1],
-        targetFile = (sourceFile || originalFile).replace(SOURCE_PATH, OUTPUT_PATH).replace(/\.s[ac]ss$/, '.css'),
-        isFwkError = error.messageOriginal.indexOf(FWK_ERROR_PREFIX)===0,
-        message = isFwkError ? error.messageOriginal.split(' - ')[0] : error.messageFormatted;
-    if (isFwkError) {
-        // write expected (SPOT CSS framework) error to target file
-        fs.mkdir(getPathWithoutFileName(targetFile), { recursive: true }, function(err, cb) {
-            fs.writeFileSync(targetFile, '/* Error '+message+' */');
-        });        
+    try {
+        var originalFile = error.message.split('\n')[0],
+            sourceFile = (error.message.match(new RegExp('from line \\d+ of ('+TEST_PATH + '/' + SOURCE_PATH + '[^,$\n]*)')) || error.message.match(/from line \d+ of (.*)/))[1],
+            targetFile = (sourceFile || originalFile).replace(SOURCE_PATH, OUTPUT_PATH).replace(/\.s[ac]ss$/, '.css'),
+            isFwkError = error.messageOriginal.indexOf(FWK_ERROR_PREFIX)===0,
+            message = isFwkError ? error.messageOriginal.split(' - ')[0] : error.messageFormatted;
+        if (isFwkError) {
+            // write expected (SPOT CSS framework) error to target file
+            fs.mkdir(getPathWithoutFileName(targetFile), { recursive: true }, function(err, cb) {
+                fs.writeFileSync(targetFile, '/* Error '+message+' */');
+            });        
+        }
+        else {
+            // non-expected (SASS) errors write to console
+            throwError(1, message);        
+        }
     }
-    else {
-        // non-expected (SASS) errors write to console
-        throwError(1, message);        
+    catch(e) {
+        console.error(error);
     }
     this.emit('end');
 }
