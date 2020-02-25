@@ -1,4 +1,4 @@
-![SPOT CSS](https://www.spotcss.page/images/spot-css-logo-white-small.png)
+![SPOT CSS](https://www.spotcss.page/images/spot-css-logo-white-small.png?v2)
 
 This is the official repository of SPOT CSS framework and Single Place Of Truth Methodology. 
 
