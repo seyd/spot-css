@@ -1,5 +1,5 @@
 {
-  "name": "spot-css",
+  "name": "spot-css-fwk",
   "version": "1.0.0",
   "description": "SPOT CSS Framework { Single Place Of Truth Methodology }",
   "main": "_index.scss",
