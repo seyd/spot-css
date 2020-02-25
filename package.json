@@ -15,11 +15,11 @@
     "url": "git+https://github.com/seyd/spot-css.git"
   },
   "files": [
-		"LICENSE",
-		"README.md",
-		"_index.scss",
-		"src/"
-	],
+    "LICENSE",
+    "README.md",
+    "_index.scss",
+    "src/"
+  ],
   "keywords": [
     "spot",
     "single place of truth",
@@ -56,6 +56,6 @@
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "node-sass": "^4.13.1",
-    "sass": "^1.25.0"
+    "sass": "^1.26.0"
   }
 }
