@@ -1,7 +1,20 @@
-# SPOT CSS
-SPOT CSS Framework { Single Place Of Truth CSS Methodology }
+![SPOT CSS](https://www.spotcss.page/images/spot-css-logo-white-small.png)
 
-## Development instructions
+This is the official repository of SPOT CSS framework and Single Place Of Truth Methodology. 
+
+Handle your styles properly! 
+
+Powered by SASS/SCSS.
+
+
+## Install instructions
+Run `$ npm i spot-css-fwk` to install SPOT CSS package.
+
+Include line `@import "./node_modules/spot-css-fwk/index";` into your SCSS/SASS files.
+
+
+## For contributors
+### Development instructions
 Run `$ npm run test` to run tests once.
 
 Run `$ npm run test:watch` to develop and see the tests result live.
