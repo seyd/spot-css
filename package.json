@@ -1,8 +1,8 @@
 {
   "name": "spot-css-fwk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "SPOT CSS Framework { Single Place Of Truth Methodology }",
-  "main": "_index.scss",
+  "main": "index.scss",
   "scripts": {
     "test": "gulp test",
     "test:watch": "gulp test:watch",
