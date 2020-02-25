@@ -1,0 +1,411 @@
+/// @group Component
+/// @access public
+/// @return { String } Current component selector.
+@function component() {
+    @return #{$_current-components}; 
+}
+
+
+/// @group Component
+/// @access public
+/// @return { String } Current single component selector (the last one if nested).
+@function current-single-component() {
+    @return #{last($_current-components)}; 
+}
+
+
+/// Return variant name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } variant string identifier.
+@function variant($args...) {
+    /// @todo validate if exist 
+    @return 'variant(' + $args + ')';
+}
+
+
+/// Return state name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } State string identifier.
+@function state($args...) {
+    /// @todo validate if exist 
+    @return 'state(' + $args + ')';
+}
+
+
+/// Return context name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } context string identifier.
+@function context($args...) {
+    /// @todo validate if exist 
+    @return 'context(' + $args + ')';
+}
+
+
+/// Return browser name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } browser string identifier.
+@function browser($args...) {
+    /// @todo validate if exist 
+    @return 'browser(' + $args + ')';
+}
+
+
+/// Return responsive name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } responsive string identifier.
+@function responsive($args...) {
+    /// @todo validate if exist 
+    @return 'responsive(' + $args + ')';
+}
+
+
+/// Tests if given selector contains pseudo element 'before' or 'after'.
+/// @access public
+/// @param { String } $selector - single selector
+/// @return { Bool } True if contains pseudo element
+@function contains-pseudo-element($selector) {
+    $last-selector: nth($selector, length($selector));
+    @return str-index($last-selector, ':before')!=null or str-index($last-selector, ':after')!=null;
+}
+
+
+/// Add selector specificity at element level.
+/// @access public
+/// @param { String } $selector - Selector(s)
+/// @param { Number } $n - How many levels to add (1..n)
+/// @return { String } Stronger selector(s).
+@function add-element-specificity($selector, $n) {
+    @return _add-selector-specificity($selector, $n, '_');
+}
+
+
+/// Add selector specificity at class level.
+/// @access public
+/// @param { String } $selector - Selector(s)
+/// @param { Number } $n - How many levels to add (1..n)
+/// @return { String } Stronger selector(s).
+@function add-class-specificity($selector, $n) {
+    @return _add-selector-specificity($selector, $n, '._');
+}
+
+
+/// Add selector specificity at id level.
+/// @access public
+/// @param { String } $selector - Selector(s)
+/// @param { Number } $n - How many levels to add (1..n)
+/// @return { String } Stronger selector(s).
+@function add-id-specificity($selector, $n) {
+    @return _add-selector-specificity($selector, $n, '#_');
+}
+
+
+/// Add selector specificity to override given specificity.
+/// It will make same selector specificity plus one extra element specificity to override it.
+/// @access public
+/// @param { String } $selector - Selector(s)
+/// @param { Number } $id-specificity - Specificity of selector on id level
+/// @param { Number } $id-specificity - Specificity of selector on id level
+/// @throw SPOT CSS: override-selector-specificity/single-selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
+/// @return { String } Stronger selector(s).
+@function override-selector-specificity($selector, $id-specificity, $class-specificity, $element-specificity) {
+    // Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
+    $parts: selector-parse($selector);
+    @if length($parts)>1 {
+        @error $SPOT_ERROR_PREFIX + "override-selector-specificity/single-selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
+    } 
+    $specificity: specificity($selector);
+    $id-spec: nth($specificity, 1);
+    $class-spec: nth($specificity, 2);
+    $element-spec: nth($specificity, 3);
+
+    // minimize useless selector strength
+    @if $id-spec > $id-specificity {
+        @return $selector;
+    }
+    @if $id-spec == $id-specificity and $class-spec > $class-specificity {
+        @return $selector;
+    }
+    @if $id-spec == $id-specificity and $class-spec == $class-specificity and $element-spec > $element-specificity {
+        @return $selector;
+    }
+
+    // element specificity is incremented to make stronger selector 
+    $element-specificity: $element-specificity + 1;
+
+    @if $id-specificity > $id-spec {
+        $selector: add-id-specificity($selector, $id-specificity - $id-spec);
+    }
+    @if $class-specificity > $class-spec {
+        $selector: add-class-specificity($selector, $class-specificity - $class-spec);
+    }
+    @if $element-specificity > $element-spec {
+        $selector: add-element-specificity($selector, $element-specificity - $element-spec);
+    }
+    @return $selector;
+}
+
+ 
+/// Returns the specificity map or value of given simple/complex/multiple selector(s).
+///
+/// (Utility to calculate (and display) specificity or specificity map of any valid simple/compound/complex selector.)
+/// @author David Khourshid (https://twitter.com/davidkpiano)
+/// @access public
+/// @param {List | String} $initial-selector - selector returned by '&'
+/// @param {Bool} $integer (false) - output specificity as integer? (default: false)
+/// @return {Map | Number} specificity map or specificity value represented as integer
+@function specificity($initial-selector, $integer: false) {
+    $initial-selector: _str-replace-batch(#{$initial-selector}, ('+', '>', '~'));
+    $selectors: selector-parse($initial-selector);
+    $specificities-map: ();
+    
+    @each $selector in $selectors {
+        $parts: ();
+        $selector-specificity-map: (a: 0, b: 0, c: 0);
+        
+        @each $simple-selectors in $selector {
+            @each $simple-selector in simple-selectors($simple-selectors) {
+                $parts: append($parts, $simple-selector);
+            }
+        }
+        
+        @each $part in $parts {
+            $specificity-type: _specificity-type($part);
+            @if $specificity-type {
+                $selector-specificity-map: map-merge($selector-specificity-map, (#{$specificity-type}: map-get($selector-specificity-map, $specificity-type) + 1));
+            }
+        }
+        
+        $specificities-map: map-merge($specificities-map, (_specificity-value($selector-specificity-map): $selector-specificity-map));
+    }
+    
+    $specificity-value: max(map-keys($specificities-map)...);
+    $specificity-map: map-values(map-get($specificities-map, $specificity-value));
+    
+    @return if($integer, $specificity-value, $specificity-map);
+}
+
+
+/// Override current selector over given selector.
+/// @access public
+/// @param { String } $current-selector - Selector(s) to be strengthen
+/// @param { String } $args... - Selector(s) to override
+/// @throw SPOT CSS: override/single-selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
+/// @return { String } Stronger selector(s).
+@function override($current-selector, $args...) {
+    // find strongest specificity in $args
+    $strongest-specificity: 0;
+    $strongest-selector: null;
+    @each $selector in $args {
+        $parts: selector-parse($selector);
+        // @feature Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
+        @if length($parts)>1 {
+            @error $SPOT_ERROR_PREFIX + "override/single-selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
+        }        
+        $specificity: specificity($selector, true);
+        @if $specificity > $strongest-specificity {
+            $strongest-specificity: $specificity;
+            $strongest-selector: $selector;
+        }
+    }
+    // calculate specificity of the strongest selector
+    $specificity: specificity($strongest-selector);
+    $id-specificity: nth($specificity, 1);
+    $class-specificity: nth($specificity, 2);
+    $element-specificity: nth($specificity, 3);
+   
+    // for each selector
+    $selectors: selector-parse($current-selector);
+    $output: (); 
+    @each $selector in $selectors {
+        $selector: override-selector-specificity($selector, $id-specificity, $class-specificity, $element-specificity);
+        $output: append($output, $selector, 'comma');
+    }
+    @return #{$output};
+}
+
+
+/// Filter given selector with given sub-selectors.
+/// Every selector which does not contain any of given args will be excluded.
+/// @access public
+/// @param { String } $current-selector - Selector(s) to be strengthen
+/// @param { String } $args... - Selector(s) to override
+/// @throw SPOT CSS: for-branch/not-found - given branch selector was not found at the end of current selector ('selector').
+/// @return { String } Filtered selector(s).
+@function for-branch($selector, $args...) {
+    $selectors: selector-parse($selector);
+    $output: (); 
+    $found: false;
+    @each $selector in $selectors {
+        $match: false;
+        @each $branch in $args {
+            @if str-index(to-string($selector), $branch) {
+                $match: true;
+                $found: true;
+            }
+        }
+        @if $match {
+            $output: append($output, $selector, 'comma');
+        }
+    }
+    @if not $found {
+        @error $SPOT_ERROR_PREFIX + "for-branch/not-found - given branch selector was not found at the end of current selector ('"+$selector+"').";
+    }
+    @return #{$output};
+}
+
+
+
+/// @todo tests
+@function extend($selector, $something, $extension) {
+    // for each selector (if more selectors in $selector) check if extended selector is present
+    @each $single-selector in $selector {
+        @if str-index($single-selector+'', $something+'')==null {
+            @error 'Extend function has failed! Subselector "'+$something+'" was not found in selector "'+$single-selector+'".';
+        }
+    }  
+    // if more selector in $extension, breaks it and replace each individual
+    // it makes from ($something: '.item', $extenssion: '':first-child, :last-child') => $new-extension: 'item:first-child, item:last-child'
+    $parts: selector-parse($extension);
+    $new-extension: ();
+    @each $partial-selector in $parts {
+        $partial-selector: selector-replace($partial-selector, $partial-selector, $something + $partial-selector);
+        $new-extension: append($new-extension, $partial-selector, 'comma');
+    }
+    // now it is safe to use selector-replace
+    @return selector-replace($selector, $something, $new-extension+''); // +'' = convert to string
+}
+
+
+/// @todo tests
+// test if selector contains simple subselector
+@function selector-contains($selector, $simple-sub-selector) {
+    $selectors: selector-parse($selector);
+    @each $single-selector in $selectors {
+        @each $part-selector in $single-selector {
+            @if is-superselector($simple-sub-selector, $part-selector) {
+                @return true;
+            }
+        }
+    }
+    @return false;
+}
+
+
+@function first($list) {
+    @return nth($list, 1);
+}
+
+
+@function last($list) {
+    @return nth($list, length($list));
+}
+
+
+// @description Complementary to append() function.
+@function prepend($list, $value) {
+    @return join($value, $list);
+}
+
+
+// @description Remove the last item in the list (opposite of append() function).
+// @returns new list, not last item (to do so use last() function)
+@function pop($list) {
+    $result: ();
+    $len: length($list);
+    @if $len>1 {
+        @for $i from 1 through $len - 1 {
+            $result: append($result, nth($list, $i));
+        }
+    }
+    @return $result;
+}
+
+
+@function str-replace($string, $search, $replace: '') {
+    $index: str-index($string, $search);
+    
+    @if $index {
+      @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    }
+    
+    @return $string;
+  }
+
+
+@function str-trim-left($s) {
+    @while (str-index($s, ' ')==1) {
+        $i: str-index($s, ' ');
+        $s: "#{str-slice($s, 0, $i - 1)}#{str-slice($s, $i + 1)}";
+    }
+    @return $s;
+}
+
+
+@function str-trim-right($s) {
+    @while (str-slice($s, str-length($s))==' ') {
+        $i: str-index($s, ' ');
+        $s: "#{str-slice($s, 0, $i - 1)}#{str-slice($s, $i + 1)}";
+    }
+    @return $s;
+}
+
+
+@function str-trim($s) {
+    @return str-trim-left(str-trim-right($s));
+}
+
+
+@function str-last-char($s) {
+    @return str-slice(str-trim-right($s), -1);
+}
+
+// It has to be simple selector (not contain comma separated selectors)
+// @return How many selector levels given selector contains.
+// @example:
+//  'a.link' => 1 
+//  'a.link span' => 2
+//  'a.link + span' => 3
+//  '> a.link' => 2
+@function length-of-simple-selector($selector) {
+    @return length(nth(selector-parse($selector),1));
+}
+
+
+@function to-string($value) {
+    @return inspect($value);
+}
+
+
+@function pow($number, $exponent) {
+    $value: 1;
+    @if $exponent > 0 {
+        @for $i from 1 through $exponent {
+        $value: $value * $number;
+        }
+    }
+    @return $value;
+}
+
+
+/// Remove item from list. Supports also negative index (from the end).
+/// @author Jakob Eriksen (https://gist.github.com/jakob-e)
+@function nth-delete($list, $n) {
+    $result: ();
+    $n: if($n < 0, length($list) + $n + 1, $n);
+    $bracketed: is-bracketed($list);
+    $separator: list-separator($list);
+    @for $i from 1 through length($list){
+        @if $i != $n { $result: append($result, nth($list, $i)); }
+    }
+    @return join((), $result, $separator, $bracketed);
+}

@@ -1,0 +1,96 @@
+/// Prefix of the SPOT CSS Framework errors.
+/// @access private
+/// @type String
+$SPOT_ERROR_PREFIX: "SPOT CSS: ";
+
+
+/// Map of registered components.
+/// @group Component
+/// @access private
+/// @type Map
+$_registered-components: ();
+
+
+/// Current component or stack of current components (if multiple are nested).
+/// @group Component
+/// @access private
+/// @type Map
+$_current-components: ();
+
+
+/// Flag of register mode - if parser enters mixin register.
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-register-mode: false;
+
+
+/// Flag of modifier mode - if parser enters mixin variant, state, context, browser or responsive.
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-modifier-mode: false;
+
+
+/// Last used modifier name ('variant', 'state', 'context', 'browser' or 'responsive').
+/// @group Component
+/// @access private
+/// @type String
+$_current_modifier: '';
+
+
+/// Map of registered modifiers, e.g. state, variant, context, ...
+/// @group Component
+/// @access private
+/// @type Map
+$_registered-modifiers: ();
+
+
+/// List of registered identifiers for guarding uniqueness (per component).
+/// @group Component
+/// @access private
+/// @type List
+$_registered-identifierss: [];
+
+
+/// List of registered aliases of identifiers for guarding uniqueness (per component).
+/// @group Component
+/// @access private
+/// @type List
+$_registered-aliases: [];
+
+
+/// List of calling register mixin for each component.
+/// @group Component
+/// @access private
+/// @type List
+$_register-called-on: [];
+
+
+/// List of selectors where sub selectors was applied, 
+/// where mixin child-element(), sub-element(), pseudo-element() was called.
+/// @group Component
+/// @access private
+/// @type List
+$_selectors-with-sub-elements: [];
+
+
+/// List of already used selectors for watching multiple using
+/// of state(), variant(), context(), browser() and responsive().
+/// @group Component
+/// @access private
+/// @type List
+$_already-used-selectors: [];
+
+
+/// Map of used modifiers (nested) per component, e.g. state, variant, context, ...
+/// @group Component
+/// @access private
+/// @type Map
+$_used-modifiers: ();
+
+/// Map of current modifiers stack per component, e.g. state, variant, context, ...
+/// @group Component
+/// @access private
+/// @type Map
+$_current-modifiers-stack: ();
