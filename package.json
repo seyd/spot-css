@@ -2,7 +2,7 @@
   "name": "spot-css",
   "version": "1.0.0",
   "description": "SPOT CSS Framework { Single Place Of Truth Methodology }",
-  "main": "index.js",
+  "main": "_index.scss",
   "scripts": {
     "test": "gulp test",
     "test:watch": "gulp test:watch",
@@ -14,10 +14,17 @@
     "type": "git",
     "url": "git+https://github.com/seyd/spot-css.git"
   },
+  "files": [
+		"LICENSE",
+		"README.md",
+		"_index.scss",
+		"src/"
+	],
   "keywords": [
     "spot",
     "single place of truth",
     "css",
+    "spotcss",
     "scss",
     "sass",
     "framework",
@@ -36,7 +43,7 @@
   "bugs": {
     "url": "https://github.com/seyd/spot-css/issues"
   },
-  "homepage": "https://github.com/seyd/spot-css#readme",
+  "homepage": "https://www.spotcss.page/",
   "dependencies": {},
   "devDependencies": {
     "cli-color": "^2.0.0",
