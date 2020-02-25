@@ -1157,23 +1157,25 @@ $_current-modifiers-stack: ();
 
     // log modifier to nested map
     $modifier-pointer: map-get($_used-modifiers, component());
-    $parents: []; 
-    @each $modifier in $current-modifier-stack {
-        @if not map-has-key($modifier-pointer, $modifier) {
-            $modifier-pointer: map-merge($modifier-pointer, ($modifier: ()));
+    @if $modifier-pointer {
+        $parents: []; 
+        @each $modifier in $current-modifier-stack {
+            @if not map-has-key($modifier-pointer, $modifier) {
+                $modifier-pointer: map-merge($modifier-pointer, ($modifier: ()));
+            }
+            $parents: append($parents, $modifier-pointer, 'comma');
+            $modifier-pointer: map-get($modifier-pointer, $modifier);
         }
-        $parents: append($parents, $modifier-pointer, 'comma');
-        $modifier-pointer: map-get($modifier-pointer, $modifier);
+        $map: ();
+        @while length($parents)>0 {
+            $i: length($parents);
+            $name: nth($current-modifier-stack, $i);
+            $last: nth($parents, $i);
+            $map: map-merge($last, ($name: $map));
+            $parents: nth-delete($parents, -1);
+        }
+        $_used-modifiers: map-merge($_used-modifiers, (component(): $map)) !global;
     }
-    $map: ();
-    @while length($parents)>0 {
-        $i: length($parents);
-        $name: nth($current-modifier-stack, $i);
-        $last: nth($parents, $i);
-        $map: map-merge($last, ($name: $map));
-        $parents: nth-delete($parents, -1);
-    }
-    $_used-modifiers: map-merge($_used-modifiers, (component(): $map)) !global;
 
     // generate selectors for all args
     @each $identifier in $args {
