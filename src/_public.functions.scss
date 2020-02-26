@@ -9,7 +9,7 @@
 /// @group Component
 /// @access public
 /// @return { String } Current single component selector (the last one if nested).
-@function current-single-component() {
+@function self() {
     @return #{last($_current-components)}; 
 }
 

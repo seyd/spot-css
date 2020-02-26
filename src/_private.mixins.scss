@@ -203,7 +203,7 @@
                             $extended-selector: $extension;
                         }
                         @else {
-                            $extended-selector: extend(&, current-single-component(), $extension);
+                            $extended-selector: extend(&, self(), $extension);
                         }
                         $selectors: append($selectors, $extended-selector, 'comma');
                     }                
@@ -223,7 +223,7 @@
                     $extended-selector: $extension;
                 }
                 @else {
-                    $extended-selector: extend(&, current-single-component(), $extension);
+                    $extended-selector: extend(&, self(), $extension);
                 }
                 $selectors: append($selectors, $extended-selector, 'comma');
             }
