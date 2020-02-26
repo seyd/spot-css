@@ -43,7 +43,7 @@
   "bugs": {
     "url": "https://github.com/seyd/spot-css/issues"
   },
-  "homepage": "https://www.spotcss.page/",
+  "homepage": "https://www.spotcss.page",
   "dependencies": {},
   "devDependencies": {
     "cli-color": "^2.0.0",
