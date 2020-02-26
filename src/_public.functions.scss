@@ -239,9 +239,9 @@
 /// @access public
 /// @param { String } $current-selector - Selector(s) to be strengthen
 /// @param { String } $args... - Selector(s) to override
-/// @throw SPOT CSS: for-branch/not-found - given branch selector was not found at the end of current selector ('selector').
+/// @throw SPOT CSS: only-for/not-found - given branch selector was not found at the end of current selector ('selector').
 /// @return { String } Filtered selector(s).
-@function for-branch($selector, $args...) {
+@function only-for($selector, $args...) {
     $selectors: selector-parse($selector);
     $output: (); 
     $found: false;
@@ -258,7 +258,7 @@
         }
     }
     @if not $found {
-        @error $SPOT_ERROR_PREFIX + "for-branch/not-found - given branch selector was not found at the end of current selector ('"+$selector+"').";
+        @error $SPOT_ERROR_PREFIX + "only-for/not-found - given branch selector was not found at the end of current selector ('"+$selector+"').";
     }
     @return #{$output};
 }

@@ -391,8 +391,8 @@
 /// @param { String } $args... - Selector(s) to override
 /// @content
 /// @output Filtered selector(s) with given inner content.
-@mixin for-branch($args...) {
-    @at-root #{for-branch(&, $args...)} {
+@mixin only-for($args...) {
+    @at-root #{only-for(&, $args...)} {
         @content;
     }
 }

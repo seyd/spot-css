@@ -12,10 +12,10 @@
   +variant('.apple', '.orange')
     property: value
 
-    +for-branch('.apple')
+    +only-for('.apple')
       property: other-value-1
 
-    +for-branch('.orange')
+    +only-for('.orange')
       property: other-value-2
 
   // ----------------------------------------------
@@ -24,8 +24,8 @@
       +variant('.apple', '.orange')
         property: value
 
-        +for-branch('.apple')
+        +only-for('.apple')
           property: other-value-1
 
-        +for-branch('.orange')
+        +only-for('.orange')
           property: other-value-2
