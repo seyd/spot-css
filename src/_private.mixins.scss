@@ -4,9 +4,9 @@
 /// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive'
 /// @param { String } $identifier - selector extension
 /// @param { String } $args... - extra arguments for input values for placeholder '?' or alias name when context-like modifier ('context' | 'browser' | 'responsive')
-/// @throw SPOT CSS: register/invalid-selector-extension - the mixin register { modifier-name(identifier) } uses invalid selector extension 'identifier'. The extension can start only with one of these characters: '.', '#', '[', ':' (or '?' or '{' when placeholder is used).
+/// @throw SPOT CSS: register/invalid-selector-extension - the mixin register { modifier-name(identifier) } uses invalid selector extension 'identifier'. The extension can start only with one of these characters: '.', '#', '@', '[', ':' (or '?' or '{' when placeholder is used).
 /// @throw SPOT CSS: register/no-component - the mixin register { modifier-name(identifier) } must be used inside a component selector.
-/// @throw SPOT CSS: register/placeholder-in-context - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param).
+/// @throw SPOT CSS: register/placeholder-in- context - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param).
 /// @throw SPOT CSS: register/missing-values - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but no values were provided.
 /// @throw SPOT CSS: register/extra-values - the mixin register { modifier-name(identifier) } doesn't use '?' as value placeholder but extra values were provided.
 /// @output Nothing.
@@ -21,8 +21,8 @@
     // for variant-like selector extensions only valid first chars are: . # [ : (or '?' or '{' when placeholder is used)
     @if not $is-context-like {
         $first-char: str-slice(str-trim-left($identifier), 1, 1);
-        @if $first-char!='.' and $first-char!='#' and $first-char!='[' and $first-char!=':' and $first-char!='?' and $first-char!='{' {
-            @error $SPOT_ERROR_PREFIX + "register/invalid-selector-extension - the mixin register { "+$modifier-name+"("+$identifier+") } uses invalid selector extension '"+$identifier+"'. The extension can start only with one of these characters: '.', '#', '[', ':' (or '?' or '{' when placeholder is used).";
+        @if $first-char!='.' and $first-char!='#' and $first-char!='[' and $first-char!=':' and $first-char!='?' and $first-char!='{' and $first-char!='@' {
+            @error $SPOT_ERROR_PREFIX + "register/invalid-selector-extension - the mixin register { "+$modifier-name+"("+$identifier+") } uses invalid selector extension '"+$identifier+"'. The extension can start only with one of these characters: '.', '#', '@', [', ':' (or '?' or '{' when placeholder is used).";
         }
     }
 
@@ -145,7 +145,8 @@
 /// @throw SPOT CSS: modifier/unknown-modifier - the 'modifier-name' 'identifier' is not registered in component 'current selector'. Use mixin register + state() at first!
 /// @output Selector extended by given extensions with given content.
 @mixin _apply-modifier($modifier-name, $args...) {
-    $selectors: (); 
+    $selectors: ();
+    $medias: ();
     $component: component();
     $_current_modifier: $modifier-name !global;
 
@@ -199,17 +200,22 @@
                     @if $original-identifier==$alias {
                         $extension: nth($modifier, 1);
                         $extended-selector: '';
-                        @if str-index($extension, '&') {
-                            $extended-selector: $extension;
+                        @if str-index($extension, '@media')==1 {
+                            $medias: append($medias, str-replace(str-replace($extension, '@media ', ''), ' &', ''), 'comma');
                         }
-                        @else {
-                            $extended-selector: extend(&, self(), $extension);
+                        @else {   
+                            @if str-index($extension, '&') {
+                                $extended-selector: $extension;
+                            }
+                            @else {
+                                $extended-selector: extend(&, self(), $extension);
+                            }
+                            $selectors: append($selectors, $extended-selector, 'comma');
                         }
-                        $selectors: append($selectors, $extended-selector, 'comma');
                     }                
                 }
             }
-            @if length($selectors)==0 {
+            @if length($selectors)==0 and length($medias)==0 {
                 // @feature Forcing to register all modifiers at first
                 @error $SPOT_ERROR_PREFIX + "modifier/wrong-modifier-type - the modifier '"+$identifier+"' is not registered in component '"+&+"' as "+$modifier-name+". Check it out!";
             }
@@ -218,14 +224,19 @@
         @else {
             @if $modifiers!=null and map-has-key($modifiers, $identifier) {
                 $extension: $identifier;
-                $extended-selector: '';                
-                @if str-index($extension, '&') {
-                    $extended-selector: $extension;
+                $extended-selector: '';
+                @if str-index($extension, '@media')==1 {
+                    $medias: append($medias, str-replace(str-replace($extension, '@media ', ''), ' &', ''), 'comma');
                 }
-                @else {
-                    $extended-selector: extend(&, self(), $extension);
+                @else {          
+                    @if str-index($extension, '&') {
+                        $extended-selector: $extension;
+                    }
+                    @else {
+                        $extended-selector: extend(&, self(), $extension);
+                    }
+                    $selectors: append($selectors, $extended-selector, 'comma');
                 }
-                $selectors: append($selectors, $extended-selector, 'comma');
             }
             @else {
                 // @feature Forcing to register all modifiers at first
@@ -245,10 +256,17 @@
 
     $_is-modifier-mode: true !global;
 
-    @at-root #{$selectors} {
-        @content;
+    @if length($medias)>0 {
+        @media #{$medias} {
+            @content;
+        }
     }
 
+    @if length($selectors)>0 {
+        @at-root #{$selectors} {
+            @content;
+        }
+    }
     // remove current modifier from the stack
     $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): $current-modifier-stack-backup)) !global;
 

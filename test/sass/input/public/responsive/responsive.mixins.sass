@@ -1,0 +1,25 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +responsive('@media only screen and (max-width: 800px)')
+        +responsive('@media only screen and (max-width: 360px)', 'mobile')
+        +responsive('@media only screen and (max-width: 600px), only screen and (max-width: 600px)', 'multiple')
+        +responsive('html.grayscale', 'grayscale')
+
+    +responsive('@media only screen and (max-width: 800px)')
+        property: value
+    
+    // alias
+    +responsive('mobile')
+        property: value
+
+    // multiple @media queries
+    +responsive('multiple')
+        property: value
+
+    // mixed @media and html.class context
+    +responsive('multiple', 'grayscale')
+        property: value
+
