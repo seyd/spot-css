@@ -25,3 +25,18 @@
 html.grayscale my-component {
   property: value;
 }
+
+my-component-2 {
+  display: inline-block;
+  color: grey;
+}
+
+my-component-2:hover {
+  color: red;
+}
+
+@media (min-width: 576px), (min-width: 768px) {
+  my-component-2 {
+    color: white;
+  }
+}

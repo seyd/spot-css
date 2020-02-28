@@ -23,3 +23,30 @@
     +responsive('multiple', 'grayscale')
         property: value
 
+
+
+// defined somewhere in reusable mixins
+@mixin responsive-breakpoints
+    +responsive('@media (min-width:  576px)', 'sm')
+    +responsive('@media (min-width:  768px)', 'md')
+    +responsive('@media (min-width: 1280px)', 'lg')
+    +responsive('@media (min-width: 1400px)', 'xl')
+
+
+// later in component...
+  
++component("my-component-2")
+    +register
+        +state(':hover')
+        +responsive-breakpoints() // this can be reused in every component 
+
+    // ----------------------------------------
+    display: inline-block
+    color: grey
+
+    +state(':hover')
+        color: red
+
+    +responsive('sm', 'md')
+        color: white
+
