@@ -3,6 +3,7 @@
 
 +component('my-component')
   +register
+    +state(':hover')
     +variant('.apple')
     +variant('.orange')
   
@@ -15,21 +16,19 @@
       property: value
 
     +only-for('.apple')
-      property: other-value-1
+      +default
+        property: other-value-1
+      
+      +state(':hover')
+        property: value-3
 
     +only-for('.orange')
       property: other-value-2
 
   // ----------------------------------------------
   +child-element('span')
-    +default
-
-    +variant('.apple', '.orange')
       +default
+        property: no-value
+        
+      +variant('.apple', '.orange')
         property: value
-
-      +only-for('.apple')
-        property: other-value-1
-
-      +only-for('.orange')
-        property: other-value-2

@@ -69,16 +69,49 @@
     @if component()=='' {
         @error $SPOT_ERROR_PREFIX + "register/no-component - the mixin register must be used inside a component.";
     }
+    
+    /// @todo check if was called as first mixin in component
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // run only once per component
-    @if index($_register-called-on, component()) {
+    @if _register-mixin-was-already-called() {
         @error $SPOT_ERROR_PREFIX + "register/already-called - the mixin register was already called for component '"+component()+"'.";
     }
-    $_register-called-on: append($_register-called-on, component()) !global;
+    @else {
+        @include _set_register-mixin-was-already-called();
+    }
 
     $_is-register-mode: true !global;
     @content;
     $_is-register-mode: false !global;
+}
+
+
+/// This mixins defines default component or sub elements style.
+/// It is required only when other modifiers are used. 
+/// This is not modifier so it has to be not registered in register mixin.
+/// This mixin helps only in semantic matter better understanding of component style.
+/// If just static style of an element, default mixin is not required.
+/// @group Component
+/// @access public
+/// @content
+/// @throw SPOT CSS: default/in-register - the mixin default has to be not registered in register mixin in component 'component'.
+/// @throw SPOT CSS: default/already-called - the mixin default was already called for element 'element'.
+/// @output Just given content.
+@mixin default {
+    @if $_is-register-mode {
+        @error $SPOT_ERROR_PREFIX + "default/in-register - the mixin default has to be not registered in register mixin in component '"+component()+"'.";
+    }
+    $current-selector: &;
+    // run only once per component selector
+    @if index($_default-called-on, $current-selector) {
+        @error $SPOT_ERROR_PREFIX + "default/already-called - the mixin default was already called for element '"+$current-selector+"'.";
+    }
+    $_default-called-on: append($_default-called-on, $current-selector) !global;
+    
+    $_is-default-mode: true !global;
+    @content;
+    $_is-default-mode: false !global;
 }
 
 
@@ -390,8 +423,14 @@
 /// @access public
 /// @param { String } $args... - Selector(s) to override
 /// @content
+/// @throw SPOT CSS: only-for/default-is-missing - the only-for '$args' in component 'component' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).
 /// @output Filtered selector(s) with given inner content.
 @mixin only-for($args...) {
+    // force using 'default' mixin when using modifiers
+    @if not _default-mixin-was-already-called() {
+        @error $SPOT_ERROR_PREFIX + "only-for/default-is-missing - the only-for '"+inspect($args)+"' in component '"+component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
+    }
+
     @at-root #{only-for(&, $args...)} {
         @content;
     }

@@ -8,6 +8,9 @@
         +responsive('@media only screen and (max-width: 600px), only screen and (max-width: 600px)', 'multiple')
         +responsive('html.grayscale', 'grayscale')
 
+    // ----------------------------------------------
+    +default
+
     +responsive('@media only screen and (max-width: 800px)')
         property: value
     
@@ -40,9 +43,10 @@
         +state(':hover')
         +responsive-breakpoints() // this can be reused in every component 
 
-    // ----------------------------------------
-    display: inline-block
-    color: grey
+    // ----------------------------------------------
+    +default
+        display: inline-block
+        color: grey
 
     +state(':hover')
         color: red

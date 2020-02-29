@@ -5,14 +5,21 @@
     +register
         +state(':hover')
 
+    // ----------------------------------------------
+    +default
+
     +state(':hover')
         property: value
+
 
 
 // enable create same states on another component
 +component("your-component")
     +register
         +state(':hover')
+
+    // ----------------------------------------------
+    +default
 
     +state(':hover')
         property: value
@@ -22,14 +29,21 @@
     +register
         +state('[type="?"]', 'primary', 'secondary')
 
+    // ----------------------------------------------
+    +default
+
     +state('[type="primary"]')
         property: value
+
 
 
 +component("next-component-2")
     +register
         +state('[type="?"]', 'primary', 'secondary')
         +state('[level="?"]', '1', '2', '3')
+
+    // ----------------------------------------------
+    +default
 
     // this has to generate all value combinations:
     //  next-component[type="primary"], next-component[type="secondary"]
@@ -42,13 +56,18 @@
         property: value
 
 
+
 +component("another-component")
     +register
         // named placeholder
         +state('{priority}', '.primary', '.secondary')
         +state(':hover')
 
+    // ----------------------------------------------
+    +default
+
     // named placeholder
     +state('{priority}')
+        +default
         +state(':hover')
             property: value

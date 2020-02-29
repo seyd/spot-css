@@ -178,3 +178,19 @@
     
     @return $specificity;
 }
+
+
+/// Checks if mixin register was already called in component.
+/// @access private
+/// @return {Boolean} True if mixin register was already called in current component.
+@function _register-mixin-was-already-called() {
+    @return index($_register-called-on, component()) != null;
+}
+
+
+/// Checks if mixin default was already called in current selector.
+/// @access private
+/// @return {Boolean} True if mixin register was already called in current selector.
+@function _default-mixin-was-already-called() {
+    @return index($_default-called-on, &) != null;
+}

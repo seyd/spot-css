@@ -1,0 +1,22 @@
+@import "./src/spot-css"
+
+
++component('my-component')
+  +register
+    +variant('.apple')
+    +variant('.orange')
+
+  // -----------------------------------
+  +default
+    property: value
+
+  // -----------------------------------
+  +child-element('span')
+    +default
+      property: value
+
+    +variant('.apple')
+      property: value-2
+
+    +default()  // redundant default in child element
+      property: value-3

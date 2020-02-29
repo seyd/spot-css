@@ -1,0 +1,27 @@
+my-component {
+  prop: val;
+}
+
+my-component.apple, my-component.orange {
+  property: value;
+}
+
+my-component.apple {
+  property: other-value-1;
+}
+
+my-component.apple:hover {
+  property: value-3;
+}
+
+my-component.orange {
+  property: other-value-2;
+}
+
+my-component > span {
+  property: no-value;
+}
+
+my-component.apple > span, my-component.orange > span {
+  property: value;
+}

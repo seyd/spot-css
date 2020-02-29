@@ -1,0 +1,17 @@
+@import "./src/spot-css"
+
+
++component('my-component')
+  +register
+    +variant('.apple')
+    +variant('.orange')
+
+  // -----------------------------------
+  +default
+    property: value
+
+  +variant('.apple')
+    property: value-2
+
+  +default
+    property: value-3

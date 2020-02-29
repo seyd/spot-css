@@ -141,6 +141,7 @@
 /// @param { String } $args... - selector extension(s)
 /// @content
 /// @throw SPOT CSS: modifier/invalid-order - the modifier-name 'args' in component 'component' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.
+/// @throw SPOT CSS: modifier/default-is-missing - the modifier-name '$args' in component 'component' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).
 /// @throw SPOT CSS: modifier/wrong-modifier-type - the modifier 'identifier' is not registered in component 'current selector' as 'modifier-name'. Check it out!
 /// @throw SPOT CSS: modifier/unknown-modifier - the 'modifier-name' 'identifier' is not registered in component 'current selector'. Use mixin register + state() at first!
 /// @output Selector extended by given extensions with given content.
@@ -150,9 +151,14 @@
     $component: component();
     $_current_modifier: $modifier-name !global;
 
-    // store appling sub element in current selector to avoid calling state, variant, etc. after that
+    // check if sub elements mixin was not used for current selector
     @if index($_selectors-with-sub-elements, &) {
         @error $SPOT_ERROR_PREFIX + "modifier/invalid-order - the "+$modifier-name+" '"+inspect($args)+"' in component '"+component()+"' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.";
+    }
+
+    // force using 'default' mixin when using modifiers
+    @if not _default-mixin-was-already-called() {
+        @error $SPOT_ERROR_PREFIX + "modifier/default-is-missing - the "+$modifier-name+" '"+inspect($args)+"' in component '"+component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
     }
 
     $current-modifier: $modifier-name + '(' + $args + ')';
@@ -271,4 +277,20 @@
     $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): $current-modifier-stack-backup)) !global;
 
     $_is-modifier-mode: false !global;
+}
+
+
+/// Sets flag that register was already called in component.
+/// @access private
+/// @output Nothing.
+@mixin _set_register-mixin-was-already-called() {
+    $_register-called-on: append($_register-called-on, component()) !global;
+}
+
+
+/// Sets flag that default was already called in current selector.
+/// @access private
+/// @output Nothing.
+@mixin _set_default-mixin-was-already-called() {
+    $_default-called-on: append($_default-called-on, component()) !global;
 }

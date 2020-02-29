@@ -25,6 +25,13 @@ $_current-components: ();
 $_is-register-mode: false;
 
 
+/// Flag of default mode - if parser enters mixin default.
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-default-mode: false;
+
+
 /// Flag of modifier mode - if parser enters mixin variant, state, context, browser or responsive.
 /// @group Component
 /// @access private
@@ -65,6 +72,13 @@ $_registered-aliases: [];
 /// @access private
 /// @type List
 $_register-called-on: [];
+
+
+/// List of calling defualt mixin for each component element.
+/// @group Component
+/// @access private
+/// @type List
+$_default-called-on: [];
 
 
 /// List of selectors where sub selectors was applied, 

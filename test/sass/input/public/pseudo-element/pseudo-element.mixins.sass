@@ -6,6 +6,7 @@
 
     // ----------------------------------------------
     +pseudo-element('before', 'after')
+        +default
         +state('.active')
             property: value
 
@@ -17,6 +18,7 @@
 
     // ----------------------------------------------
     +pseudo-element('before')
+        +default
         +state('.active')
             property: value-b
 
@@ -28,5 +30,6 @@
 
     // ----------------------------------------------
     +pseudo-element('after')
+        +default
         +state('.active')
             property: value-a
