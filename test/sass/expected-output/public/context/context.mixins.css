@@ -9,3 +9,7 @@ direct-parent-component > my-component {
 super-direct-parent-component > * > my-component {
   property: value;
 }
+
+parent-component my-component > a {
+  property: value-x;
+}

@@ -1,0 +1,15 @@
+my-component {
+  property: value;
+}
+
+my-component > span.sub > a {
+  property: value;
+}
+
+my-component > span.sub > a:hover {
+  property: value-2;
+}
+
+my-component > span.sub > strong {
+  property: value;
+}

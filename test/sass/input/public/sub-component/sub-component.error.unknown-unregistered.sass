@@ -1,0 +1,11 @@
+@import "./src/spot-css"
+
++component(".component")
+
+    property: value
+
+    +sub-component(".component-1") // throws error unknown-unregistered
+        property: value
+
+    +sub-component(".component-2")
+        property: value

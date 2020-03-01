@@ -8,6 +8,9 @@
         +state('.a')
         +state('.b')
 
+        +child-element('.inner')
+            +sub-component("sub-component")
+
     // ----------------------------------------------
     +default
 
@@ -24,10 +27,11 @@
             property: value-x
 
         // ----------------------------------------------
-        +component("sub-component")
+        +sub-component("sub-component")
             +register
                 +state(':hover')        
-
+                +sub-component("sub-sub-component")
+                
             // ----------------------------------------------
             +default
 
@@ -35,7 +39,7 @@
                 property: sub-value
 
             // ----------------------------------------------
-            +component("sub-sub-component")
+            +sub-component("sub-sub-component")
                 +register
                     +state(':hover')        
                 

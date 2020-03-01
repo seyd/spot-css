@@ -2,19 +2,24 @@
 ///
 /// 1) It checks if same component is defined multiple times. It is not allowed because Single Place Of Truth.
 ///
-/// 2) Components can be nested one into another.
+/// 2) Components can be nested one into another (with sub-component mixin).
 ///
 /// @group Component
 /// @access public
 /// @param { String } $selector - single selector of component
 /// @content
 /// @throw SPOT CSS: component/no-selector - selector was expected but nothing passed.
+/// @throw SPOT CSS: component/sub-component - you cannot use mixin component in component. Instead use mixin sub-component and also register it in parent component.
 /// @throw SPOT CSS: component/single-selector - given selector is not a single selector ({selector}).
 /// @throw SPOT CSS: component/already-registered - given selector is already registered as component ({selector}).
 /// @output Given selector with given content.
 @mixin component($selector) {
     @if not $selector or $selector=="" {
         @error $SPOT_ERROR_PREFIX + "component/no-selector - selector was expected but nothing passed.";
+    }
+
+    @if component()!='' {
+        @error $SPOT_ERROR_PREFIX + "component/sub-component - you cannot use mixin component in component. Instead use mixin sub-component and also register it in parent component.";
     }
 
     $selectors: selector-parse($selector);
@@ -24,10 +29,9 @@
     
     $component-selector: $selector;
 
-    $already-registered: index($_registered-components, $component-selector)!=null;
-
     // 1)
-    @if $already-registered {
+    // if already registred
+    @if index($_registered-components, $component-selector)!=null {
         @error $SPOT_ERROR_PREFIX + "component/already-registered - given selector is already registered as component ('"+$component-selector+"').";
     }
     @else {
@@ -55,6 +59,102 @@
 
     // remove current component selector (from stack)
     $_current-components: pop($_current-components) !global;
+}
+
+
+/// Sub-component mixin to define component in component (with separate states, variants and sub-elements).
+///
+/// Context, responsive and browser modifiers are inherited from parent component.
+///
+/// 1) It checks if same component is defined multiple times. It is not allowed because Single Place Of Truth.
+///
+/// 2) Components can be nested one into another.
+///
+/// @group Component
+/// @access public
+/// @param { String } $selector - single selector of sub-component
+/// @content
+/// @throw SPOT CSS: sub-component/no-selector - selector was expected but nothing passed.
+/// @throw SPOT CSS: sub-component/no-component - you cannot use mixin sub-component outside component. Sub-component can be used only in component.
+/// @throw SPOT CSS: sub-component/single-selector - given selector is not a single selector ({selector}).
+/// @throw SPOT CSS: sub-component/already-registered - trying to register already registered sub-component 'selector' for component 'component'.
+/// @throw SPOT CSS: sub-component/childs-in-register - it is not allowed call any other modifiers and sub element mixins in sub-component in register of component 'component'. Register all those modifiers in register section of sub-component 'selector'.
+/// @throw SPOT CSS: sub-component/unknown-unregistered - given sub-component 'selector' is not registered in direct parent component ('component').
+/// @throw SPOT CSS: sub-component/duplicate - given selector is already used as sub-component ({selector}).
+/// @output Given selector with given content.
+@mixin sub-component($selector) {
+    @if not $selector or $selector=="" {
+        @error $SPOT_ERROR_PREFIX + "sub-component/no-selector - selector was expected but nothing passed.";
+    }
+
+    @if component()=='' {
+        @error $SPOT_ERROR_PREFIX + "sub-component/no-component - you cannot use mixin sub-component outside component. Sub-component can be used only in component.";
+    }
+
+    $selectors: selector-parse($selector);
+    @if length($selectors)>1 {
+        @error $SPOT_ERROR_PREFIX + "sub-component/single-selector - given selector is not a single selector ('"+$selector+"').";
+    }
+    
+    $sub-component-selector: #{ & + ' > ' + $selector };
+
+
+    @if $_is-register-mode { 
+        // guarding duplicity of sub-components (and all sub selectors)
+        @if index($_registered-selectors, $sub-component-selector) or index($_registered-sub-components, $sub-component-selector) {
+            @error $SPOT_ERROR_PREFIX + "sub-component/already-registered - trying to register already registered sub-component '"+$selector+"' for component '"+component()+"'.";
+        }
+        // store unique sub-component
+        $_registered-selectors: append($_registered-selectors, $sub-component-selector, 'comma') !global;
+        $_registered-sub-components: append($_registered-sub-components, $sub-component-selector, 'comma') !global;
+
+        $_is-called-something-in-register: false !global;
+
+        $_is-sub-component-mode: true !global;
+
+        @at-root
+        #{$sub-component-selector} {
+            @content;
+        }
+
+        $_is-sub-component-mode: false !global;
+
+        // check if something was called inside sub-component (in register mode)
+        @if $_is-called-something-in-register {
+            @error $SPOT_ERROR_PREFIX + "sub-component/childs-in-register - it is not allowed call any other modifiers and sub element mixins in sub-component in register of component '"+component()+"'. Register all those modifiers in register section of sub-component '"+$selector+"'.";
+        }
+    }
+    @else {
+        // check if sub-component is registered
+        @if not index($_registered-selectors, $sub-component-selector) {
+            @error $SPOT_ERROR_PREFIX + "sub-component/unknown-unregistered - given sub-component '"+$selector+"' is not registered in direct parent component ('"+$sub-component-selector+"').";
+        }
+        // 1)
+        // if already registred
+        @if index($_registered-components, $sub-component-selector)!=null {
+            @error $SPOT_ERROR_PREFIX + "sub-component/duplicate - given selector is already used as sub-component ('"+$sub-component-selector+"').";
+        }
+        @else {
+            // store component selector if is not stored yet
+            $_registered-components: append($_registered-components, $sub-component-selector, 'comma') !global;
+        }
+
+        // 2)
+        // store current component selector (into stack)
+        $_current-components: append($_current-components, '> '+$selector, 'space') !global;
+
+        $_is-sub-component-mode: true !global;
+
+        @at-root
+        #{$sub-component-selector} {
+            @content;
+        }
+
+        $_is-sub-component-mode: false !global;
+
+        // remove current component selector (from stack)
+        $_current-components: pop($_current-components) !global;
+    }
 }
 
 
@@ -241,9 +341,16 @@
     @if $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "child-element/in-modifier - it is not allowed to use child-element in modifier '"+$_current_modifier+"'.";
     }
-    // store appling sub element in current selector to avoid calling state, variant, etc. after that
-    @if not index($_selectors-with-sub-elements, &) {
-        $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
+
+    @if $_is-register-mode {
+        // mark flag that some modifier was called in register mixin
+        $_is-called-something-in-register: true !global;
+    }
+    @else {
+        // store appling sub element in current selector to avoid calling state, variant, etc. after that
+        @if not index($_selectors-with-sub-elements, &) {
+            $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
+        }
     }
 
     $selectors: (); 
@@ -286,6 +393,10 @@
     @if length($args)==0 {
         @error $SPOT_ERROR_PREFIX + "sub-element/no-selectors - at least one selector is expected.";
     }
+    @if $_is-register-mode {
+        // mark flag that some modifier was called in register mixin
+        $_is-called-something-in-register: true !global;
+    }
     // do not allow in modifier
     @if $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "sub-element/in-modifier - it is not allowed to use sub-element in modifier '"+$_current_modifier+"'.";
@@ -323,6 +434,10 @@
 @mixin pseudo-element($first: '', $second: '') {
     @if not $first or $first=='' {
         @error $SPOT_ERROR_PREFIX + "pseudo-element/no-selectors - at least one pseudo selector is expected ('before' or 'after').";
+    }
+    @if $_is-register-mode {
+        // mark flag that some modifier was called in register mixin
+        $_is-called-something-in-register: true !global;
     }
     // do not allow in modifier
     @if $_is-modifier-mode {
@@ -426,6 +541,8 @@
 /// @throw SPOT CSS: only-for/default-is-missing - the only-for '$args' in component 'component' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).
 /// @output Filtered selector(s) with given inner content.
 @mixin only-for($args...) {
+    /// @todo Cannot be used in register mixin !!!!!!!!!!!!!!!!!!!!!!!!!!
+
     // force using 'default' mixin when using modifiers
     @if not _default-mixin-was-already-called() {
         @error $SPOT_ERROR_PREFIX + "only-for/default-is-missing - the only-for '"+inspect($args)+"' in component '"+component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
@@ -438,6 +555,8 @@
 
 
 @mixin already-defined-in($modifiers...) {
+    /// @todo Cannot be used in register mixin !!!!!!!!!!!!!!!!!!!!!!!!!!
+
     // do not allow outside of modifier(s)
     @if not $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "already-defined-in/outside-modifiers - it is not allowed to use already-defined-in mixin outside of modifiers.";

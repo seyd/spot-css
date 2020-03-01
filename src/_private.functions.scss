@@ -194,3 +194,12 @@
 @function _default-mixin-was-already-called() {
     @return index($_default-called-on, &) != null;
 }
+
+
+/// Check if given modifier name is context-like modifier.
+/// @access private
+/// @param {String} $modifier-name - name of modifier
+/// @return {Boolean} True if given modifier name is context-like modifier.
+@function _is-modifier-context-like($modifier-name) {
+    @return str-index($modifier-name, ' &') != null; // 'context &' | 'responsive &' | 'browser &' 
+}

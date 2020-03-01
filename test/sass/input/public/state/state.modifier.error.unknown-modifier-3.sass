@@ -1,0 +1,28 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    +register
+        +state(':hover')
+
+        +child-element('span.sub')
+            +sub-component("a")
+            +sub-component("strong")
+
+
+    property: value
+
+    // ---------------------------------
+    +child-element('span.sub')
+
+        // ---------------------------------
+        +sub-component("a")
+            +default
+                property: value
+            
+            +state(':hover')    // unknown-modifier (it is state of parent component)
+                property: value-2
+
+        // ---------------------------------
+        +sub-component("strong")
+            property: value

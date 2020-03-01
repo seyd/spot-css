@@ -2,15 +2,25 @@
 
 // testing component() function
 +component("top-component")
+    +register
+        +sub-component("sub-component")
+
+
     /* #{ component() } */
 
-    +component("sub-component")
+    +sub-component("sub-component")
         /* #{ component() } */
 
     /* #{ component() } */
 
 /* #{ component() } */
 
+
+
 +component("top-component-2")
-    +component("> sub-component-2")
+    +register
+        +sub-component("sub-component-2")
+
+        
+    +sub-component("sub-component-2")
         /* #{ component() } */

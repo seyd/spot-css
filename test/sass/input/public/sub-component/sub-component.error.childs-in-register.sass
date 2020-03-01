@@ -1,0 +1,9 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    +register
+        +child-element('span.sub')
+            +sub-component("a")
+                +state(':hover')   // throws error childs-in-register
+            +sub-component("strong")

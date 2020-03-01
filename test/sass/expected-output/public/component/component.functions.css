@@ -3,8 +3,8 @@ top-component {
   /* top-component */
 }
 
-top-component sub-component {
-  /* top-component sub-component */
+top-component > sub-component {
+  /* top-component > sub-component */
 }
 
 /*  */

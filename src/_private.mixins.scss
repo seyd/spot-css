@@ -15,6 +15,9 @@
         @error $SPOT_ERROR_PREFIX + "register/no-component - the mixin register { "+$modifier-name+"("+$identifier+") } must be used inside a component selector.";
     }
 
+    // mark flag that some modifier was called in register mixin
+    $_is-called-something-in-register: true !global;
+
     // is context-like (context, browser or responsive) or vriation-like (state or variant)
     $is-context-like: str-index($modifier-name, '&');
 
@@ -71,6 +74,7 @@
 /// @param { String } $identifier - selector extension
 /// @param { String } $alias - alias name when context-like modifier ('context' | 'browser' | 'responsive')
 /// @param { Bool } $do-not-check-alias - flag to skip duplicity check for aliases
+/// @throw SPOT CSS: register/sub-component-context - it is not allowed to register modifier(identifier) for sub-component 'component'. Register this 'modifier' in top parent component.
 /// @throw SPOT CSS: register/duplicate-modifier - trying to register already registered modifier 'identifier' for component 'component'.
 /// @throw SPOT CSS: register/duplicate-modifier-with-alias - trying to register modifier 'identifier' but there is already registered modifier with same alias for component 'component'.
 /// @throw SPOT CSS: register/duplicate-alias-with-modifier - trying to register alias 'alias' but there is already registered same modifier for component 'component'.
@@ -82,7 +86,13 @@
 
     $identifier: _add-default-ampersand-if-context($modifier-name, $identifier);
     $alias_with_ampersand: _add-default-ampersand-if-context($modifier-name, $alias);
-    $current-component: component(); 
+    $modifier: str-replace($modifier-name, ' &', '');
+
+    $current-component: component();; 
+
+    @if _is-modifier-context-like($modifier-name) and $_is-sub-component-mode {
+        @error $SPOT_ERROR_PREFIX + "register/sub-component-context - it is not allowed to register "+$modifier+"('"+$original-identifier+"') for sub-component '"+$current-component+"'. Register this "+$modifier+" in top parent component.";
+    }
 
     // create unique identifier of component+identifier
     $component-with-identifier: _get-component-identifier($current-component, $identifier);
@@ -91,7 +101,7 @@
     $component-with-modifier: str-replace(_get-component-modifier($current-component, $modifier-name), ' &', '');
 
     // @feature Guarding duplicity of modifiers
-    @if index($_registered-identifierss, $component-with-identifier) {
+    @if index($_registered-identifiers, $component-with-identifier) {
         @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier - trying to register already registered modifier '"+$original-identifier+"' for component '"+$current-component+"'.";
     }
 
@@ -101,11 +111,11 @@
     }
 
     // store unique identifier
-    $_registered-identifierss: append($_registered-identifierss, $component-with-identifier) !global;
+    $_registered-identifiers: append($_registered-identifiers, $component-with-identifier) !global;
 
     @if $alias and $alias!='' and not $do-not-check-alias {
         // @feature Guarding duplicity of alias with modifiers
-        @if index($_registered-identifierss, _get-component-identifier($current-component, $alias_with_ampersand)) {
+        @if index($_registered-identifiers, _get-component-identifier($current-component, $alias_with_ampersand)) {
             @error $SPOT_ERROR_PREFIX + "register/duplicate-alias-with-modifier - trying to register alias '"+$alias+"' but there is already registered same modifier for component '"+$current-component+"'.";
         }
 
@@ -148,28 +158,34 @@
 @mixin _apply-modifier($modifier-name, $args...) {
     $selectors: ();
     $medias: ();
-    $component: component();
+    $component: '';
+    @if _is-modifier-context-like($modifier-name) {
+        $component: top-component();
+    }
+    @else {
+        $component: component();
+    }
     $_current_modifier: $modifier-name !global;
 
     // check if sub elements mixin was not used for current selector
     @if index($_selectors-with-sub-elements, &) {
-        @error $SPOT_ERROR_PREFIX + "modifier/invalid-order - the "+$modifier-name+" '"+inspect($args)+"' in component '"+component()+"' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.";
+        @error $SPOT_ERROR_PREFIX + "modifier/invalid-order - the "+$modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.";
     }
 
     // force using 'default' mixin when using modifiers
     @if not _default-mixin-was-already-called() {
-        @error $SPOT_ERROR_PREFIX + "modifier/default-is-missing - the "+$modifier-name+" '"+inspect($args)+"' in component '"+component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
+        @error $SPOT_ERROR_PREFIX + "modifier/default-is-missing - the "+$modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
     }
 
     $current-modifier: $modifier-name + '(' + $args + ')';
     // add current modifier to the stack
-    $current-modifier-stack: map-get($_current-modifiers-stack, component()); // for this component
+    $current-modifier-stack: map-get($_current-modifiers-stack, $component); // for this component
     $current-modifier-stack-backup: $current-modifier-stack;
     $current-modifier-stack: append($current-modifier-stack, $current-modifier, 'comma');
-    $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): $current-modifier-stack)) !global;
+    $_current-modifiers-stack: map-merge($_current-modifiers-stack, ($component: $current-modifier-stack)) !global;
 
     // log modifier to nested map
-    $modifier-pointer: map-get($_used-modifiers, component());
+    $modifier-pointer: map-get($_used-modifiers, $component);
     @if $modifier-pointer {
         $parents: []; 
         @each $modifier in $current-modifier-stack {
@@ -187,7 +203,7 @@
             $map: map-merge($last, ($name: $map));
             $parents: nth-delete($parents, -1);
         }
-        $_used-modifiers: map-merge($_used-modifiers, (component(): $map)) !global;
+        $_used-modifiers: map-merge($_used-modifiers, ($component: $map)) !global;
     }
 
     // generate selectors for all args
@@ -254,6 +270,7 @@
     $i: 0;
     @each $single-selector in $selectors {
         $i: $i + 1;
+        $single-selector: str-replace($single-selector+'', '&', &);
         @if index($_already-used-selectors, $single-selector) {
             @error $SPOT_ERROR_PREFIX + "modifier/already-used-modifier - the "+$modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }
@@ -274,7 +291,7 @@
         }
     }
     // remove current modifier from the stack
-    $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): $current-modifier-stack-backup)) !global;
+    $_current-modifiers-stack: map-merge($_current-modifiers-stack, ($component: $current-modifier-stack-backup)) !global;
 
     $_is-modifier-mode: false !global;
 }

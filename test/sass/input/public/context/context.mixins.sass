@@ -8,6 +8,7 @@
         +context('super-direct-parent-component > * > &') // with ampersand
         +context('html.mobile')
         +context('html.layout-portrait')
+        +sub-component('a')
 
     // ----------------------------------------------
     +default
@@ -20,6 +21,13 @@
 
     +context('super-direct-parent-component > * > &')
         property: value
+
+    // ----------------------------------------------
+    +sub-component('a')
+        +default
+        
+        +context('parent-component') // inherited from parent (top) component
+            property: value-x
 
     // t has to combine contexts into one: html.mobile.layout-portrait
     // @TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -8,6 +8,14 @@
 
 /// @group Component
 /// @access public
+/// @return { String } Current single top level component selector.
+@function top-component() {
+    @return #{first($_current-components)}; 
+}
+
+
+/// @group Component
+/// @access public
 /// @return { String } Current single component selector (the last one if nested).
 @function self() {
     @return #{last($_current-components)}; 

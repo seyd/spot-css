@@ -39,6 +39,20 @@ $_is-default-mode: false;
 $_is-modifier-mode: false;
 
 
+/// Flag of calling any mixin in register - if parser enters mixin register.
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-called-something-in-register: false;
+
+
+/// Flag of sub-component mode - if parser enters mixin sub-component.
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-sub-component-mode: false;
+
+
 /// Last used modifier name ('variant', 'state', 'context', 'browser' or 'responsive').
 /// @group Component
 /// @access private
@@ -57,7 +71,7 @@ $_registered-modifiers: ();
 /// @group Component
 /// @access private
 /// @type List
-$_registered-identifierss: [];
+$_registered-identifiers: [];
 
 
 /// List of registered aliases of identifiers for guarding uniqueness (per component).
@@ -65,6 +79,20 @@ $_registered-identifierss: [];
 /// @access private
 /// @type List
 $_registered-aliases: [];
+
+
+/// List of registered selectors for guarding uniqueness and required register (per component).
+/// @group Component
+/// @access private
+/// @type List
+$_registered-selectors: [];
+
+
+/// List of registered sub-components for guarding uniqueness and required register (per component).
+/// @group Component
+/// @access private
+/// @type List
+$_registered-sub-components: [];
 
 
 /// List of calling register mixin for each component.

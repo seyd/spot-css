@@ -1,0 +1,16 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +sub-component(".component-1")
+        +sub-component(".component-2")
+        // duplicate (same selector again)
+        +sub-component(".component-1")
+
+    property: value
+
+    +sub-component(".component-1")
+        property: value
+
+    +sub-component(".component-2")
+        property: value
