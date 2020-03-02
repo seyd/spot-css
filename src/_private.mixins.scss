@@ -6,7 +6,6 @@
 /// @param { String } $args... - extra arguments for input values for placeholder '?' or alias name when context-like modifier ('context' | 'browser' | 'responsive')
 /// @throw SPOT CSS: register/invalid-selector-extension - the mixin register { modifier-name(identifier) } uses invalid selector extension 'identifier'. The extension can start only with one of these characters: '.', '#', '@', '[', ':' (or '?' or '{' when placeholder is used).
 /// @throw SPOT CSS: register/no-component - the mixin register { modifier-name(identifier) } must be used inside a component selector.
-/// @throw SPOT CSS: register/placeholder-in- context - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param).
 /// @throw SPOT CSS: register/missing-values - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but no values were provided.
 /// @throw SPOT CSS: register/extra-values - the mixin register { modifier-name(identifier) } doesn't use '?' as value placeholder but extra values were provided.
 /// @output Nothing.
@@ -32,12 +31,6 @@
     // if selector contains '?' (e.g. '[type="?"]') character, $args must be provided as expected values
     // expample arguments: ('state', '[type="?"]', 'primary', 'secondary')
     @if str-index($identifier, '?') or str-index($identifier, '{') {
-
-        // if context-like modifier then placeholder '?' is not supported
-        @if $is-context-like {
-            @error $SPOT_ERROR_PREFIX + "register/placeholder-in-context - the mixin register { "+$modifier-name+"("+$identifier+") } uses '?' as value placeholder but for context-like modifiers it is not supported (it supports only extra alias param).";
-        }
-
         $len: length($args);
         @if $len==0 {
             @error $SPOT_ERROR_PREFIX + "register/missing-values - the mixin register { "+$modifier-name+"("+$identifier+") } uses '?' as value placeholder but no values were provided.";
@@ -53,10 +46,10 @@
             }
         }
     }
-    // if selector does not contains "?" character, $args must be not provided (as expected values)
+    // if selector does not contains "?" or "{" character, $args must be not provided (as expected values)
     @else {
-        // if extra values and not context-like modifier (it accepts extra $alias param)
-        @if $args!=null and length($args)!=0 and not $is-context-like {
+        // if extra values
+        @if $args!=null and length($args)!=0 {
             @error $SPOT_ERROR_PREFIX + "register/extra-values - the mixin register { "+$modifier-name+"("+$identifier+") } doesn't use '?' as value placeholder but extra values were provided.";
         }
         @else {

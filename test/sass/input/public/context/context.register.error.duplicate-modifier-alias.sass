@@ -2,6 +2,6 @@
 
 +component("my-component")
     +register
-        +context('context-1', 'my-alias')
+        +context('{my-alias}', 'context-1')
         // duplicate alias
-        +context('context-2', 'my-alias')
+        +context('{my-alias}', 'context-2')

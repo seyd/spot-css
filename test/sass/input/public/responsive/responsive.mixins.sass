@@ -4,9 +4,9 @@
 +component("my-component")
     +register
         +responsive('@media only screen and (max-width: 800px)')
-        +responsive('@media only screen and (max-width: 360px)', 'mobile')
-        +responsive('@media only screen and (max-width: 600px), only screen and (max-width: 600px)', 'multiple')
-        +responsive('html.grayscale', 'grayscale')
+        +responsive('{mobile}', '@media only screen and (max-width: 360px)')
+        +responsive('{multiple}', '@media only screen and (max-width: 600px), only screen and (max-width: 600px)')
+        +responsive('{grayscale}', 'html.grayscale')
 
     // ----------------------------------------------
     +default
@@ -15,25 +15,25 @@
         property: value
     
     // alias
-    +responsive('mobile')
+    +responsive('{mobile}')
         property: value
 
     // multiple @media queries
-    +responsive('multiple')
+    +responsive('{multiple}')
         property: value
 
     // mixed @media and html.class context
-    +responsive('multiple', 'grayscale')
+    +responsive('{multiple}', '{grayscale}')
         property: value
 
 
 
 // defined somewhere in reusable mixins
 @mixin responsive-breakpoints
-    +responsive('@media (min-width:  576px)', 'sm')
-    +responsive('@media (min-width:  768px)', 'md')
-    +responsive('@media (min-width: 1280px)', 'lg')
-    +responsive('@media (min-width: 1400px)', 'xl')
+    +responsive('{sm}', '@media (min-width:  576px)')
+    +responsive('{md}', '@media (min-width:  768px)')
+    +responsive('{lg}', '@media (min-width: 1280px)')
+    +responsive('{xl}', '@media (min-width: 1400px)')
 
 
 // later in component...
@@ -51,6 +51,6 @@
     +state(':hover')
         color: red
 
-    +responsive('sm', 'md')
+    +responsive('{sm}', '{md}')
         color: white
 

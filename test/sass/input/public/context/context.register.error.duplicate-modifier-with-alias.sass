@@ -2,6 +2,6 @@
 
 +component("my-component")
     +register
-        +context('context-1', 'context-alias')
+        +context('{context-alias}', 'context-1')
         // duplicate selector (modifier) with alias
-        +context('context-alias', 'another-alias')
+        +context('{another-alias}', '{context-alias}')

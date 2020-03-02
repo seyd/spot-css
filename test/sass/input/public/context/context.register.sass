@@ -4,7 +4,7 @@
 +component("my-component")
     +register
         +context('parent-component')
-        +context('html.special', 'special') // alias
+        +context('{special}', 'html.special') // alias
 
     // ----------------------------------------------
     +default
@@ -12,5 +12,5 @@
     +context('parent-component')
         property: value
 
-    +context('special') // alias
+    +context('{special}') // alias
         property: special-value
