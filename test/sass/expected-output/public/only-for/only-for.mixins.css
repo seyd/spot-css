@@ -14,14 +14,54 @@ my-component.orange {
   property: other-value-2;
 }
 
+my-component.apple:first-child, my-component.orange:first-child {
+  property: other-value-3;
+}
+
+my-component.apple:first-of-type, my-component.orange:first-of-type {
+  property: other-value-4;
+}
+
+my-component > span:last-child {
+  property: other-value-5;
+}
+
+my-component > span:last-of-type {
+  property: other-value-6;
+}
+
 my-component.apple > span, my-component.orange > span {
   property: value;
 }
 
 my-component.apple > span {
-  property: other-value-1;
+  property: other-value-7;
 }
 
 my-component.orange > span {
-  property: other-value-2;
+  property: other-value-8;
+}
+
+my-component.apple > span:nth-child(1), my-component.orange > span:nth-child(1) {
+  property: other-value-9;
+}
+
+my-component.apple > span:nth-last-child(2), my-component.orange > span:nth-last-child(2) {
+  property: other-value-10;
+}
+
+my-component.apple > span:nth-last-of-type(3n+1), my-component.orange > span:nth-last-of-type(3n+1) {
+  property: other-value-11;
+}
+
+my-component.apple > span:nth-of-type(3+2), my-component.orange > span:nth-of-type(3+2) {
+  property: other-value-8;
+}
+
+my-component.apple > span:only-of-type, my-component.orange > span:only-of-type {
+  property: other-value-9;
+}
+
+my-component.apple > span:only-child, my-component.orange > span:only-child {
+  property: other-value-10;
 }

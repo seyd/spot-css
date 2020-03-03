@@ -20,16 +20,46 @@
     +only-for('.orange')
       property: other-value-2
 
+    +only-for(':first-child')
+      property: other-value-3
+
+    +only-for(':first-of-type')
+      property: other-value-4
+
   // ----------------------------------------------
   +child-element('span')
     +default
+
+    +only-for(':last-child')
+      property: other-value-5
+    
+    +only-for(':last-of-type')
+      property: other-value-6
 
     +variant('.apple', '.orange')
       +default
         property: value
 
       +only-for('.apple')
-        property: other-value-1
+        property: other-value-7
 
       +only-for('.orange')
-        property: other-value-2
+        property: other-value-8
+
+      +only-for(':nth-child(1)')
+        property: other-value-9
+
+      +only-for(':nth-last-child(2)')
+        property: other-value-10
+
+      +only-for(':nth-last-of-type(3n+1)')
+        property: other-value-11
+
+      +only-for(':nth-of-type(3+2)')
+        property: other-value-8
+
+      +only-for(':only-of-type')
+        property: other-value-9
+      
+      +only-for(':only-child')
+        property: other-value-10

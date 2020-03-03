@@ -247,22 +247,39 @@
 /// @access public
 /// @param { String } $current-selector - Selector(s) to be strengthen
 /// @param { String } $args... - Selector(s) to override
+/// @throw SPOT CSS: only-for/pseudo-element - given selector ('selector') is a pseudo selector. Use mixin pseudo-element for this job.
 /// @throw SPOT CSS: only-for/not-found - given branch selector was not found at the end of current selector ('selector').
 /// @return { String } Filtered selector(s).
 @function only-for($selector, $args...) {
     $selectors: selector-parse($selector);
     $output: (); 
     $found: false;
-    @each $selector in $selectors {
+    @each $sel in $selectors {
         $match: false;
+        $sel: to-string($sel);
         @each $branch in $args {
-            @if str-index(to-string($selector), $branch) {
+            @if str-index($sel, $branch) {
                 $match: true;
                 $found: true;
             }
+            // Exception: If some of theese selectors, it will apply it on current selector.
+            //   :first-* [:first-child, :first-of-type]
+            //   :last-*  [:last-child, :last-of-type]
+            //   :nth-*   [:nth-child(n), :nth-last-child(n), :nth-last-of-type(n), :nth-of-type(n)]
+            //   :only-*  [:only-of-type, :only-child]
+            @else if str-index($branch, ':first-') or  str-index($branch, ':last-') or str-index($branch, ':nth-') or str-index($branch, ':only-') {
+                // except pseudo elements ::first-letter and ::first-line (but check for one ':')
+                @if str-index($branch, '::')==null and str-index($branch, ':first-letter')==null and str-index($branch, ':first-line')==null {
+                    $found: true;
+                    $output: append($output, $sel + $branch, 'comma');
+                }
+                @else {
+                    @error $SPOT_ERROR_PREFIX + "only-for/pseudo-element - given selector ('"+$selector+"') is a pseudo selector. Use mixin pseudo-element for this job.";
+                }
+            }
         }
         @if $match {
-            $output: append($output, $selector, 'comma');
+            $output: append($output, $sel, 'comma');
         }
     }
     @if not $found {
