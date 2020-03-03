@@ -81,13 +81,6 @@ $_registered-identifiers: [];
 $_registered-aliases: [];
 
 
-/// List of registered selectors for guarding uniqueness and required register (per component).
-/// @group Component
-/// @access private
-/// @type List
-$_registered-selectors: [];
-
-
 /// List of registered sub-components for guarding uniqueness and required register (per component).
 /// @group Component
 /// @access private
@@ -123,6 +116,14 @@ $_selectors-with-sub-elements: [];
 /// @access private
 /// @type List
 $_already-used-selectors: [];
+
+
+/// List of already used selectors (also multiple) for watching multiple using
+/// to be able distinct between +variant('.apple', '.orange') and inside +only-for('.apple').
+/// @group Component
+/// @access private
+/// @type List
+$_already-used-multiple-selectors: [];
 
 
 /// Map of used modifiers (nested) per component, e.g. state, variant, context, ...

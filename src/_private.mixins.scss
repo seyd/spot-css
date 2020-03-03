@@ -259,6 +259,10 @@
             }
         }
     } 
+
+    // for purpose of mixin only-for 
+    $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $selectors) !global;
+
     // check all selectors if wasn't used already
     $i: 0;
     @each $single-selector in $selectors {

@@ -101,11 +101,11 @@
 
     @if $_is-register-mode { 
         // guarding duplicity of sub-components (and all sub selectors)
-        @if index($_registered-selectors, $sub-component-selector) or index($_registered-sub-components, $sub-component-selector) {
+        @if index($_already-used-selectors, $sub-component-selector) or index($_registered-sub-components, $sub-component-selector) {
             @error $SPOT_ERROR_PREFIX + "sub-component/already-registered - trying to register already registered sub-component '"+$selector+"' for component '"+component()+"'.";
         }
         // store unique sub-component
-        $_registered-selectors: append($_registered-selectors, $sub-component-selector, 'comma') !global;
+        $_already-used-selectors: append($_already-used-selectors, $sub-component-selector, 'comma') !global;
         $_registered-sub-components: append($_registered-sub-components, $sub-component-selector, 'comma') !global;
 
         $_is-called-something-in-register: false !global;
@@ -126,7 +126,7 @@
     }
     @else {
         // check if sub-component is registered
-        @if not index($_registered-selectors, $sub-component-selector) {
+        @if not index($_already-used-selectors, $sub-component-selector) {
             @error $SPOT_ERROR_PREFIX + "sub-component/unknown-unregistered - given sub-component '"+$selector+"' is not registered in direct parent component ('"+$sub-component-selector+"').";
         }
         // 1)
@@ -428,7 +428,8 @@
 /// @content
 /// @throw SPOT CSS: pseudo-element/no-selectors - at least one pseudo selector is expected ('before' or 'after').
 /// @throw SPOT CSS: pseudo-element/in-modifier - it is not allowed to use pseudo-element in modifier 'modifier'.
-/// @throw SPOT CSS: pseudo-element/invalid-selector - Ivalid value for pseudo element 'selector'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.
+/// @throw SPOT CSS: pseudo-element/invalid-selector - Invalid value for pseudo element 'selector'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.
+/// @throw SPOT CSS: pseudo-element/already-used - the pseudo-element('pseudo-selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every pseudo-element.
 /// @output Given selector with given content.
 @mixin pseudo-element($selectors...) {
     @if length($selectors)==0 or not first($selectors) or first($selectors)=='' {
@@ -446,16 +447,24 @@
     @if not index($_selectors-with-sub-elements, &) {
         $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
     }
+
     $output: ();
     @each $pseudo-selector in $selectors {   
         // replace all colons (':' and '::')
         $pseudo-selector: str-trim(str-replace(str-replace($pseudo-selector, '::', ''), ':', ''));
 
         @if $pseudo-selector!='before' and $pseudo-selector!='after' and $pseudo-selector!='first-letter' and $pseudo-selector!='first-line' and $pseudo-selector!='placeholder' and $pseudo-selector!='selection' {
-            @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid-selector - Ivalid value for pseudo element '"+$pseudo-selector+"'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.";
+            @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid-selector - Invalid value for pseudo element '"+$pseudo-selector+"'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.";
         }
 
-        $output: append($output, & + '::' + $pseudo-selector, 'comma');
+        $selector: & + '::' + $pseudo-selector;
+
+        @if index($_already-used-selectors, $selector) {
+            @error $SPOT_ERROR_PREFIX + "pseudo-element/already-used - the pseudo-element('" + $pseudo-selector + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every pseudo-element.";
+        }
+        $_already-used-selectors: append($_already-used-selectors, $selector) !global;
+
+        $output: append($output, $selector, 'comma');
     }
     
     @at-root

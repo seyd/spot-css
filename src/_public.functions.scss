@@ -247,6 +247,7 @@
 /// @access public
 /// @param { String } $current-selector - Selector(s) to be strengthen
 /// @param { String } $args... - Selector(s) to override
+/// @throw SPOT CSS: only-for/already-used-selector - the only-for('selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.
 /// @throw SPOT CSS: only-for/pseudo-element - given selector ('selector') is a pseudo selector. Use mixin pseudo-element for this job.
 /// @throw SPOT CSS: only-for/not-found - given branch selector was not found at the end of current selector ('selector').
 /// @return { String } Filtered selector(s).
@@ -254,6 +255,7 @@
     $selectors: selector-parse($selector);
     $output: (); 
     $found: false;
+    $found-branch: '';
     @each $sel in $selectors {
         $match: false;
         $sel: to-string($sel);
@@ -261,6 +263,7 @@
             @if str-index($sel, $branch) {
                 $match: true;
                 $found: true;
+                $found-branch: $branch;
             }
             // Exception: If some of theese selectors, it will apply it on current selector.
             //   :first-* [:first-child, :first-of-type]
@@ -271,7 +274,13 @@
                 // except pseudo elements ::first-letter and ::first-line (but check for one ':')
                 @if str-index($branch, '::')==null and str-index($branch, ':first-letter')==null and str-index($branch, ':first-line')==null {
                     $found: true;
-                    $output: append($output, $sel + $branch, 'comma');
+                    $complete-selector: $sel + $branch;
+                    @if index($_already-used-selectors, $complete-selector) {
+                        @error $SPOT_ERROR_PREFIX + "only-for/already-used-selector - the only-for('" + $branch + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.";
+                    }
+                    $_already-used-selectors: append($_already-used-selectors, $complete-selector) !global;
+
+                    $output: append($output, $complete-selector, 'comma');
                 }
                 @else {
                     @error $SPOT_ERROR_PREFIX + "only-for/pseudo-element - given selector ('"+$selector+"') is a pseudo selector. Use mixin pseudo-element for this job.";
@@ -279,6 +288,11 @@
             }
         }
         @if $match {
+            @if index($_already-used-multiple-selectors, $sel) {
+                @error $SPOT_ERROR_PREFIX + "only-for/already-used-selector - the only-for('" + $found-branch + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.";
+            }
+            $_already-used-selectors: append($_already-used-selectors, $sel) !global;
+            $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sel) !global;
             $output: append($output, $sel, 'comma');
         }
     }

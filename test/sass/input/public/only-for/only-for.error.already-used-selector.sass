@@ -1,0 +1,19 @@
+@import "./src/spot-css"
+
+
++component('my-component')
+  +register
+    +variant('.apple')
+    +variant('.orange')
+
+  // ----------------------------------------------
+  +default
+
+  +variant('.apple', '.orange')
+    +default
+      property: value
+
+    +only-for('.apple')
+      property: other-value
+
+    +only-for('.apple') // duplicate - already used selector
