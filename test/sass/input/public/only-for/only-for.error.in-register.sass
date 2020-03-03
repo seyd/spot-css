@@ -1,0 +1,8 @@
+@import "./src/spot-css"
+
+
++component('my-component')
+  +register
+    +variant('.apple')
+    +variant('.orange')
+    +only-for('.apple') // throw error - only-for is not allowed in register

@@ -195,12 +195,12 @@
 /// @group Component
 /// @access public
 /// @content
-/// @throw SPOT CSS: default/in-register - the mixin default has to be not registered in register mixin in component 'component'.
+/// @throw SPOT CSS: default/in-register - the mixin default doesn't have to be registered in register mixin in component 'component'.
 /// @throw SPOT CSS: default/already-called - the mixin default was already called for element 'element'.
 /// @output Just given content.
 @mixin default {
     @if $_is-register-mode {
-        @error $SPOT_ERROR_PREFIX + "default/in-register - the mixin default has to be not registered in register mixin in component '"+component()+"'.";
+        @error $SPOT_ERROR_PREFIX + "default/in-register - the mixin default doesn't have to be registered in register mixin in component '"+component()+"'.";
     }
     $current-selector: &;
     // run only once per component selector
@@ -540,11 +540,14 @@
 /// @access public
 /// @param { String } $args... - Selector(s) to override
 /// @content
+/// @throw SPOT CSS: only-for/in-register - the mixin default doesn't have to be registered in register mixin in component 'component'.
 /// @throw SPOT CSS: only-for/default-is-missing - the only-for '$args' in component 'component' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).
 /// @output Filtered selector(s) with given inner content.
 @mixin only-for($args...) {
-    /// @todo Cannot be used in register mixin !!!!!!!!!!!!!!!!!!!!!!!!!!
-
+    // not allowed in register
+    @if $_is-register-mode {
+        @error $SPOT_ERROR_PREFIX + "only-for/in-register - the mixin only-for doesn't have to be registered in register mixin in component '"+component()+"'.";
+    }
     // force using 'default' mixin when using modifiers
     @if not _default-mixin-was-already-called() {
         @error $SPOT_ERROR_PREFIX + "only-for/default-is-missing - the only-for '"+inspect($args)+"' in component '"+component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
@@ -557,7 +560,10 @@
 
 
 @mixin already-defined-in($modifiers...) {
-    /// @todo Cannot be used in register mixin !!!!!!!!!!!!!!!!!!!!!!!!!!
+    // not allowed in register
+    @if $_is-register-mode {
+        @error $SPOT_ERROR_PREFIX + "already-defined-in/in-register - the mixin already-defined-in doesn't have to be registered in register mixin in component '"+component()+"'.";
+    }
 
     // do not allow outside of modifier(s)
     @if not $_is-modifier-mode {
