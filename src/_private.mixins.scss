@@ -220,7 +220,8 @@
                         }
                         @else {   
                             @if str-index($extension, '&') {
-                                $extended-selector: $extension;
+                                $context-extension: str-replace($extension, ' &', '');
+                                $extended-selector: merge-selectors($context-extension, &);
                             }
                             @else {
                                 $extended-selector: extend(&, self(), $extension);
@@ -245,7 +246,8 @@
                 }
                 @else {          
                     @if str-index($extension, '&') {
-                        $extended-selector: $extension;
+                        $context-extension: str-replace($extension, ' &', '');
+                        $extended-selector: merge-selectors($context-extension, &);
                     }
                     @else {
                         $extended-selector: extend(&, self(), $extension);

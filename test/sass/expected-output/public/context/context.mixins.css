@@ -13,3 +13,7 @@ super-direct-parent-component > * > my-component {
 parent-component my-component > a {
   property: value-x;
 }
+
+html.layout-portrait.mobile your-component {
+  property: value;
+}

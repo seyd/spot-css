@@ -1,0 +1,9 @@
+/* html.mobile.layout-portrait my-component */
+/* html.mobile.layout-portrait > my-component */
+/* html.mobile.layout-portrait > my-component[type] */
+/* html.mobile body.layout-portrait my-component */
+/* html.mobile body.layout-portrait my-component */
+/* html.mobile body.layout-portrait my-component.fixed */
+/* html.layout-portrait body.mobile my-component.fixed */
+/* html.layout-portrait body.mobile > my-component.fixed */
+/* html.a.a2 body.b.b2 top-component my-component */

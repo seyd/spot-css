@@ -29,9 +29,18 @@
         +context('parent-component') // inherited from parent (top) component
             property: value-x
 
-    // t has to combine contexts into one: html.mobile.layout-portrait
-    // @TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // +context('html.mobile')
-    //     +context('html.layout-portrait')
-    //         property: value
+// mergin contexts
++component("your-component")
+    +register
+        +context('parent-component')        
+        +context('direct-parent-component >')
+        +context('super-direct-parent-component > * > &') // with ampersand
+        +context('html.mobile')
+        +context('html.layout-portrait')
+    
+    +default
 
+    +context('html.mobile')
+        +default
+        +context('html.layout-portrait')
+            property: value

@@ -1,0 +1,28 @@
+@import "./src/spot-css"
+
+/* #{ merge-selectors('html.mobile my-component', 'html.layout-portrait my-component') } */
+// Expected output:  html.mobile.layout-portrait my-component
+
+/* #{ merge-selectors('html.mobile > my-component', 'html.layout-portrait') } */
+// Expected output:  html.mobile.layout-portrait my-component
+
+/* #{ merge-selectors('html.mobile > my-component', 'html.layout-portrait my-component[type]') } */
+// Expected output:  html.mobile.layout-portrait > my-component[type]
+
+/* #{ merge-selectors('html.mobile my-component', 'body.layout-portrait') } */
+// Expected output:  html.mobile body.layout-portrait my-component
+
+/* #{ merge-selectors('html.mobile my-component', 'body.layout-portrait my-component') } */
+// Expected output:  html.mobile body.layout-portrait my-component
+
+/* #{ merge-selectors('html.mobile my-component', 'body.layout-portrait my-component.fixed') } */
+// Expected output:  html.mobile body.layout-portrait my-component.fixed
+
+/* #{ merge-selectors('body.mobile my-component', 'html.layout-portrait my-component.fixed') } */
+// Expected output:  html.layout-portrait body.mobile my-component.fixed
+
+/* #{ merge-selectors('body.mobile > my-component', 'html.layout-portrait my-component.fixed') } */
+// Expected output:  html.layout-portrait body.mobile > my-component.fixed
+
+/* #{ merge-selectors('html.a body.b top-component my-component', 'html.a2 body.b2') } */
+// Expected output:  html.a.a2 body.b.b2 top-component my-component
