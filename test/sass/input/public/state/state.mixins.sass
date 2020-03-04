@@ -7,6 +7,8 @@
         +state('.active')
         +state('.a')
         +state('.b')
+        +responsive('{mobile}', '@media only screen and (max-width: 360px)')
+        +responsive('{multiple}', '@media only screen and (max-width: 600px), only screen and (max-width: 600px)')
 
         +child-element('.inner')
             +sub-component("sub-component")
@@ -15,10 +17,17 @@
     +default
 
     +state(':hover')
-        property: value
+        +default
+            property: value
     
     +state('.a', '.b')
         property: value
+
+    +responsive('{mobile}')
+        +default
+
+        +state(':hover')
+            property: value-responsive
 
     // ----------------------------------------------
     +child-element('.inner')

@@ -6,6 +6,12 @@ my-component.a, my-component.b {
   property: value;
 }
 
+@media only screen and (max-width: 360px) {
+  my-component:hover {
+    property: value-responsive;
+  }
+}
+
 my-component:hover > .inner {
   property: value-x;
 }

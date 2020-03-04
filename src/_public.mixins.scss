@@ -201,13 +201,13 @@
 @mixin default {
     @if $_is-register-mode {
         @error $SPOT_ERROR_PREFIX + "default/in-register - the mixin default doesn't have to be registered in register mixin in component '"+component()+"'.";
-    }
-    $current-selector: &;
+    }    
     // run only once per component selector
-    @if index($_default-called-on, $current-selector) {
-        @error $SPOT_ERROR_PREFIX + "default/already-called - the mixin default was already called for element '"+$current-selector+"'.";
+    $current-media-selector: _wrap_into_media_selector(&);
+    @if index($_default-called-on, $current-media-selector) {
+        @error $SPOT_ERROR_PREFIX + "default/already-called - the mixin default was already called for element '"+$current-media-selector+"'.";
     }
-    $_default-called-on: append($_default-called-on, $current-selector) !global;
+    $_default-called-on: append($_default-called-on, $current-media-selector) !global;
     
     $_is-default-mode: true !global;
     @content;

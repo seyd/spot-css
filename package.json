@@ -1,6 +1,6 @@
 {
   "name": "spot-css-fwk",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "SPOT CSS Framework { Single Place Of Truth Methodology }",
   "main": "index.scss",
   "scripts": {

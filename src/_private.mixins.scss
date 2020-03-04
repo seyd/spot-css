@@ -269,7 +269,7 @@
     $i: 0;
     @each $single-selector in $selectors {
         $i: $i + 1;
-        $single-selector: str-replace($single-selector+'', '&', &);
+        $single-selector: _wrap_into_media_selector( str-replace($single-selector+'', '&', &) );
         @if index($_already-used-selectors, $single-selector) {
             @error $SPOT_ERROR_PREFIX + "modifier/already-used-modifier - the "+$modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }
@@ -279,9 +279,14 @@
     $_is-modifier-mode: true !global;
 
     @if length($medias)>0 {
+        // store current media selector (into stack)
+        $_current-media-stack: append($_current-media-stack, $medias, 'space') !global;
+        
         @media #{$medias} {
             @content;
-        }
+        }        
+        // remove current media selector (from stack)
+        $_current-media-stack: pop($_current-media-stack) !global;
     }
 
     @if length($selectors)>0 {

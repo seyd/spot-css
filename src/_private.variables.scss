@@ -18,6 +18,13 @@ $_registered-components: ();
 $_current-components: ();
 
 
+/// Current media or stack of current media queries (if multiple are used).
+/// @group Component
+/// @access private
+/// @type List
+$_current-media-stack: [];
+
+
 /// Flag of register mode - if parser enters mixin register.
 /// @group Component
 /// @access private

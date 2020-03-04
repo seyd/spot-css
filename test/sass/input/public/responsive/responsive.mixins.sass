@@ -26,14 +26,15 @@
     +responsive('{multiple}', '{grayscale}')
         property: value
 
-
-
 // defined somewhere in reusable mixins
 @mixin responsive-breakpoints
     +responsive('{sm}', '@media (min-width:  576px)')
     +responsive('{md}', '@media (min-width:  768px)')
     +responsive('{lg}', '@media (min-width: 1280px)')
     +responsive('{xl}', '@media (min-width: 1400px)')
+    +responsive('{mobile}', '@media only screen and (max-width: 360px)')
+    +responsive('{multiple}', '@media only screen and (max-width: 600px), only screen and (max-width: 600px)')
+    +responsive('{grayscale}', 'html.grayscale')
 
 
 // later in component...
@@ -54,3 +55,12 @@
     +responsive('{sm}', '{md}')
         color: white
 
+    // mixed @media and html.class context
+    +responsive('{mobile}')
+        +default
+        
+        +responsive('{grayscale}')
+            +default
+
+            +responsive('{multiple}')
+                property: value
