@@ -320,3 +320,91 @@
 @mixin _set_default-mixin-was-already-called() {
     $_default-called-on: append($_default-called-on, component()) !global;
 }
+
+
+/// Declares direct child block in current component selector.
+/// @group Component
+/// @access private
+/// @param { String } $sub-element-type - Name of modifier: 'child', 'sub' or 'pseudo'
+/// @param { String } $selectors... - One or more selectors of direct childs. Each selector as a single selector in separate argument.
+/// @content
+/// @throw SPOT CSS: {sub}-element/no-selectors - at least one {sub} selector is expected.
+/// @throw SPOT CSS: {sub}-element/in-modifier - it is not allowed to use {sub}-element in modifier 'modifier'.
+/// @throw SPOT CSS: {sub}-element/in-default - it is not allowed to call {sub}-element mixin in default mixin (in component 'component').
+/// @throw SPOT CSS: {sub}-element/single-selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
+/// @throw SPOT CSS: {sub}-element/multilevel-selector - given selector is not a single selector ('selector'). Just use more {sub}-element mixins nested.
+/// @throw SPOT CSS: pseudo-element/invalid-selector - Invalid value for pseudo element 'selector'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.
+/// @throw SPOT CSS: {sub}-element/already-used - the {sub}-element('pseudo-selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every {sub}-element.
+/// @output Given selector with given content.
+@mixin _sub-element($sub-element-type, $sub-selectors...) {
+    @if length($sub-selectors)==0 {
+        @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/no-selectors - at least one "+$sub-element-type+" selector is expected.";
+    }
+    // do not allow in modifier
+    @if $_is-modifier-mode {
+        @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/in-modifier - it is not allowed to use "+$sub-element-type+"-element in modifier '"+$_current_modifier+"'.";
+    }
+
+    @if $_is-default-mode {
+        @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/in-default - it is not allowed to call "+$sub-element-type+"-element mixin in default mixin (in component '"+component()+"').";
+    }
+
+    @if $_is-register-mode {
+        // mark flag that some modifier was called in register mixin
+        $_is-called-something-in-register: true !global;
+    }
+    @else {
+        // store appling sub element in current selector to avoid calling state, variant, etc. after that
+        @if not index($_selectors-with-sub-elements, &) {
+            $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
+        }
+    }
+
+    $selectors: (); 
+    @each $selector in $sub-selectors {
+        $parts: selector-parse($selector);
+        // @feature Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
+        @if length($parts)>1 {
+            @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/single-selector - given selector is not a single selector ('"+$selector+"'). Just pass it as a separate argument.";
+        }
+        @if $sub-element-type == 'sub' {    
+            $selector: & + ' ' + $selector;
+        }  
+        @if $sub-element-type == 'child' {    
+            // all child selectors must start with >
+            @if str-index(str-trim-left($selector), '>')!=1 and str-last-char(#{&})!='>' {
+                $selector: '> '+$selector;
+            }
+            // @feature Guarding that only first (one) level child selector is passed.
+            // Value 2 because also starting '>' is counted
+            @if length-of-simple-selector($selector)>2 {
+                @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/multilevel-selector - given selector is not a single selector ('"+$selector+"'). Just use more "+$sub-element-type+"-element mixins nested.";
+            }
+            $selector: & + $selector;
+        }
+        @if $sub-element-type == 'pseudo' {
+            // replace all colons (':' and '::')
+            $pseudo-selector: str-trim(str-replace(str-replace($selector, '::', ''), ':', ''));
+
+            @if $pseudo-selector!='before' and $pseudo-selector!='after' and $pseudo-selector!='first-letter' and $pseudo-selector!='first-line' and $pseudo-selector!='placeholder' and $pseudo-selector!='selection' {
+                @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid-selector - Invalid value for pseudo element '"+$pseudo-selector+"'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.";
+            }
+
+            $selector: & + '::' + $pseudo-selector;
+        }
+
+        @if not $_is-register-mode {
+            @if index($_already-used-selectors, $selector) {
+                @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/already-used - the "+$sub-element-type+"-element('" + $selector + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every "+$sub-element-type+"-element.";
+            }
+            $_already-used-selectors: append($_already-used-selectors, $selector) !global;
+        }
+        
+        $selectors: append($selectors, $selector, 'comma');
+    }
+
+    @at-root
+    #{$selectors} {
+        @content;
+    }
+}
