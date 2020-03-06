@@ -1,0 +1,10 @@
+@import "./src/spot-css"
+
++component("my-component")
+    +register
+        +state('.active')
+
+    // ----------------------------------------------
+    +default    
+        +state('.active')  // throw error - cannot be used in default mixin
+            property: value

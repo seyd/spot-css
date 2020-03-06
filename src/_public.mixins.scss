@@ -330,6 +330,7 @@
 /// @content
 /// @throw SPOT CSS: child-element/no-selectors - at least one child selector is expected.
 /// @throw SPOT CSS: child-element/in-modifier - it is not allowed to use child-element in modifier 'modifier'.
+/// @throw SPOT CSS: child-element/in-default - it is not allowed to call child-element mixin in default mixin (in component 'component').
 /// @throw SPOT CSS: child-element/single-selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
 /// @throw SPOT CSS: child-element/multilevel-selector - given selector is not a single selector ('selector'). Just use more child-element mixins nested.
 /// @output Given selector with given content.
@@ -340,6 +341,10 @@
     // do not allow in modifier
     @if $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "child-element/in-modifier - it is not allowed to use child-element in modifier '"+$_current_modifier+"'.";
+    }
+
+    @if $_is-default-mode {
+        @error $SPOT_ERROR_PREFIX + "child-element/in-default - it is not allowed to call child-element mixin in default mixin (in component '"+component()+"').";
     }
 
     @if $_is-register-mode {
@@ -387,6 +392,7 @@
 /// @content
 /// @throw SPOT CSS: sub-element/no-selectors - at least one selector is expected.
 /// @throw SPOT CSS: sub-element/in-modifier - it is not allowed to use sub-element in modifier 'modifier'.
+/// @throw SPOT CSS: sub-element/in-default - it is not allowed to call child-element mixin in default mixin (in component 'component').
 /// @throw SPOT CSS: sub-element/single-selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
 /// @output Given selector with given content.
 @mixin sub-element($args...) {
@@ -400,6 +406,9 @@
     // do not allow in modifier
     @if $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "sub-element/in-modifier - it is not allowed to use sub-element in modifier '"+$_current_modifier+"'.";
+    }
+    @if $_is-default-mode {
+        @error $SPOT_ERROR_PREFIX + "sub-element/in-default - it is not allowed to call child-element mixin in default mixin (in component '"+component()+"').";
     }
     // store appling sub element in current selector to avoid calling state, variant, etc. after that
     @if not index($_selectors-with-sub-elements, &) {
@@ -428,6 +437,7 @@
 /// @content
 /// @throw SPOT CSS: pseudo-element/no-selectors - at least one pseudo selector is expected ('before' or 'after').
 /// @throw SPOT CSS: pseudo-element/in-modifier - it is not allowed to use pseudo-element in modifier 'modifier'.
+/// @throw SPOT CSS: pseudo-element/in-default - it is not allowed to call child-element mixin in default mixin (in component 'component').
 /// @throw SPOT CSS: pseudo-element/invalid-selector - Invalid value for pseudo element 'selector'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.
 /// @throw SPOT CSS: pseudo-element/already-used - the pseudo-element('pseudo-selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every pseudo-element.
 /// @output Given selector with given content.
@@ -442,6 +452,9 @@
     // do not allow in modifier
     @if $_is-modifier-mode {
         @error $SPOT_ERROR_PREFIX + "pseudo-element/in-modifier - it is not allowed to use pseudo-element in modifier '"+$_current_modifier+"'.";
+    }
+    @if $_is-default-mode {
+        @error $SPOT_ERROR_PREFIX + "pseudo-element/in-default - it is not allowed to call child-element mixin in default mixin (in component '"+component()+"').";
     }
     // store appling sub element in current selector to avoid calling state, variant, etc. after that
     @if not index($_selectors-with-sub-elements, &) {

@@ -74,8 +74,8 @@ gulp.task('test',
     gulp.series(
         'log-start', 
         'clean', 
-        'check-expected-output-files', 
         'sass', 
+        'check-expected-output-files', 
         'check-diff', 
         'status'
     )
@@ -160,15 +160,21 @@ function checkFiles(es) {
     return es.map(function(file, cb) {    
         var slash = recognizeSlash(file.path),
             extension = getFileExtension(file.path),
+            relativePath = getRelativePathWithoutFileName(file.path, SOURCE_PATH),
             fileNameWithoutExtension = getFileNameWithoutExtension(file.path),
-            expectedOutputFile = CURRENT_PATH + normalizePath( TEST_PATH + slash + EXPECTED_OUTPUT_PATH + slash + getRelativePathWithoutFileName(file.path, SOURCE_PATH) + fileNameWithoutExtension ) + '.css';
+            expectedOutputFile = CURRENT_PATH + normalizePath( TEST_PATH + slash + EXPECTED_OUTPUT_PATH + slash + relativePath + fileNameWithoutExtension ) + '.css';
 
         fileExists(expectedOutputFile, (err, exists) => {
             if (err) cb(err, file);
+            var relative = relativePath.replace(/\\/g,'/');
             if (!exists) {                
-                throwError(1, 'Missing file in /'+TEST_PATH+'/'+EXPECTED_OUTPUT_PATH+'/'+fileNameWithoutExtension+'.css\n'+
+                throwError(1, 'Missing file in /'+TEST_PATH+'/'+EXPECTED_OUTPUT_PATH+'/'+relative+fileNameWithoutExtension+'.css\n'+
                         'as an expected output '+
-                        'to input file /'+TEST_PATH+'/'+SOURCE_PATH+'/'+fileNameWithoutExtension+'.'+extension);
+                        'to input file /'+TEST_PATH+'/'+SOURCE_PATH+'/'+relative+fileNameWithoutExtension+'.'+extension);
+                
+            var newContent = fs.readFileSync('./'+TEST_PATH+'/'+OUTPUT_PATH+'/'+relative+fileNameWithoutExtension+'.css');
+            if (err) cb(err, file);
+                console.log('\x1b[32m%s\x1b[0m ', newContent);  // green color
             }
             cb(null, file);
         });

@@ -1,0 +1,13 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +variant('.active')
+
+    // ----------------------------------------------
+    +default
+        +sub-element('span') // throw error - not allowed in default
+            property: value
+
+        
+
