@@ -1,0 +1,25 @@
+my-component.x {
+  property: value;
+}
+
+my-component.a, my-component.b {
+  property: value;
+}
+
+@media only screen and (max-width: 360px) {
+  my-component.x {
+    property: value-responsive;
+  }
+}
+
+my-component.x > .inner {
+  property: value-x;
+}
+
+my-component > .inner > sub-component.x {
+  property: sub-value;
+}
+
+my-component > .inner > sub-component > sub-sub-component.x {
+  property: sub-sub-value;
+}

@@ -1,0 +1,58 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +variant('.a')
+        +variant('.b')
+        +variant('.x')
+        +responsive('{mobile}', '@media only screen and (max-width: 360px)')
+        +responsive('{multiple}', '@media only screen and (max-width: 600px), only screen and (max-width: 600px)')
+
+        +child-element('.inner')
+            +sub-component("sub-component")
+
+    // ----------------------------------------------
+    +default
+
+    +variant('.x')
+        +default
+            property: value
+    
+    +variant('.a', '.b')
+        property: value
+
+    +responsive('{mobile}')
+        +default
+
+        +variant('.x')
+            property: value-responsive
+
+    // ----------------------------------------------
+    +child-element('.inner')
+        +default
+        +variant('.x')
+            property: value-x
+
+        // ----------------------------------------------
+        +sub-component("sub-component")
+            +register
+                +variant('.x')        
+                +sub-component("sub-sub-component")
+                
+            // ----------------------------------------------
+            +default
+
+            +variant('.x')
+                property: sub-value
+
+            // ----------------------------------------------
+            +sub-component("sub-sub-component")
+                +register
+                    +variant('.x')        
+                
+                // ----------------------------------------------
+                +default
+
+                +variant('.x')
+                    property: sub-sub-value

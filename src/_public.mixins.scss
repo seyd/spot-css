@@ -333,6 +333,7 @@
 /// @throw SPOT CSS: child-element/in-default - it is not allowed to call child-element mixin in default mixin (in component 'component').
 /// @throw SPOT CSS: child-element/single-selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
 /// @throw SPOT CSS: child-element/multilevel-selector - given selector is not a single selector ('selector'). Just use more child-element mixins nested.
+/// @throw SPOT CSS: child-element/already-used - the child-element('selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every child-element.
 /// @output Given selector with given content.
 @mixin child-element($selectors...) {
     @include _sub-element('child', $selectors...) {
@@ -353,6 +354,7 @@
 /// @throw SPOT CSS: sub-element/in-modifier - it is not allowed to use sub-element in modifier 'modifier'.
 /// @throw SPOT CSS: sub-element/in-default - it is not allowed to call child-element mixin in default mixin (in component 'component').
 /// @throw SPOT CSS: sub-element/single-selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
+/// @throw SPOT CSS: sub-element/already-used - the sub-element('selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every sub-element.
 /// @output Given selector with given content.
 @mixin sub-element($selectors...) {
     @include _sub-element('sub', $selectors...) {
@@ -370,7 +372,7 @@
 /// @throw SPOT CSS: pseudo-element/in-modifier - it is not allowed to use pseudo-element in modifier 'modifier'.
 /// @throw SPOT CSS: pseudo-element/in-default - it is not allowed to call child-element mixin in default mixin (in component 'component').
 /// @throw SPOT CSS: pseudo-element/invalid-selector - Invalid value for pseudo element 'selector'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.
-/// @throw SPOT CSS: pseudo-element/already-used - the pseudo-element('pseudo-selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every pseudo-element.
+/// @throw SPOT CSS: pseudo-element/already-used - the pseudo-element('selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every pseudo-element.
 /// @output Given selector with given content.
 @mixin pseudo-element($selectors...) {
     @include _sub-element('pseudo', $selectors...) {
