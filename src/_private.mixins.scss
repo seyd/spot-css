@@ -154,6 +154,7 @@
 @mixin _apply-modifier($modifier-name, $args...) {
     $selectors: ();
     $medias: ();
+    $original-modifier-name: str-replace($modifier-name, ' &', '');
     $component: component();
     $component-to-extend: self();
     @if _is-modifier-context-like($modifier-name) {
@@ -161,7 +162,6 @@
     }
     @else if str-index($modifier-name, 'super-')==1 {
         // convert super-state and super-variant into modifier state and variant
-        $original-modifier-name: $modifier-name;
         $modifier-name: str-replace($modifier-name, 'super-', '');
         $sub-component-stack: $_current-components;
         $found: false;
@@ -201,16 +201,16 @@
 
     // check if sub elements mixin was not used for current selector
     @if index($_selectors-with-sub-elements, &) {
-        @error $SPOT_ERROR_PREFIX + "modifier/invalid-order - the "+$modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.";
+        @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/invalid-order - the "+$original-modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.";
     }
 
     @if $_is-default-mode {
-        @error $SPOT_ERROR_PREFIX + "modifier/in-default - the "+$modifier-name+" '"+inspect($args)+"' in component '"+component()+"' cannot by called in default mixin.";
+        @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/in-default - the "+$original-modifier-name+" '"+inspect($args)+"' in component '"+component()+"' cannot by called in default mixin.";
     }
 
     // force using 'default' mixin when using modifiers
     @if not _default-mixin-was-already-called() {
-        @error $SPOT_ERROR_PREFIX + "modifier/default-is-missing - the "+$modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
+        @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/default-is-missing - the "+$original-modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
     }
 
     $current-modifier: $modifier-name + '(' + $args + ')';
@@ -276,7 +276,7 @@
             }
             @if length($selectors)==0 and length($medias)==0 {
                 // @feature Forcing to register all modifiers at first
-                @error $SPOT_ERROR_PREFIX + "modifier/wrong-modifier-type - the modifier '"+$identifier+"' is not registered in component '"+&+"' as "+$modifier-name+". Check it out!";
+                @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/wrong-modifier-type - the modifier '"+$identifier+"' is not registered in component '"+&+"' as "+$modifier-name+". Check it out!";
             }
         }
         // if not alias - just $identifier
@@ -300,7 +300,7 @@
             }
             @else {
                 // @feature Forcing to register all modifiers at first
-                @error $SPOT_ERROR_PREFIX + "modifier/unknown-modifier - the "+$modifier-name+" '"+$identifier+"' is not registered in component '"+&+"'. Use mixin register state() at first!";
+                @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/unknown-modifier - the "+$original-modifier-name+" '"+$identifier+"' is not registered in component '"+&+"'. Use mixin register state() at first!";
             }
         }
     } 
@@ -314,7 +314,7 @@
         $i: $i + 1;
         $single-selector: _wrap_into_media_selector( str-replace($single-selector+'', '&', &) );
         @if index($_already-used-selectors, $single-selector) {
-            @error $SPOT_ERROR_PREFIX + "modifier/already-used-modifier - the "+$modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
+            @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/already-used-modifier - the "+$original-modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }
         $_already-used-selectors: append($_already-used-selectors, $single-selector) !global;
     }

@@ -2,11 +2,11 @@
 
 +component("next-component")
     +register
-        +state('[level="?"]', '1', '2', '3')
+        +browser('{firefox}', 'html.firefox')
 
     // ----------------------------------------------
     +default
 
     // bad modifier - it has to be state
-    +variant('[level="?"]')
+    +context('{firefox}')
         property: value
