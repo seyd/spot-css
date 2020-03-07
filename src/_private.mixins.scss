@@ -143,6 +143,8 @@
 /// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive'
 /// @param { String } $args... - selector extension(s)
 /// @content
+/// @throw SPOT CSS: modifier/super-unknown-modifier - the modifier-name 'identifier' is not registered in any super component 'component'.
+/// @throw SPOT CSS: modifier/super-modifier-not-found - the modifier-name 'identifier' is was not found on given super component index 'sub-component'.
 /// @throw SPOT CSS: modifier/invalid-order - the modifier-name 'args' in component 'component' was used after sub element(s) which is not allowed. Put it higher before all child-element, sub-element and pseudo-element mixins.
 /// @throw SPOT CSS: modifier/in-default - the modifier-name '$args' in component 'component' cannot by called in default mixin.
 /// @throw SPOT CSS: modifier/default-is-missing - the modifier-name '$args' in component 'component' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).
@@ -152,12 +154,48 @@
 @mixin _apply-modifier($modifier-name, $args...) {
     $selectors: ();
     $medias: ();
-    $component: '';
+    $component: component();
+    $component-to-extend: self();
     @if _is-modifier-context-like($modifier-name) {
         $component: top-component();
     }
-    @else {
-        $component: component();
+    @else if str-index($modifier-name, 'super-')==1 {
+        // convert super-state and super-variant into modifier state and variant
+        $original-modifier-name: $modifier-name;
+        $modifier-name: str-replace($modifier-name, 'super-', '');
+        $sub-component-stack: $_current-components;
+        $found: false;
+        $sub-component-name-for-error: '';
+        // just find component only for first identifier (all others are expected on the same component)
+        $identifier: first($args);
+        // find $identifier in parent component
+        @while not $found and length($sub-component-stack)>1 {
+            @if $_super-component-index != null {
+                $_super-component-index: $_super-component-index + 1 !global;
+            }
+            $sub-component-stack: pop($sub-component-stack);
+            $component: #{$sub-component-stack};
+            // if no index is given or current super component is given index
+            @if $_super-component-index == null or $_super-component-index == 0 {
+                $sub-component-name-for-error: $component;
+                $component-with-identifier: _get-component-identifier($component, $identifier);
+                $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
+                $modifiers: map-get($_registered-modifiers, $component-with-modifier);
+                $is-alias: index($_registered-aliases, str-replace($component-with-identifier, ' &', ''));
+                @if $is-alias or ($modifiers!=null and map-has-key($modifiers, $identifier)) {
+                    $found: true;
+                }
+            }
+        }
+        @if not $found {
+            @if $_super-component-index == null {
+                @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/super-unknown-modifier - the "+$original-modifier-name+" '"+$identifier+"' is not registered in any super component '"+&+"'.";
+            }
+            @else {
+                @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/super-modifier-not-found - the "+$original-modifier-name+" '"+$identifier+"' is was not found on given super component index '"+$sub-component-name-for-error+"'.";
+            }
+        }
+        $component-to-extend: last($sub-component-stack);
     }
     $_current_modifier: $modifier-name !global;
 
@@ -229,7 +267,7 @@
                                 $extended-selector: merge-selectors($context-extension, &);
                             }
                             @else {
-                                $extended-selector: extend(&, self(), $extension);
+                                $extended-selector: extend(&, $component-to-extend, $extension);
                             }
                             $selectors: append($selectors, $extended-selector, 'comma');
                         }
@@ -255,7 +293,7 @@
                         $extended-selector: merge-selectors($context-extension, &);
                     }
                     @else {
-                        $extended-selector: extend(&, self(), $extension);
+                        $extended-selector: extend(&, $component-to-extend, $extension);
                     }
                     $selectors: append($selectors, $extended-selector, 'comma');
                 }
@@ -405,6 +443,51 @@
 
     @at-root
     #{$selectors} {
+        @content;
+    }
+}
+
+
+/// Mixin supporting super-state and super-variant mixin.
+/// @group Component
+/// @access private
+/// @param { String } $modifier-name - Name of modifier: 'super-state' or 'super-variant'
+/// @param { String } $args... - One or more selectors of direct childs. Each selector as a single selector in separate argument.
+/// @content
+/// @throw SPOT CSS: super-{modifier}/in-register - the mixin super-{modifier} doesn't have to be registered in register mixin in component 'component'. It is already registered in parent component.
+/// @throw SPOT CSS: super-{modifier}/no-selector - selector was expected but nothing passed.
+/// @throw SPOT CSS: super-{modifier}/sub-component - super-{modifier} can be used only in sub-component.
+/// @output Extended super component selector with given content.
+@mixin _super-modifier($modifier-name, $args...) {
+    // not allowed in register
+    @if $_is-register-mode {
+        @error $SPOT_ERROR_PREFIX + $modifier-name+"/in-register - the mixin "+$modifier-name+" doesn't have to be registered in register mixin in component '"+component()+"'. It is already registered in parent component.";
+    }
+
+    @if length($args)==0 {
+        @error $SPOT_ERROR_PREFIX + $modifier-name+"/no-selector - selector was expected but nothing passed.";
+    }
+
+    @if length($_current-components)<2 {
+        @error $SPOT_ERROR_PREFIX + $modifier-name+"/sub-component - "+$modifier-name+" can be used only in sub-component.";
+    }
+
+    // clear this global variable
+    $_super-component-index: null !global;
+
+    // if index of super component is given as first argument
+    @if type-of(first($args))=='number' {
+        $index: first($args);
+        @if $index > 0 {
+            // convert positive number (reverse index - from start) to negative value
+            $len: length($_current-components);
+            $index: ($len - $index) * -1;
+        }
+        $_super-component-index: $index !global;
+        $args: nth-delete($args, 1);
+    }
+
+    @include _apply-modifier($modifier-name, $args...) {
         @content;
     }
 }

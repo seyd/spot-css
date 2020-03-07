@@ -1,0 +1,90 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    +register
+        +state(':hover')
+        +state('.active')
+        +state('.pasive')
+        +state('[type="?"]', 'apple', 'orange')
+        +state('{priority}', '.primary', '.secondary')
+
+        +child-element('span.sub')
+            +sub-component("sub-component")
+            +sub-component("sub-component-2")
+
+    property: value
+
+    // ---------------------------------
+    +child-element('span.sub')
+
+        // ---------------------------------
+        +sub-component("sub-component")
+            +register
+                +state(':hover')
+                +state('.active')
+                +state('.pasive')
+                +state('[type="?"]', 'apple', 'orange')
+                +sub-component("sub-sub-component")
+            
+            +default
+                property: value
+            
+            +state(':hover')
+                property: value-2
+
+            +super-state(':hover') // this is state of my-component (direct parent)
+                property: value-3
+
+            +super-state('[type="?"]') // this is state of my-component (direct parent)
+                property: value-4
+
+            // ---------------------------------
+            +sub-component("sub-sub-component")
+                +register
+                    +state(':hover')
+
+                +default
+                    property: value-x
+                
+                +state(':hover')
+                    property: value-x-2
+
+                +super-state(':hover') // this is state of sub-component (direct parent)
+                    property: value-x-3
+
+                +super-state(1, '.active') // this is state of my-component (top parent)
+                    property: value-x-4
+
+                +super-state(2, '.active') // this is state of sub-component (direct parent)
+                    property: value-x-5
+
+                +super-state(-1, '.pasive') // this is state of sub-component (direct parent)
+                    property: value-x-6
+                
+                +super-state(-2, '.pasive') // this is state of sub-component (top parent)
+                    property: value-x-7
+
+        // ---------------------------------
+        +sub-component("sub-component-2")
+            +register
+                +sub-component("sub-sub-component")
+
+            property: value
+            
+            // ---------------------------------
+            +sub-component("sub-sub-component")
+                +register
+                    +state(':hover')
+
+                +default
+                    property: value-y
+                
+                +state(':hover')
+                    property: value-y-2
+
+                +super-state(':hover') // this is state of my-component (top parent)
+                    property: value-y-3
+
+                +super-state('{priority}') // this is state of my-component (top parent)
+                    property: value-y-4

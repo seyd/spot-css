@@ -1,0 +1,13 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    +register
+        +state(':hover')
+        +sub-component("sub-component")
+
+    // ---------------------------------
+    +sub-component("sub-component")
+        +register
+            +super-state(':hover') // throws error - not allowed in register
+               

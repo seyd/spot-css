@@ -257,6 +257,44 @@
 }
 
 
+/// Extend current selector by super component state.
+///
+/// It is appling the nearest super component with given state selector.
+///
+/// If first argument is an number, it is the index of supper component (positive number means from top 1, negative from nearest super element -1).
+///
+/// @group Component
+/// @access public
+/// @param { String } $args... - selector extension(s) = state names
+/// @content
+/// @throw See errors of mixin _super-modifier and _apply-modifier.
+/// @output It will output selector extended by given super component state(s) with given content.
+@mixin super-state($args...) {
+    @include _super-modifier('super-state', $args...) {
+        @content;
+    }
+}
+
+
+/// Extend current selector by super component variant.
+///
+/// It is appling the nearest super component with given variant selector.
+///
+/// If first argument is an number, it is the index of supper component (positive number means from top 1, negative from nearest super element -1).
+///
+/// @group Component
+/// @access public
+/// @param { String } $args... - selector extension(s) = variant names
+/// @content
+/// @throw See errors of mixin _super-modifier and _apply-modifier.
+/// @output It will output selector extended by given super component variant(s) with given content.
+@mixin super-variant($args...) {
+    @include _super-modifier('super-variant', $args...) {
+        @content;
+    }
+}
+
+
 /// This mixins works in 2 modes:
 ///
 /// 1) when used in register mixin, it will register context in current component.

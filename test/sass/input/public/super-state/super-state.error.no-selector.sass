@@ -1,0 +1,11 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    +register
+        +state(':hover')
+        +sub-component("sub-component")
+
+    // ---------------------------------
+    +sub-component("sub-component")
+        +super-state() // throws error - no arguments               

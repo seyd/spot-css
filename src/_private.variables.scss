@@ -144,3 +144,11 @@ $_used-modifiers: ();
 /// @access private
 /// @type Map
 $_current-modifiers-stack: ();
+
+
+/// Helper variable for remember given super component index as first argument
+/// for mixins super-state and super-variant.
+/// @group Component
+/// @access private
+/// @type Number | null
+$_super-component-index: null;

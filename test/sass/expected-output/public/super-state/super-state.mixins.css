@@ -1,0 +1,67 @@
+my-component {
+  property: value;
+}
+
+my-component > span.sub > sub-component {
+  property: value;
+}
+
+my-component > span.sub > sub-component:hover {
+  property: value-2;
+}
+
+my-component:hover > span.sub > sub-component {
+  property: value-3;
+}
+
+my-component[type="apple"] > span.sub > sub-component, my-component[type="orange"] > span.sub > sub-component {
+  property: value-4;
+}
+
+my-component > span.sub > sub-component > sub-sub-component {
+  property: value-x;
+}
+
+my-component > span.sub > sub-component > sub-sub-component:hover {
+  property: value-x-2;
+}
+
+my-component > span.sub > sub-component:hover > sub-sub-component {
+  property: value-x-3;
+}
+
+my-component.active > span.sub > sub-component > sub-sub-component {
+  property: value-x-4;
+}
+
+my-component > span.sub > sub-component.active > sub-sub-component {
+  property: value-x-5;
+}
+
+my-component > span.sub > sub-component.pasive > sub-sub-component {
+  property: value-x-6;
+}
+
+my-component.pasive > span.sub > sub-component > sub-sub-component {
+  property: value-x-7;
+}
+
+my-component > span.sub > sub-component-2 {
+  property: value;
+}
+
+my-component > span.sub > sub-component-2 > sub-sub-component {
+  property: value-y;
+}
+
+my-component > span.sub > sub-component-2 > sub-sub-component:hover {
+  property: value-y-2;
+}
+
+my-component:hover > span.sub > sub-component-2 > sub-sub-component {
+  property: value-y-3;
+}
+
+my-component.primary > span.sub > sub-component-2 > sub-sub-component, my-component.secondary > span.sub > sub-component-2 > sub-sub-component {
+  property: value-y-4;
+}

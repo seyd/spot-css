@@ -1,0 +1,26 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    +register
+        +state('.pasive')
+
+        +child-element('span.sub')
+            +sub-component("sub-component")
+
+    // ---------------------------------
+    +child-element('span.sub')
+
+        // ---------------------------------
+        +sub-component("sub-component")
+            +register
+                +sub-component("sub-sub-component")
+            
+            // ---------------------------------
+            +sub-component("sub-sub-component")
+                +default
+
+                +super-state(-1, '.pasive') // throws error - not found on direct parent component
+                    property: value-x-6
+                
+
