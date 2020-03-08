@@ -4,14 +4,14 @@
     +register
         +state('.active')
 
-    // ----------------------------------------------
     +default
 
     +state('.active')
         property: value
 
+    +_________________________
     +child-element('.wrapper')
         property: another-value
 
-    +state('.active')
+    +state('.active') // throws error - invalid order
         property: value-1

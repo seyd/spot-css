@@ -1,6 +1,5 @@
 @import "./src/spot-css"
 
-// element selector
 +component("my-component")
     +register
         +state(':hover')
@@ -15,10 +14,10 @@
 
     property: value
 
-    // ---------------------------------
+    +_________________________
     +child-element('span.sub')
 
-        // ---------------------------------
+        +______________________________
         +sub-component("sub-component")
             +register
                 +state(':hover')
@@ -39,7 +38,7 @@
             +super-state('[type="?"]') // this is state of my-component (direct parent)
                 property: value-4
 
-            // ---------------------------------
+            +__________________________________
             +sub-component("sub-sub-component")
                 +register
                     +state(':hover')
@@ -65,14 +64,14 @@
                 +super-state(-2, '.pasive') // this is state of sub-component (top parent)
                     property: value-x-7
 
-        // ---------------------------------
+        +________________________________
         +sub-component("sub-component-2")
             +register
                 +sub-component("sub-sub-component")
 
             property: value
             
-            // ---------------------------------
+            +__________________________________
             +sub-component("sub-sub-component")
                 +register
                     +state(':hover')

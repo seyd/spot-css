@@ -1,0 +1,11 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +variant('.active')
+
+    +default
+
+    +child-element('span') // throw error - because missing sub-element separator (_______)
+        property: value
+

@@ -12,7 +12,6 @@
         +child-element('.inner')
             +sub-component("sub-component")
 
-    // ----------------------------------------------
     +default
 
     +variant('.x')
@@ -28,30 +27,28 @@
         +variant('.x')
             property: value-responsive
 
-    // ----------------------------------------------
+    +_______________________
     +child-element('.inner')
         +default
         +variant('.x')
             property: value-x
 
-        // ----------------------------------------------
+        +______________________________
         +sub-component("sub-component")
             +register
                 +variant('.x')        
                 +sub-component("sub-sub-component")
                 
-            // ----------------------------------------------
             +default
 
             +variant('.x')
                 property: sub-value
 
-            // ----------------------------------------------
+            +__________________________________
             +sub-component("sub-sub-component")
                 +register
                     +variant('.x')        
                 
-                // ----------------------------------------------
                 +default
 
                 +variant('.x')

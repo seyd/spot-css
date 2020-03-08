@@ -8,7 +8,6 @@
         +responsive('{multiple}', '@media only screen and (max-width: 600px), only screen and (max-width: 600px)')
         +responsive('{grayscale}', 'html.grayscale')
 
-    // ----------------------------------------------
     +default
 
     +responsive('@media only screen and (max-width: 800px)')
@@ -25,6 +24,8 @@
     // mixed @media and html.class context
     +responsive('{multiple}', '{grayscale}')
         property: value
+
+
 
 // defined somewhere in reusable mixins
 @mixin responsive-breakpoints
@@ -44,7 +45,6 @@
         +state(':hover')
         +responsive-breakpoints() // this can be reused in every component 
 
-    // ----------------------------------------------
     +default
         display: inline-block
         color: grey

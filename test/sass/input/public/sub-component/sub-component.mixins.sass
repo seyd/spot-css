@@ -7,13 +7,12 @@
             +sub-component("a")
             +sub-component("strong")
 
-
     property: value
 
-    // ---------------------------------
+    +_________________________
     +child-element('span.sub')
 
-        // ---------------------------------
+        +__________________
         +sub-component("a")
             +register
                 +state(':hover')
@@ -24,6 +23,6 @@
             +state(':hover')
                 property: value-2
 
-        // ---------------------------------
+        +_______________________
         +sub-component("strong")
             property: value

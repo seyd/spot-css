@@ -9,11 +9,11 @@ div a
   +add-element-specificity(2)
     property: value
 
-  +pseudo-element('before')
+  &::before
     +add-element-specificity(1)
         property: value
   
-  //before
+  // before
   &:before
     +add-element-specificity(1)
         property: value
@@ -23,7 +23,7 @@ div a
         property: value
 
   html &
-    +pseudo-element('before')
+    &::before
       +add-element-specificity(1)
           property: value
 
@@ -37,7 +37,7 @@ div a
         property: value
 
   html &
-    +pseudo-element('after')
+    &::after
       +add-element-specificity(1)
           property: value
 

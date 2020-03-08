@@ -5,13 +5,12 @@
         +context('parent-component')        
         +sub-component('a')
 
-    // ----------------------------------------------
     +default
 
     +context('parent-component')
         property: value
     
-    // ----------------------------------------------
+    +__________________
     +sub-component('a')
         +register
             +context('parent-component-2') // not allowed to register context (responsive and browser) in sub-component

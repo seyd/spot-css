@@ -152,3 +152,10 @@ $_current-modifiers-stack: ();
 /// @access private
 /// @type Number | null
 $_super-component-index: null;
+
+
+/// Flag if mandatory separator (mixin ________) was used before sub-element modifier.
+/// @group Component
+/// @access private
+/// @type Bool
+$_was-used-sub-element-separator: false;

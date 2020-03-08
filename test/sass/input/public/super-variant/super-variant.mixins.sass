@@ -15,10 +15,10 @@
 
     property: value
 
-    // ---------------------------------
+    +_________________________
     +child-element('span.sub')
 
-        // ---------------------------------
+        +______________________________
         +sub-component("sub-component")
             +register
                 +variant(':hover')
@@ -39,7 +39,7 @@
             +super-variant('[type="?"]') // this is variant of my-component (direct parent)
                 property: value-4
 
-            // ---------------------------------
+            +__________________________________
             +sub-component("sub-sub-component")
                 +register
                     +variant(':hover')
@@ -65,14 +65,14 @@
                 +super-variant(-2, '.pasive') // this is variant of sub-component (top parent)
                     property: value-x-7
 
-        // ---------------------------------
+        +________________________________
         +sub-component("sub-component-2")
             +register
                 +sub-component("sub-sub-component")
 
             property: value
             
-            // ---------------------------------
+            +__________________________________
             +sub-component("sub-sub-component")
                 +register
                     +variant(':hover')

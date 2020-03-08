@@ -13,7 +13,6 @@
         +child-element('.inner')
             +sub-component("sub-component")
 
-    // ----------------------------------------------
     +default
 
     +state(':hover')
@@ -29,30 +28,28 @@
         +state(':hover')
             property: value-responsive
 
-    // ----------------------------------------------
+    +_______________________
     +child-element('.inner')
         +default
         +state(':hover')
             property: value-x
 
-        // ----------------------------------------------
+        +______________________________
         +sub-component("sub-component")
             +register
                 +state(':hover')        
                 +sub-component("sub-sub-component")
                 
-            // ----------------------------------------------
             +default
 
             +state(':hover')
                 property: sub-value
 
-            // ----------------------------------------------
+            +__________________________________
             +sub-component("sub-sub-component")
                 +register
                     +state(':hover')        
                 
-                // ----------------------------------------------
                 +default
 
                 +state(':hover')

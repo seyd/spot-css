@@ -77,6 +77,7 @@
 /// @throw SPOT CSS: sub-component/no-selector - selector was expected but nothing passed.
 /// @throw SPOT CSS: sub-component/no-component - you cannot use mixin sub-component outside component. Sub-component can be used only in component.
 /// @throw SPOT CSS: sub-component/single-selector - given selector is not a single selector ({selector}).
+/// @throw SPOT CSS: sub-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('selector').
 /// @throw SPOT CSS: sub-component/already-registered - trying to register already registered sub-component 'selector' for component 'component'.
 /// @throw SPOT CSS: sub-component/childs-in-register - it is not allowed call any other modifiers and sub element mixins in sub-component in register of component 'component'. Register all those modifiers in register section of sub-component 'selector'.
 /// @throw SPOT CSS: sub-component/unknown-unregistered - given sub-component 'selector' is not registered in direct parent component ('component').
@@ -98,7 +99,12 @@
     
     $sub-component-selector: #{ & + ' > ' + $selector };
 
-
+    // check for separator
+    @if not $_is-register-mode and not $_was-used-sub-element-separator {
+        @error $SPOT_ERROR_PREFIX + "sub-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('"+$sub-component-selector+"').";
+    }
+    $_was-used-sub-element-separator: false !global;
+    
     @if $_is-register-mode { 
         // guarding duplicity of sub-components (and all sub selectors)
         @if index($_already-used-selectors, $sub-component-selector) or index($_registered-sub-components, $sub-component-selector) {
@@ -547,3 +553,70 @@
         @content;
     }
 }
+
+
+/// Mandatory separator before each sub-element modifier. Use as long as you wish.
+@mixin _ { @include _sub-element-separator; }
+@mixin __ { @include _sub-element-separator; }
+@mixin ___ { @include _sub-element-separator; }
+@mixin ____ { @include _sub-element-separator; }
+@mixin _____ { @include _sub-element-separator; }
+@mixin ______ { @include _sub-element-separator; }
+@mixin _______ { @include _sub-element-separator; }
+@mixin ________ { @include _sub-element-separator; }
+@mixin _________ { @include _sub-element-separator; }
+@mixin __________ { @include _sub-element-separator; }
+@mixin ___________ { @include _sub-element-separator; }
+@mixin ____________ { @include _sub-element-separator; }
+@mixin _____________ { @include _sub-element-separator; }
+@mixin ______________ { @include _sub-element-separator; }
+@mixin _______________ { @include _sub-element-separator; }
+@mixin ________________ { @include _sub-element-separator; }
+@mixin _________________ { @include _sub-element-separator; }
+@mixin __________________ { @include _sub-element-separator; }
+@mixin ___________________ { @include _sub-element-separator; }
+@mixin ____________________ { @include _sub-element-separator; }
+@mixin _____________________ { @include _sub-element-separator; }
+@mixin ______________________ { @include _sub-element-separator; }
+@mixin _______________________ { @include _sub-element-separator; }
+@mixin ________________________ { @include _sub-element-separator; }
+@mixin _________________________ { @include _sub-element-separator; }
+@mixin __________________________ { @include _sub-element-separator; }
+@mixin ___________________________ { @include _sub-element-separator; }
+@mixin ____________________________ { @include _sub-element-separator; }
+@mixin _____________________________ { @include _sub-element-separator; }
+@mixin ______________________________ { @include _sub-element-separator; }
+@mixin _______________________________ { @include _sub-element-separator; }
+@mixin ________________________________ { @include _sub-element-separator; }
+@mixin _________________________________ { @include _sub-element-separator; }
+@mixin __________________________________ { @include _sub-element-separator; }
+@mixin ___________________________________ { @include _sub-element-separator; }
+@mixin ____________________________________ { @include _sub-element-separator; }
+@mixin _____________________________________ { @include _sub-element-separator; }
+@mixin ______________________________________ { @include _sub-element-separator; }
+@mixin _______________________________________ { @include _sub-element-separator; }
+@mixin ________________________________________ { @include _sub-element-separator; }
+@mixin _________________________________________ { @include _sub-element-separator; }
+@mixin __________________________________________ { @include _sub-element-separator; }
+@mixin ___________________________________________ { @include _sub-element-separator; }
+@mixin ____________________________________________ { @include _sub-element-separator; }
+@mixin _____________________________________________ { @include _sub-element-separator; }
+@mixin ______________________________________________ { @include _sub-element-separator; }
+@mixin _______________________________________________ { @include _sub-element-separator; }
+@mixin ________________________________________________ { @include _sub-element-separator; }
+@mixin _________________________________________________ { @include _sub-element-separator; }
+@mixin __________________________________________________ { @include _sub-element-separator; }
+@mixin ___________________________________________________ { @include _sub-element-separator; }
+@mixin ____________________________________________________ { @include _sub-element-separator; }
+@mixin _____________________________________________________ { @include _sub-element-separator; }
+@mixin ______________________________________________________ { @include _sub-element-separator; }
+@mixin _______________________________________________________ { @include _sub-element-separator; }
+@mixin ________________________________________________________ { @include _sub-element-separator; }
+@mixin _________________________________________________________ { @include _sub-element-separator; }
+@mixin __________________________________________________________ { @include _sub-element-separator; }
+@mixin ___________________________________________________________ { @include _sub-element-separator; }
+@mixin ____________________________________________________________ { @include _sub-element-separator; }
+@mixin _____________________________________________________________ { @include _sub-element-separator; }
+@mixin ______________________________________________________________ { @include _sub-element-separator; }
+@mixin _______________________________________________________________ { @include _sub-element-separator; }
+@mixin ________________________________________________________________ { @include _sub-element-separator; }

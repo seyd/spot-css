@@ -4,26 +4,27 @@
 +component("my-component")
     property: value
 
+    +_______________________
     +sub-element(".wrapper")
         property: value
     
-
-    // multiple child elements
-    +sub-element(".wrapper-a", ".wrapper-b")
+    +_______________________________________
+    +sub-element(".wrapper-a", ".wrapper-b") // multiple child elements
         property: value
 
-    +sub-element(".wrapper-x", ".wrapper-y", ".wrapper-z")
+    +_______________________________________
+    +sub-element(".wrapper-x", ".wrapper-y", ".wrapper-z") // multiple child elements
         property: value
-
 
     // sub sub element
+    +_________________________
     +sub-element(".wrapper-c")
         property: value-c
         
+        +_________________________
         +sub-element(".wrapper-d")
             property: value-d
 
-
-    // complex selector (but single selector)
-    +sub-element("div.wrapper")
+    +__________________________
+    +sub-element("div.wrapper") // complex selector (but single selector)
         property: value

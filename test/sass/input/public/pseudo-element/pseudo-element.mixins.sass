@@ -4,45 +4,48 @@
     +register
         +state('.active')
 
-    // ----------------------------------------------
+    +_________________________________
     +pseudo-element('before', 'after')
         +default
         +state('.active')
             property: value
 
 
-// ----------------------------------------------
+
 +component("my-component-2")
     +register
         +state('.active')
 
-    // ----------------------------------------------
+    +________________________
     +pseudo-element('before')
         +default
         +state('.active')
             property: value-b
 
 
-// ----------------------------------------------
+
 +component("my-component-3")
     +register
         +state('.active')
 
-    // ----------------------------------------------
+    +_______________________
     +pseudo-element('after')
         +default
         +state('.active')
             property: value-a
 
-    // ----------------------------------------------
+    +______________________________
     +pseudo-element('first-letter')
         property: value-1
-    // ----------------------------------------------
+
+    +____________________________
     +pseudo-element('first-line')
         property: value-1
-    // ----------------------------------------------
+
+    +_____________________________
     +pseudo-element('placeholder')
         property: value-1
-    // ----------------------------------------------
+
+    +___________________________
     +pseudo-element('selection')
         property: value-1

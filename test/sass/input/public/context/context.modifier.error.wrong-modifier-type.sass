@@ -4,9 +4,7 @@
     +register
         +browser('{firefox}', 'html.firefox')
 
-    // ----------------------------------------------
     +default
-
-    // bad modifier - it has to be state
-    +context('{firefox}')
+    
+    +context('{firefox}') // throws error - bad modifier - it has to be browser mixin
         property: value

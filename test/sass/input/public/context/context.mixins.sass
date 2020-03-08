@@ -10,7 +10,6 @@
         +context('html.layout-portrait')
         +sub-component('a')
 
-    // ----------------------------------------------
     +default
 
     +context('parent-component')
@@ -22,13 +21,14 @@
     +context('super-direct-parent-component > * > &')
         property: value
 
-    // ----------------------------------------------
+    +__________________
     +sub-component('a')
         +default
         
         +context('parent-component') // inherited from parent (top) component
             property: value-x
 
+    
 // mergin contexts
 +component("your-component")
     +register

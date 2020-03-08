@@ -4,45 +4,56 @@
 +component("my-component")
     property: value
 
+    +_________________________
     +child-element(".wrapper")
         property: value
     
 
     // multiple child elements
+    +_________________________________________
     +child-element(".wrapper-a", ".wrapper-b")
         property: value
 
+    +_______________________________________________________
     +child-element(".wrapper-x", ".wrapper-y", ".wrapper-z")
         property: value
 
 
     // sub sub element
+    +___________________________
     +child-element(".wrapper-c")
         property: value-c
         
+        +___________________________
         +child-element(".wrapper-d")
             property: value-d
 
 
     // detecting > at start - do not prepend another >
+    +_____________________________
     +child-element("> .wrapper-2")
         property: value
 
+    +____________________________
     +child-element(">.wrapper-3")
         property: value
 
+    +_____________________________
     +child-element(" >.wrapper-4")
         property: value
 
+    +______________________________
     +child-element(" > .wrapper-5")
         property: value
 
 
     // complex selector (but single selector)
+    +____________________________
     +child-element("div.wrapper")
         property: value
 
-    > // test of already contained > in selector        
+    > // test of already contained > in selector
+        +___________________________
         +child-element(".wrapper-x")
             property: value-x
     

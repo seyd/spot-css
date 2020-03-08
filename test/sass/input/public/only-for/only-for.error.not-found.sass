@@ -6,12 +6,11 @@
     +variant('.apple')
     +variant('.orange')
 
-  // ----------------------------------------------
   +default
 
   +variant('.apple', '.orange')
     +default
       property: value
 
-    +only-for('.bannana')
+    +only-for('.bannana') // throws error - unknown class name
       property: other-value

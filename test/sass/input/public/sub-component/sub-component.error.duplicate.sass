@@ -5,16 +5,17 @@
         +sub-component(".component-1")
         +sub-component(".component-2")
 
-        
     property: value
 
+    +_____________________________
     +sub-component(".component-1")
         property: value
-        
+    
+    +_____________________________
     +sub-component(".component-2")
         property: value
 
-    // duplicate (same selector again)
-    +sub-component(".component-1")
+    +_____________________________
+    +sub-component(".component-1")  // throws error - duplicate (same selector again)
         property: value
 

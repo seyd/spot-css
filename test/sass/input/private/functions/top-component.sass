@@ -8,14 +8,13 @@
             +sub-component("a")
             +sub-component("strong")
 
-
     property: value
     /* top component: #{ top-component() } */
 
-    // ---------------------------------
+    +_________________________
     +child-element('span.sub')
 
-        // ---------------------------------
+        +__________________
         +sub-component("a")
             +register
                 +state(':hover')
@@ -28,7 +27,7 @@
                 property: value-2
                 /* top component: #{ top-component() } */
 
-        // ---------------------------------
+        +_______________________
         +sub-component("strong")
             property: value
             /* top component: #{ top-component() } */
