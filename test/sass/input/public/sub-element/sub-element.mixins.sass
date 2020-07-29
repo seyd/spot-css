@@ -2,6 +2,17 @@
 
 // element selector
 +component("my-component")
+    +register
+        +sub-element(".wrapper")
+        +sub-element(".wrapper-a")
+        +sub-element(".wrapper-b")
+        +sub-element(".wrapper-c")
+            +sub-element(".wrapper-d")
+        +sub-element(".wrapper-x")
+        +sub-element(".wrapper-y")
+        +sub-element(".wrapper-z")
+        +sub-element("div.wrapper")
+
     property: value
 
     +_______________________

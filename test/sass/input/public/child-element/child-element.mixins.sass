@@ -2,6 +2,22 @@
 
 // element selector
 +component("my-component")
+    +register
+        +child-element(".wrapper")
+        +child-element(".wrapper-a")
+        +child-element(".wrapper-b")
+        +child-element(".wrapper-x")
+        +child-element(".wrapper-y")
+        +child-element(".wrapper-z")
+        +child-element(".wrapper-c")
+            +child-element(".wrapper-d")
+        +child-element(".wrapper-2")
+        +child-element(".wrapper-3")
+        +child-element(".wrapper-4")
+        +child-element(".wrapper-5")
+        +child-element("div.wrapper")
+        +child-element(".wrapper-xxx")
+        
     property: value
 
     +_________________________
@@ -54,6 +70,6 @@
 
     > // test of already contained > in selector
         +___________________________
-        +child-element(".wrapper-x")
+        +child-element(".wrapper-xxx")
             property: value-x
     

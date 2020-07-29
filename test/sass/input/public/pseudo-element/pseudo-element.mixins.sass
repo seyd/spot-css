@@ -3,6 +3,8 @@
 +component("my-component-1")
     +register
         +state('.active')
+        +pseudo-element('before')
+        +pseudo-element('after')
 
     +_________________________________
     +pseudo-element('before', 'after')
@@ -15,6 +17,7 @@
 +component("my-component-2")
     +register
         +state('.active')
+        +pseudo-element('before')
 
     +________________________
     +pseudo-element('before')
@@ -27,6 +30,11 @@
 +component("my-component-3")
     +register
         +state('.active')
+        +pseudo-element('after')
+        +pseudo-element('first-letter')
+        +pseudo-element('first-line')
+        +pseudo-element('placeholder')
+        +pseudo-element('selection')
 
     +_______________________
     +pseudo-element('after')

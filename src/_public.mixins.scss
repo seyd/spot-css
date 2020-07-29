@@ -263,6 +263,28 @@
 }
 
 
+/// Mixin for register and apply internal state of component. 
+/// Difference between internal-state and state mixin is that internal-state 
+/// is binded to component element or sub-element where is internal-state registered in register mixin.
+/// It works as super-state so it is looking to parent elements where internal-state is registered. 
+/// @see {mixin} variant
+/// @group Component
+/// @access public
+/// @param { String } $args... Same as for state mixin.
+/// @content
+/// @output It will output selector extended by given internal-state(s) with given content.
+@mixin internal-state($args...) {
+    @if $_is-register-mode {        
+        @include _register-modifiers('internal-state', $args...);
+    }
+    @else {
+        @include _apply-modifier('internal-state', $args...) {        
+            @content;
+        }
+    }   
+}
+
+
 /// Extend current selector by super component state.
 ///
 /// It is appling the nearest super component with given state selector.

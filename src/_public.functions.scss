@@ -2,7 +2,12 @@
 /// @access public
 /// @return { String } Current component selector.
 @function component() {
-    @return #{$_current-components}; 
+    @if length($_current-components)==0  {
+        @return ''; 
+    }
+    @else {
+        @return #{$_current-components}; 
+    } 
 }
 
 
@@ -406,6 +411,15 @@
 
 @function str-last-char($s) {
     @return str-slice(str-trim-right($s), -1);
+}
+
+
+@function selector-normalize-spaces($selector) {
+    // unify '> ' with space
+    $selector: str-replace(str-replace($selector, '> ', '>'), '>', '> ');
+    // unify ' >' with space
+    $selector: str-replace(str-replace($selector, ' >', '>'), '>', ' >');
+    @return $selector;
 }
 
 // It has to be simple selector (not contain comma separated selectors)

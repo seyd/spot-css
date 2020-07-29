@@ -6,10 +6,15 @@
     +state(':hover')
     +variant('.apple')
     +variant('.orange')
+    +internal-state('.loaded')
     +child-element('span')
+      +internal-state('.loadedx')
 
   +default
     prop: val
+
+  +internal-state('.loaded')
+    property: loaded
 
   +variant('.apple', '.orange')
     +default
@@ -29,6 +34,9 @@
   +child-element('span')
       +default
         property: no-value
-        
+      
+      // +internal-state('.loaded')
+      //   property: loaded-inside
+
       +variant('.apple', '.orange')
         property: value

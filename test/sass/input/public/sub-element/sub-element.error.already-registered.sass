@@ -1,0 +1,7 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +variant('.active')
+        +sub-element('span') 
+        +sub-element('span') // throw error - because already registered sub-element

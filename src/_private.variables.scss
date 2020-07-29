@@ -88,6 +88,13 @@ $_registered-identifiers: [];
 $_registered-aliases: [];
 
 
+/// List of registered sub-subelements for guarding uniqueness and required register (per component).
+/// @group Component
+/// @access private
+/// @type List
+$_registered-sub-elements: [];
+
+
 /// List of registered sub-components for guarding uniqueness and required register (per component).
 /// @group Component
 /// @access private

@@ -196,6 +196,7 @@
     @return index($_default-called-on, $current-media-selector) != null;
 }
 
+
 /// Wraps given selector into current media query stack to return unique selector
 /// to avoid duplicite usage of modifiers.
 @function _wrap_into_media_selector($selector) {
