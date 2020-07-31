@@ -25,3 +25,7 @@ my-component-3::placeholder {
 my-component-3::selection {
   property: value-1;
 }
+
+my-component-3::-webkit-scrollbar {
+  property: value-1;
+}
