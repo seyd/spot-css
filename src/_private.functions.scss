@@ -253,6 +253,6 @@
         }
     }
     // join parts
-    $selector: join(join($html-element-part, $body-element-part), $rest-selector-part);
+    $selector: join(join($html-element-part, $body-element-part, $bracketed: false), $rest-selector-part, $bracketed: false);
     @return #{ $selector };
 }

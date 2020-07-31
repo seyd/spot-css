@@ -464,9 +464,9 @@
 }
 
 
-@function merge-selectors($selector1, $selector2) {
+@function merge-selectors($selector1, $selector2) {    
     $selectors-1: selector-parse($selector1);
-    $selectors-2: selector-parse($selector2);
+    $selectors-2: selector-parse($selector2);    
     $output: [];
     @each $sel-1 in $selectors-1 {
         @each $sel-2 in $selectors-2 {
@@ -488,21 +488,27 @@
                     }
                 }
                 @if not $match {
-                    $new-selector: append($new-selector, $partial-selector-1, 'space');
+                    $new-selector: append-unbracketed($new-selector, $partial-selector-1, 'space');
                 }
                 @else {
                     $matched-selector: simple-selectors(nth($sel-2, $match-at-index));
                     $addon: nth-delete($matched-selector, 1);
-                    $new-selector: append($new-selector, $partial-selector-1 + $addon, 'space');
+                    $new-selector: append-unbracketed($new-selector, $partial-selector-1 + $addon, 'space');
                     // remove matched part
                     $sel-2: nth-delete($sel-2, $match-at-index);
                 }
             }
-            // predend rest of $sel-2 into beginning of $new-selector
+            // predend rest of $sel-2 into beginning of $new-selector            
             $new-selector: _prepend_selector_context($new-selector, $sel-2);
-            $output: append($output, $new-selector, 'comma');
+            $output: append-unbracketed($output, $new-selector, 'comma');
         }
     }
+    $output: join([], $output, 'comma', $bracketed: false);
     @return #{$output};
 }
 
+
+// fix because some version of SASS returns bracketed list 
+@function append-unbracketed($list, $item, $separator) {
+    @return join([], append($list, $item,  $separator), $separator: auto, $bracketed: false);
+}
