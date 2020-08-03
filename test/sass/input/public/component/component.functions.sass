@@ -21,7 +21,12 @@
 +component("top-component-2")
     +register
         +sub-component("sub-component-2")
+        +child-component("child-component-3")
 
     +________________________________
     +sub-component("sub-component-2")
+        /* #{ component() } */
+
+    +________________________________
+    +child-component("child-component-3")
         /* #{ component() } */

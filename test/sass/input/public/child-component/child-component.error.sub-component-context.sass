@@ -1,0 +1,16 @@
+@import "./src/spot-css"
+
++component("my-component")
+    +register
+        +context('parent-component')        
+        +child-component('a')
+
+    +default
+
+    +context('parent-component')
+        property: value
+    
+    +__________________
+    +child-component('a')
+        +register
+            +context('parent-component-2') // not allowed to register context (responsive and browser) in sub-component

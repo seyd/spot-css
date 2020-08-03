@@ -1,0 +1,8 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    property: value
+
+    +child-component("first-component, .second-selector") // multiple selectors are not allowed
+        property: value

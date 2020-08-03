@@ -9,6 +9,7 @@
         +context('html.mobile')
         +context('html.layout-portrait')
         +sub-component('a')
+        +child-component('i')
 
     +default
 
@@ -28,6 +29,12 @@
         +context('parent-component') // inherited from parent (top) component
             property: value-x
 
+    +__________________
+    +child-component('i')
+        +default
+        
+        +context('parent-component') // inherited from parent (top) component
+            property: value-y
     
 // mergin contexts
 +component("your-component")

@@ -3,17 +3,22 @@ my-component {
   /* top component: my-component */
 }
 
-my-component > span.sub > a {
+my-component > span.sub a {
   property: value;
   /* top component: my-component */
 }
 
-my-component > span.sub > a:hover {
+my-component > span.sub a:hover {
   property: value-2;
   /* top component: my-component */
 }
 
-my-component > span.sub > strong {
+my-component > span.sub strong {
+  property: value;
+  /* top component: my-component */
+}
+
+my-component > span.sub > i {
   property: value;
   /* top component: my-component */
 }

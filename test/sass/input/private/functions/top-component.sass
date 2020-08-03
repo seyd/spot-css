@@ -7,6 +7,7 @@
         +child-element('span.sub')
             +sub-component("a")
             +sub-component("strong")
+            +child-component("i")
 
     property: value
     /* top component: #{ top-component() } */
@@ -29,5 +30,11 @@
 
         +_______________________
         +sub-component("strong")
+            property: value
+            /* top component: #{ top-component() } */
+
+
+        +_______________________
+        +child-component("i")
             property: value
             /* top component: #{ top-component() } */

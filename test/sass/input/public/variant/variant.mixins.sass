@@ -11,6 +11,7 @@
 
         +child-element('.inner')
             +sub-component("sub-component")
+            +child-component("child-component")
 
     +default
 
@@ -53,3 +54,25 @@
 
                 +variant('.x')
                     property: sub-sub-value
+
+        +______________________________
+        +child-component("child-component")
+            +register
+                +variant('.x')        
+                +sub-component("sub-sub-component")
+                
+            +default
+
+            +variant('.x')
+                property: sub-value
+
+            +__________________________________
+            +sub-component("sub-sub-component")
+                +register
+                    +variant('.x')        
+                
+                +default
+
+                +variant('.x')
+                    property: sub-sub-value
+

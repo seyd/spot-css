@@ -53,6 +53,13 @@ $_is-modifier-mode: false;
 $_is-called-something-in-register: false;
 
 
+/// Flag of child-component mode - if parser enters mixin child-component.
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-child-component-mode: false;
+
+
 /// Flag of sub-component mode - if parser enters mixin sub-component.
 /// @group Component
 /// @access private

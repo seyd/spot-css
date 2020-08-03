@@ -16,10 +16,18 @@ my-component.x > .inner {
   property: value-x;
 }
 
-my-component > .inner > sub-component.x {
+my-component > .inner sub-component.x {
   property: sub-value;
 }
 
-my-component > .inner > sub-component > sub-sub-component.x {
+my-component > .inner sub-component sub-sub-component.x {
+  property: sub-sub-value;
+}
+
+my-component > .inner > child-component.x {
+  property: sub-value;
+}
+
+my-component > .inner > child-component sub-sub-component.x {
   property: sub-sub-value;
 }

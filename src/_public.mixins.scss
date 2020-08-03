@@ -62,6 +62,107 @@
 }
 
 
+/// Child-component mixin to define (direct child) sub-component in component (with separate states, variants and sub-elements).
+///
+/// Context, responsive and browser modifiers are inherited from parent component.
+///
+/// 1) It checks if same component is defined multiple times. It is not allowed because Single Place Of Truth.
+///
+/// 2) Components can be nested one into another.
+///
+/// @group Component
+/// @access public
+/// @param { String } $selector - single selector of sub-component
+/// @content
+/// @throw SPOT CSS: sub-component/no-selector - selector was expected but nothing passed.
+/// @throw SPOT CSS: sub-component/no-component - you cannot use mixin sub-component outside component. Sub-component can be used only in component.
+/// @throw SPOT CSS: sub-component/single-selector - given selector is not a single selector ({selector}).
+/// @throw SPOT CSS: sub-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('selector').
+/// @throw SPOT CSS: sub-component/already-registered - trying to register already registered sub-component 'selector' for component 'component'.
+/// @throw SPOT CSS: sub-component/childs-in-register - it is not allowed call any other modifiers and sub element mixins in sub-component in register of component 'component'. Register all those modifiers in register section of sub-component 'selector'.
+/// @throw SPOT CSS: sub-component/unknown-unregistered - given sub-component 'selector' is not registered in direct parent component ('component').
+/// @throw SPOT CSS: sub-component/duplicate - given selector is already used as sub-component ({selector}).
+/// @output Given selector with given content.
+@mixin child-component($selector) {
+    @if not $selector or $selector=="" {
+        @error $SPOT_ERROR_PREFIX + "child-component/no-selector - selector was expected but nothing passed.";
+    }
+
+    @if component()=='' {
+        @error $SPOT_ERROR_PREFIX + "child-component/no-component - you cannot use mixin sub-component outside component. Sub-component can be used only in component.";
+    }
+
+    $selectors: selector-parse($selector);
+    @if length($selectors)>1 {
+        @error $SPOT_ERROR_PREFIX + "child-component/single-selector - given selector is not a single selector ('"+$selector+"').";
+    }
+    
+    $sub-component-selector: #{ & + ' > ' + $selector };
+
+    // check for separator
+    @if not $_is-register-mode and not $_was-used-sub-element-separator {
+        @error $SPOT_ERROR_PREFIX + "child-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('"+$sub-component-selector+"').";
+    }
+    $_was-used-sub-element-separator: false !global;
+    
+    @if $_is-register-mode { 
+        // guarding duplicity of sub-components (and all sub selectors)
+        @if index($_already-used-selectors, $sub-component-selector) or index($_registered-sub-components, $sub-component-selector) {
+            @error $SPOT_ERROR_PREFIX + "child-component/already-registered - trying to register already registered sub-component '"+$selector+"' for component '"+component()+"'.";
+        }
+        // store unique sub-component
+        $_already-used-selectors: append($_already-used-selectors, $sub-component-selector, 'comma') !global;
+        $_registered-sub-components: append($_registered-sub-components, $sub-component-selector, 'comma') !global;
+
+        $_is-called-something-in-register: false !global;
+
+        $_is-child-component-mode: true !global;
+
+        @at-root
+        #{$sub-component-selector} {
+            @content;
+        }
+
+        $_is-child-component-mode: false !global;
+
+        // check if something was called inside sub-component (in register mode)
+        @if $_is-called-something-in-register {
+            @error $SPOT_ERROR_PREFIX + "child-component/childs-in-register - it is not allowed call any other modifiers and sub element mixins in sub-component in register of component '"+component()+"'. Register all those modifiers in register section of sub-component '"+$selector+"'.";
+        }
+    }
+    @else {
+        // check if sub-component is registered
+        @if not index($_already-used-selectors, $sub-component-selector) {
+            @error $SPOT_ERROR_PREFIX + "child-component/unknown-unregistered - given sub-component '"+$selector+"' is not registered in direct parent component ('"+$sub-component-selector+"').";
+        }
+        // 1)
+        // if already registred
+        @if index($_registered-components, $sub-component-selector)!=null {
+            @error $SPOT_ERROR_PREFIX + "child-component/duplicate - given selector is already used as sub-component ('"+$sub-component-selector+"').";
+        }
+        @else {
+            // store component selector if is not stored yet
+            $_registered-components: append($_registered-components, $sub-component-selector, 'comma') !global;
+        }
+
+        // 2)
+        // store current component selector (into stack)
+        $_current-components: append($_current-components, '> '+$selector, 'space') !global;
+
+        $_is-child-component-mode: true !global;
+
+        @at-root
+        #{$sub-component-selector} {
+            @content;
+        }
+
+        $_is-child-component-mode: false !global;
+
+        // remove current component selector (from stack)
+        $_current-components: pop($_current-components) !global;
+    }
+}
+
 /// Sub-component mixin to define component in component (with separate states, variants and sub-elements).
 ///
 /// Context, responsive and browser modifiers are inherited from parent component.
@@ -97,7 +198,7 @@
         @error $SPOT_ERROR_PREFIX + "sub-component/single-selector - given selector is not a single selector ('"+$selector+"').";
     }
     
-    $sub-component-selector: #{ & + ' > ' + $selector };
+    $sub-component-selector: #{ & + ' ' + $selector };
 
     // check for separator
     @if not $_is-register-mode and not $_was-used-sub-element-separator {
@@ -147,7 +248,7 @@
 
         // 2)
         // store current component selector (into stack)
-        $_current-components: append($_current-components, '> '+$selector, 'space') !global;
+        $_current-components: append($_current-components, ' '+$selector, 'space') !global;
 
         $_is-sub-component-mode: true !global;
 

@@ -1,0 +1,21 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +child-component(".component-1")
+        +child-component(".component-2")
+
+    property: value
+
+    +_____________________________
+    +child-component(".component-1")
+        property: value
+    
+    +_____________________________
+    +child-component(".component-2")
+        property: value
+
+    +_____________________________
+    +child-component(".component-1")  // throws error - duplicate (same selector again)
+        property: value
+

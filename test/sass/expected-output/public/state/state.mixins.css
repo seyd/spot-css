@@ -16,10 +16,18 @@ my-component:hover > .inner {
   property: value-x;
 }
 
-my-component > .inner > sub-component:hover {
+my-component > .inner sub-component:hover {
   property: sub-value;
 }
 
-my-component > .inner > sub-component > sub-sub-component:hover {
+my-component > .inner sub-component sub-sub-component:hover {
+  property: sub-sub-value;
+}
+
+my-component > .inner > child-component:hover {
+  property: sub-value;
+}
+
+my-component > .inner > child-component sub-sub-component:hover {
   property: sub-sub-value;
 }

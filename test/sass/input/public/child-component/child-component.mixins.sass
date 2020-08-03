@@ -1,0 +1,28 @@
+@import "./src/spot-css"
+
+// element selector
++component("my-component")
+    +register
+        +child-element('span.sub')
+            +child-component("a")
+            +child-component("strong")
+
+    property: value
+
+    +_________________________
+    +child-element('span.sub')
+
+        +__________________
+        +child-component("a")
+            +register
+                +state(':hover')
+            
+            +default
+                property: value
+            
+            +state(':hover')
+                property: value-2
+
+        +_______________________
+        +child-component("strong")
+            property: value

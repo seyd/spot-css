@@ -68,6 +68,7 @@
 /// @param { String } $alias - alias name when context-like modifier ('context' | 'browser' | 'responsive')
 /// @param { Bool } $do-not-check-alias - flag to skip duplicity check for aliases
 /// @throw SPOT CSS: register/sub-component-context - it is not allowed to register modifier(identifier) for sub-component 'component'. Register this 'modifier' in top parent component.
+/// @throw SPOT CSS: register/child-component-context - it is not allowed to register modifier(identifier) for child-component 'component'. Register this 'modifier' in top parent component.
 /// @throw SPOT CSS: register/duplicate-modifier - trying to register already registered modifier 'identifier' for component 'component'.
 /// @throw SPOT CSS: register/duplicate-modifier-with-alias - trying to register modifier 'identifier' but there is already registered modifier with same alias for component 'component'.
 /// @throw SPOT CSS: register/duplicate-alias-with-modifier - trying to register alias 'alias' but there is already registered same modifier for component 'component'.
@@ -91,6 +92,10 @@
 
     @if _is-modifier-context-like($modifier-name) and $_is-sub-component-mode {
         @error $SPOT_ERROR_PREFIX + "register/sub-component-context - it is not allowed to register "+$modifier+"('"+$original-identifier+"') for sub-component '"+$current-component+"'. Register this "+$modifier+" in top parent component.";
+    }
+
+    @if _is-modifier-context-like($modifier-name) and $_is-child-component-mode {
+        @error $SPOT_ERROR_PREFIX + "register/child-component-context - it is not allowed to register "+$modifier+"('"+$original-identifier+"') for child-component '"+$current-component+"'. Register this "+$modifier+" in top parent component.";
     }
 
     // create unique identifier of component+identifier

@@ -12,6 +12,7 @@
         +child-element('span.sub')
             +sub-component("sub-component")
             +sub-component("sub-component-2")
+            +child-component("child-component")
 
     property: value
 
@@ -88,3 +89,50 @@
 
                 +super-variant('{priority}') // this is variant of my-component (top parent)
                     property: value-y-4
+
+        +______________________________
+        +child-component("child-component")
+            +register
+                +variant(':hover')
+                +variant('.active')
+                +variant('.pasive')
+                +variant('[type="?"]', 'apple', 'orange')
+                +sub-component("sub-sub-component")
+            
+            +default
+                property: value
+            
+            +variant(':hover')
+                property: value-2
+
+            +super-variant(':hover') // this is variant of my-component (direct parent)
+                property: value-3
+
+            +super-variant('[type="?"]') // this is variant of my-component (direct parent)
+                property: value-4
+
+            +__________________________________
+            +sub-component("sub-sub-component")
+                +register
+                    +variant(':hover')
+
+                +default
+                    property: value-x
+                
+                +variant(':hover')
+                    property: value-x-2
+
+                +super-variant(':hover') // this is variant of sub-component (direct parent)
+                    property: value-x-3
+
+                +super-variant(1, '.active') // this is variant of my-component (top parent)
+                    property: value-x-4
+
+                +super-variant(2, '.active') // this is variant of sub-component (direct parent)
+                    property: value-x-5
+
+                +super-variant(-1, '.pasive') // this is variant of sub-component (direct parent)
+                    property: value-x-6
+                
+                +super-variant(-2, '.pasive') // this is variant of sub-component (top parent)
+                    property: value-x-7
