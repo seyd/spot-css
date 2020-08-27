@@ -478,12 +478,14 @@
                 $i: 0;
                 @each $partial-selector-2 in $sel-2 {
                     $i: $i + 1;
-                    $first-simple-selector-1: nth(simple-selectors($partial-selector-1), 1);
-                    $first-simple-selector-2: nth(simple-selectors($partial-selector-2), 1);
-                    @if $first-simple-selector-1!="" and $first-simple-selector-2!="" {
-                        @if $first-simple-selector-1 == $first-simple-selector-2 {
-                            $match: true;
-                            $match-at-index: $i;
+                    @if $partial-selector-1!=">" and $partial-selector-2!=">" {
+                        $first-simple-selector-1: nth(simple-selectors($partial-selector-1), 1);
+                        $first-simple-selector-2: nth(simple-selectors($partial-selector-2), 1);
+                        @if $first-simple-selector-1!="" and $first-simple-selector-2!="" {
+                            @if $first-simple-selector-1 == $first-simple-selector-2 {
+                                $match: true;
+                                $match-at-index: $i;
+                            }
                         }
                     }
                 }

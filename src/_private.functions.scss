@@ -241,7 +241,10 @@
     }
     // add context
     @each $partial-selector in $context {
-        $first-part: to-lower-case(nth(simple-selectors($partial-selector), 1));
+        $first-part: "";
+        @if $partial-selector!=">" {
+            $first-part: to-lower-case(nth(simple-selectors($partial-selector), 1));
+        }        
         @if $first-part == 'html' {
             $html-element-part: append($html-element-part, $partial-selector, 'space');
         }
