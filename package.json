@@ -7,6 +7,7 @@
     "test": "gulp test",
     "test:watch": "gulp test:watch",
     "test:sync": "gulp test:sync",
+    "publish": "npm publish --access restricted",
     "doc": "sassdoc src/*.scss -d doc/ && start ./doc/index.html",
     "doc:build": "sassdoc src/*.scss -d doc/",
     "doc:view": "start ./doc/index.html"
