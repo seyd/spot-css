@@ -275,7 +275,8 @@
             //   :last-*  [:last-child, :last-of-type]
             //   :nth-*   [:nth-child(n), :nth-last-child(n), :nth-last-of-type(n), :nth-of-type(n)]
             //   :only-*  [:only-of-type, :only-child]
-            @else if str-index($branch, ':first-') or  str-index($branch, ':last-') or str-index($branch, ':nth-') or str-index($branch, ':only-') {
+            //   :empty
+            @else if str-index($branch, ':first-') or  str-index($branch, ':last-') or str-index($branch, ':nth-') or str-index($branch, ':only-') or str-index($branch, ':empty') {
                 // except pseudo elements ::first-letter and ::first-line (but check for one ':')
                 @if str-index($branch, '::')==null and str-index($branch, ':first-letter')==null and str-index($branch, ':first-line')==null {
                     $found: true;
@@ -466,7 +467,8 @@
 
 @function merge-selectors($selector1, $selector2) {    
     $selectors-1: selector-parse($selector1);
-    $selectors-2: selector-parse($selector2);    
+    $selectors-2: selector-parse($selector2);
+    @debug $selector1 +' ::: '+$selector2;
     $output: [];
     @each $sel-1 in $selectors-1 {
         @each $sel-2 in $selectors-2 {
