@@ -41,9 +41,11 @@
     +register
         +context('parent-component')        
         +context('direct-parent-component >')
+        +context('previous-component +')
         +context('super-direct-parent-component > * > &') // with ampersand
         +context('html.mobile')
         +context('html.layout-portrait')
+        +context('other-parent-component > &') // with ampersand
     
     +default
 
@@ -51,3 +53,12 @@
         +default
         +context('html.layout-portrait')
             property: value
+
+    +context('direct-parent-component >')
+        some: thing
+
+    +context('previous-component +')
+        other: thing
+
+    +context('other-parent-component > &')
+        next: other

@@ -468,7 +468,6 @@
 @function merge-selectors($selector1, $selector2) {    
     $selectors-1: selector-parse($selector1);
     $selectors-2: selector-parse($selector2);
-    @debug $selector1 +' ::: '+$selector2;
     $output: [];
     @each $sel-1 in $selectors-1 {
         @each $sel-2 in $selectors-2 {
@@ -480,7 +479,7 @@
                 $i: 0;
                 @each $partial-selector-2 in $sel-2 {
                     $i: $i + 1;
-                    @if $partial-selector-1!=">" and $partial-selector-2!=">" {
+                    @if not _is_selector_combinator($partial-selector-1) and not _is_selector_combinator($partial-selector-2) {
                         $first-simple-selector-1: nth(simple-selectors($partial-selector-1), 1);
                         $first-simple-selector-2: nth(simple-selectors($partial-selector-2), 1);
                         @if $first-simple-selector-1!="" and $first-simple-selector-2!="" {

@@ -228,7 +228,11 @@
     $rest-selector-part: [];
     // split selector into 3 parts (html, body and rest)
     @each $partial-selector in $selector {
-        $first-part: to-lower-case(nth(simple-selectors($partial-selector), 1));
+        $first-part: "";
+        @if not _is_selector_combinator($partial-selector) {
+            $first-part: to-lower-case(nth(simple-selectors($partial-selector), 1));
+        }
+        
         @if $first-part == 'html' {
             $html-element-part: append($html-element-part, $partial-selector, 'space');
         }
@@ -242,9 +246,10 @@
     // add context
     @each $partial-selector in $context {
         $first-part: "";
-        @if $partial-selector!=">" {
+        @if not _is_selector_combinator($partial-selector) {
             $first-part: to-lower-case(nth(simple-selectors($partial-selector), 1));
-        }        
+        }
+
         @if $first-part == 'html' {
             $html-element-part: append($html-element-part, $partial-selector, 'space');
         }
@@ -258,4 +263,13 @@
     // join parts
     $selector: join(join($html-element-part, $body-element-part, $bracketed: false), $rest-selector-part, $bracketed: false);
     @return #{ $selector };
+}
+
+
+/// Check if given simple selector is combinator ('>', '+', '~').
+/// @access private
+/// @param {String} $simple-selector - simple selector
+/// @return {Boolean} True if iven simple selector is combinator.
+@function _is_selector_combinator($simple-selector) {
+    @return $simple-selector==">" or $simple-selector=="+" or $simple-selector=="~";
 }

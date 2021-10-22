@@ -21,3 +21,15 @@ parent-component my-component > i {
 html.layout-portrait.mobile your-component {
   property: value;
 }
+
+direct-parent-component > your-component {
+  some: thing;
+}
+
+previous-component + your-component {
+  other: thing;
+}
+
+other-parent-component > your-component {
+  next: other;
+}
