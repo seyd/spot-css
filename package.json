@@ -56,10 +56,10 @@
     "gulp": "^4.0.2",
     "gulp-diff": "^1.0.0",
     "gulp-flatmap": "^1.0.2",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^5.0.0",
     "gulp-sourcemaps": "^2.6.5",
     "lodash.template": ">=4.5.0",
-    "node-sass": "^4.14.1",
-    "sass": "^1.26.0"
+    "node-sass": "^4.12.1",
+    "sass": "^1.43.2"
   }
 }

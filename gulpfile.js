@@ -10,7 +10,7 @@ var TEST_PATH = 'test/sass',
     FULL_OUTPUT_PATH = CURRENT_PATH + TEST_PATH + '/' + OUTPUT_PATH,
     
     gulp = require('gulp'),
-    sass = require('gulp-sass'),
+    sass = require('gulp-sass')(require('sass')),
     fs = require('fs'),
     es = require('event-stream'),
     fileExists = require('file-exists'),
