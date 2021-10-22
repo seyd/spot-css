@@ -327,7 +327,7 @@
         $new-extension: append($new-extension, $partial-selector, 'comma');
     }
     // now it is safe to use selector-replace
-    @return selector-replace($selector, $something, $new-extension+''); // +'' = convert to string
+    @return selector-replace($selector, _remove_combinator_selector($something), $new-extension+''); // +'' = convert to string
 }
 
 

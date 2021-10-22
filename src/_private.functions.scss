@@ -273,3 +273,11 @@
 @function _is_selector_combinator($simple-selector) {
     @return $simple-selector==">" or $simple-selector=="+" or $simple-selector=="~";
 }
+
+/// Remove combinator selector ('>', '+', '~') from given simple selector.
+/// @access private
+/// @param {String} $simple-selector - simple selector
+/// @return {String} Given selector without combinator selector.
+@function _remove_combinator_selector($simple-selector) {
+    @return str-trim(str-replace(str-replace(str-replace($simple-selector+'', '>', ''), '+', ''), '~', ''));
+}
