@@ -217,6 +217,7 @@
         $component-to-extend: last($sub-component-stack);
     }
     $_current_modifier: $modifier-name !global;
+    $component-to-extend-simplified: _remove_combinator_selector($component-to-extend);
 
     // check if sub elements mixin was not used for current selector
     @if index($_selectors-with-sub-elements, &) {
@@ -286,7 +287,7 @@
                                 $extended-selector: merge-selectors($context-extension, &);
                             }
                             @else {
-                                $extended-selector: extend(&, $component-to-extend, $extension);
+                                $extended-selector: extend(&, $component-to-extend-simplified, $extension);
                             }
                             $selectors: append($selectors, $extended-selector, 'comma');
                         }
@@ -312,7 +313,7 @@
                         $extended-selector: merge-selectors($context-extension, &);
                     }
                     @else {
-                        $extended-selector: extend(&, $component-to-extend, $extension);
+                        $extended-selector: extend(&, $component-to-extend-simplified, $extension);
                     }
                     $selectors: append($selectors, $extended-selector, 'comma');
                 }
