@@ -9,3 +9,7 @@ my-component {
 .context .component {
   property: value;
 }
+
+html {
+  property: value;
+}

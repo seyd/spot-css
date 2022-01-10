@@ -6,14 +6,21 @@
 ///
 /// @group Component
 /// @access public
-/// @param { String } $selector - single selector of component
+/// @param { String[] } $args... - 1. ($selector),  2. ($alias, $selector)
 /// @content
 /// @throw SPOT CSS: component/no-selector - selector was expected but nothing passed.
 /// @throw SPOT CSS: component/sub-component - you cannot use mixin component in component. Instead use mixin sub-component and also register it in parent component.
 /// @throw SPOT CSS: component/single-selector - given selector is not a single selector ({selector}).
 /// @throw SPOT CSS: component/already-registered - given selector is already registered as component ({selector}).
 /// @output Given selector with given content.
-@mixin component($selector) {
+@mixin component($args...) {
+    $selector: first($args);
+
+    @if length($args)==2 {
+        $alias: nth($args, 1); // not used here (yet)
+        $selector: nth($args, 2);
+    }
+
     @if not $selector or $selector=="" {
         @error $SPOT_ERROR_PREFIX + "component/no-selector - selector was expected but nothing passed.";
     }
