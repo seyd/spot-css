@@ -8,9 +8,9 @@ Powered by SASS/SCSS.
 
 
 ## Install instructions
-Run `$ npm i --save-dev spot-css` to install SPOT CSS package.
+Run `$ npm i --save-dev spotcss` to install SPOT CSS package.
 
-Include line `@import "./node_modules/spot-css/index";` into your SCSS/SASS files.
+Include line `@import "~spotcss";` into your SCSS/SASS files.
 
 
 ## For contributors
