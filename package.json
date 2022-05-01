@@ -1,6 +1,6 @@
 {
   "name": "spotcss",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "SPOT CSS Framework { Single Place Of Truth Methodology }",
   "main": "index.scss",
   "scripts": {
