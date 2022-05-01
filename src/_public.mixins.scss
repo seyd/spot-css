@@ -121,7 +121,8 @@
         $_already-used-selectors: append($_already-used-selectors, $sub-component-selector, 'comma') !global;
         $_registered-sub-components: append($_registered-sub-components, $sub-component-selector, 'comma') !global;
 
-        $_is-called-something-in-register: false !global;
+         // store current component selector (into stack)
+        $_current-components: append($_current-components, '> '+$selector, 'space') !global;
 
         $_is-child-component-mode: true !global;
 
@@ -132,10 +133,8 @@
 
         $_is-child-component-mode: false !global;
 
-        // check if something was called inside sub-component (in register mode)
-        @if $_is-called-something-in-register {
-            @error $SPOT_ERROR_PREFIX + "child-component/childs-in-register - it is not allowed call any other modifiers and sub element mixins in sub-component in register of component '"+component()+"'. Register all those modifiers in register section of sub-component '"+$selector+"'.";
-        }
+        // remove current component selector (from stack)
+        $_current-components: pop($_current-components) !global;
     }
     @else {
         // check if sub-component is registered
@@ -222,7 +221,8 @@
         $_already-used-selectors: append($_already-used-selectors, $sub-component-selector, 'comma') !global;
         $_registered-sub-components: append($_registered-sub-components, $sub-component-selector, 'comma') !global;
 
-        $_is-called-something-in-register: false !global;
+        // store current component selector (into stack)
+        $_current-components: append($_current-components, ' '+$selector, 'space') !global;
 
         $_is-sub-component-mode: true !global;
 
@@ -233,10 +233,8 @@
 
         $_is-sub-component-mode: false !global;
 
-        // check if something was called inside sub-component (in register mode)
-        @if $_is-called-something-in-register {
-            @error $SPOT_ERROR_PREFIX + "sub-component/childs-in-register - it is not allowed call any other modifiers and sub element mixins in sub-component in register of component '"+component()+"'. Register all those modifiers in register section of sub-component '"+$selector+"'.";
-        }
+        // remove current component selector (from stack)
+        $_current-components: pop($_current-components) !global;
     }
     @else {
         // check if sub-component is registered

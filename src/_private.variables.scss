@@ -46,13 +46,6 @@ $_is-default-mode: false;
 $_is-modifier-mode: false;
 
 
-/// Flag of calling any mixin in register - if parser enters mixin register.
-/// @group Component
-/// @access private
-/// @type Bool
-$_is-called-something-in-register: false;
-
-
 /// Flag of child-component mode - if parser enters mixin child-component.
 /// @group Component
 /// @access private

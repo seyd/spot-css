@@ -13,3 +13,23 @@ my-component > span.sub > a:hover {
 my-component > span.sub > strong {
   property: value;
 }
+
+ui-window > .close-button {
+  property: value;
+}
+
+ui-window > .close-button:hover {
+  property: value-2;
+}
+
+ui-window > .close-button.big {
+  font-size: 15em;
+}
+
+ui-window > .close-button > button {
+  border: 0;
+}
+
+ui-window > .close-button a {
+  text-decoration: none;
+}

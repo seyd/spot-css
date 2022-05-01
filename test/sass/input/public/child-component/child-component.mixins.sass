@@ -26,3 +26,32 @@
         +_______________________
         +child-component("strong")
             property: value
+
+
++component('ui-window')
+    +register
+        +state(':hover')
+        +child-component('.close-button')
+            +state(':hover')
+            +variant('.big')
+            +child-element('button')
+            +sub-element('a')
+
+    +______________________________
+    +child-component('.close-button')
+        +default
+            property: value
+
+        +state(':hover')
+            property: value-2
+
+        +variant('.big')
+            font-size: 15em
+
+        +_______________________
+        +child-element('button')
+            border: 0
+
+        +_______________________
+        +sub-element('a')
+            text-decoration: none

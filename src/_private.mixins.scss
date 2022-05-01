@@ -14,9 +14,6 @@
         @error $SPOT_ERROR_PREFIX + "register/no-component - the mixin register { "+$modifier-name+"("+$identifier+") } must be used inside a component selector.";
     }
 
-    // mark flag that some modifier was called in register mixin
-    $_is-called-something-in-register: true !global;
-
     // is context-like (context, browser or responsive) or vriation-like (state or variant)
     $is-context-like: str-index($modifier-name, '&');
 
@@ -415,11 +412,7 @@
     }
     $_was-used-sub-element-separator: false !global;
 
-    @if $_is-register-mode {
-        // mark flag that some modifier was called in register mixin
-        $_is-called-something-in-register: true !global;
-    }
-    @else {
+    @if not $_is-register-mode {
         // store appling sub element in current selector to avoid calling state, variant, etc. after that
         @if not index($_selectors-with-sub-elements, &) {
             $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
