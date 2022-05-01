@@ -1,5 +1,5 @@
 {
-  "name": "@spotcss/spot-css",
+  "name": "spotcss",
   "version": "1.0.19",
   "description": "SPOT CSS Framework { Single Place Of Truth Methodology }",
   "main": "index.scss",
@@ -7,7 +7,7 @@
     "test": "gulp test",
     "test:watch": "gulp test:watch",
     "test:sync": "gulp test:sync",
-    "publish": "npm publish --access restricted",
+    "publish": "npm publish --access public",
     "doc": "sassdoc src/*.scss -d doc/ && start ./doc/index.html",
     "doc:build": "sassdoc src/*.scss -d doc/",
     "doc:view": "start ./doc/index.html"
