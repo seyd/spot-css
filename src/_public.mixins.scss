@@ -1,3 +1,16 @@
+/// Sets mode of strictness of evaluating SPOT rules which will be applied on next component.
+/// When 'draft' is set then +register and +default mixin is not required.
+///
+/// @group Component
+/// @access public
+/// @since from version 2.1.0
+/// @param { String } $mode - Allowed values are 'strict' and 'draft'.
+/// @throw SPOT CSS: mode/invalid-input - mode mixin accepts only value 'strict' or 'draft'.
+/// @output
+@mixin mode($mode) {
+    $new-mode: mode($mode);
+}
+
 /// Main top-level mixin to define component.
 ///
 /// 1) It checks if same component is defined multiple times. It is not allowed because Single Place Of Truth.
@@ -66,6 +79,9 @@
 
     // remove current component selector (from stack)
     $_current-components: pop($_current-components) !global;
+
+    // reset current mode to default after each component
+    $_current-component-mode: $_default-component-mode !global;
 }
 
 
@@ -140,7 +156,7 @@
     }
     @else {
         // check if sub-component is registered
-        @if not index($_already-used-selectors, $sub-component-selector) {
+        @if not index($_already-used-selectors, $sub-component-selector) and $_current-component-mode!='draft' {
             @error $SPOT_ERROR_PREFIX + "child-component/unknown-unregistered - given sub-component '"+$selector+"' is not registered in direct parent component ('"+$sub-component-selector+"').";
         }
         // 1)
@@ -242,7 +258,7 @@
     }
     @else {
         // check if sub-component is registered
-        @if not index($_already-used-selectors, $sub-component-selector) {
+        @if not index($_already-used-selectors, $sub-component-selector) and $_current-component-mode!='draft' {
             @error $SPOT_ERROR_PREFIX + "sub-component/unknown-unregistered - given sub-component '"+$selector+"' is not registered in direct parent component ('"+$sub-component-selector+"').";
         }
         // 1)
@@ -606,7 +622,7 @@
         @each $selector in $selectors {
             $sub-component-selector: #{ & + ' ' + $selector };
             // check if element is registered
-            @if not index($_already-used-selectors, $sub-component-selector) {
+            @if not index($_already-used-selectors, $sub-component-selector) and $_current-component-mode!='draft' {
                 @error $SPOT_ERROR_PREFIX + "element/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
             }
             // 1)

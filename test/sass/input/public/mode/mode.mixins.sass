@@ -1,0 +1,60 @@
+@import "./src/spot-css"
+
++mode('draft')
+    
+// no register needed for mutations
++component('my-component')
+    +default
+        property: value
+
+    +state('[disabled]')
+        property: value-2
+
+
+
+// #####################################################
+
+
++mode('draft')
+
+// no register needed for element
++component('my-component-2')
+    property: value
+
+    +____________________
+    +element('.wrapper')
+        property: value-2
+
+        +state('[disabled]')
+            property: value-2    
+
+
+
+// #####################################################
+
+
++mode('draft')
+
+// no register needed for pseudo-element
++component('my-component-3')
+    property: value
+
+    +____________________
+    +pseudo-element('before')
+        property: value-2
+
+        +state('[disabled]')
+            property: value-2    
+
+
+// #####################################################
+
+
++mode('draft')
+
+// no default needed
++component('my-component-4')
+    property: value
+
+    +state('[disabled]')
+        property: value-2

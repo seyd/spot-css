@@ -229,11 +229,13 @@
             }
         }
         @if not $found {
-            @if $_super-component-index == null {
-                @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/super-unknown-modifier - the "+$original-modifier-name+" '"+$identifier+"' is not registered in any super component '"+&+"'.";
-            }
-            @else {
-                @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/super-modifier-not-found - the "+$original-modifier-name+" '"+$identifier+"' is was not found on given super component index '"+$sub-component-name-for-error+"'.";
+            @if $is-super-modifier or ($second-param-is-number and $second-param-index<0) {
+                @if $_super-component-index == null {
+                    @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/super-unknown-modifier - the "+$original-modifier-name+" '"+$identifier+"' is not registered in any super component '"+&+"'.";
+                }
+                @else {
+                    @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/super-modifier-not-found - the "+$original-modifier-name+" '"+$identifier+"' is was not found on given super component index '"+$sub-component-name-for-error+"'.";
+                }
             }
         }
         $component-to-extend: last($sub-component-stack);
@@ -251,7 +253,7 @@
     }
 
     // force using 'default' mixin when using modifiers
-    @if not _default-mixin-was-already-called() {
+    @if not _default-mixin-was-already-called() and $_current-component-mode!='draft' {
         @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/default-is-missing - the "+$original-modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
     }
 
@@ -327,7 +329,7 @@
         }
         // if not alias - just $identifier
         @else {
-            @if $modifiers!=null and map-has-key($modifiers, $identifier) {
+            @if ($modifiers!=null and map-has-key($modifiers, $identifier)) or $_current-component-mode=='draft' {
                 $extension: $identifier;
                 $extended-selector: '';
                 @if str-index($extension, '@media')==1 {
@@ -502,7 +504,7 @@
                 $selector: selector-normalize-spaces($selector);
             }
 
-            @if not index($_registered-sub-elements, $selector) {
+            @if not index($_registered-sub-elements, $selector) and $_current-component-mode!='draft' {
                 @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/unregistred-sub-element - the "+$sub-element-type+"-element('" + $selector + "') is not registered for component selector '"+component()+"'.";
             }
 

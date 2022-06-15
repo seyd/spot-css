@@ -1,0 +1,13 @@
+@import "./src/spot-css"
+
++component("my-component")
+    +register
+        +state('.active')
+        +element('.wrapper')
+
+
+    +____________________
+    +element('.wrapper')
+        +default
+
+        +state(':pasive') // throws error - unknown modifier

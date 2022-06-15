@@ -17,6 +17,19 @@ $_registered-components: ();
 /// @type Map
 $_current-components: ();
 
+/// Default value of mode of strictness of evaluating SPOT rules.
+/// @group Component
+/// @access private
+/// @type String
+$_default-component-mode: 'strict';
+
+/// Current value of mode of strictness of evaluating SPOT rules which will be applied on next component.
+/// Allowed values are 'strict' and 'draft'.
+/// @group Component
+/// @access private
+/// @type String
+$_current-component-mode: $_default-component-mode;
+
 
 /// Current media or stack of current media queries (if multiple are used).
 /// @group Component

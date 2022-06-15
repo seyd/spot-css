@@ -1,0 +1,39 @@
+my-component {
+  property: value;
+}
+
+my-component[disabled] {
+  property: value-2;
+}
+
+my-component-2 {
+  property: value;
+}
+
+my-component-2 .wrapper {
+  property: value-2;
+}
+
+my-component-2[disabled] .wrapper {
+  property: value-2;
+}
+
+my-component-3 {
+  property: value;
+}
+
+my-component-3::before {
+  property: value-2;
+}
+
+my-component-3[disabled]::before {
+  property: value-2;
+}
+
+my-component-4 {
+  property: value;
+}
+
+my-component-4[disabled] {
+  property: value-2;
+}

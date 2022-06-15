@@ -1,3 +1,16 @@
+/// Sets mode of strictness of evaluating SPOT rules which will be applied on next component.
+/// When 'draft' is set then +register and +default mixin is not required.
+/// @group Component
+/// @access public
+/// @return { String } Current mode.
+@function mode($mode) {
+    @if $mode!='strict' and $mode!='draft' {
+        @error $SPOT_ERROR_PREFIX + "mode/invalid-input - mode mixin accepts only value 'strict' or 'draft'.";
+    }
+    $_current-component-mode: $mode !global;
+    @return $_current-component-mode;
+}
+
 /// @group Component
 /// @access public
 /// @return { String } Current component selector.
