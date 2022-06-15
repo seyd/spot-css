@@ -166,6 +166,20 @@
     $component: component();
     $component-to-extend: self();
     $is-internal-state: $modifier-name=='internal-state';
+    $is-super-modifier: str-index($modifier-name, 'super-')==1;
+    $second-param-is-number: length($args)==2 and type-of(nth($args, 2))=='number';
+    $second-param-index: '';
+    $super-component-index: 0;
+    @if $second-param-is-number { 
+        $second-param-index: nth($args, 2); 
+        $super-component-index: $second-param-index;
+    }
+
+    // for all non "super-" modifiers clear this index
+    @if not $is-super-modifier {
+        // clear this global variable
+        $_super-component-index: null !global;
+    }
 
     @if $is-internal-state {
         // for internal-state is relevant whole selector (every sub-child) 
@@ -176,14 +190,20 @@
     @else if _is-modifier-context-like($modifier-name) {
         $component: top-component();
     }
-    @else if str-index($modifier-name, 'super-')==1 {
+    @else {
         // convert super-state and super-variant into modifier state and variant
         $modifier-name: str-replace($modifier-name, 'super-', '');
         $sub-component-stack: $_current-components;
+        @if not $is-super-modifier {
+            // changing logic to parse as super-modifier also state and variant, we add extra (useless) item here
+            $sub-component-stack: append($_current-components, 'PLACEHOLDER_TO_REMOVE', 'space');
+        }
+
         $found: false;
         $sub-component-name-for-error: '';
         // just find component only for first identifier (all others are expected on the same component)
         $identifier: first($args);
+
         // find $identifier in parent component
         @while not $found and length($sub-component-stack)>1 {
             @if $_super-component-index != null {
@@ -192,14 +212,19 @@
             $sub-component-stack: pop($sub-component-stack);
             $component: #{$sub-component-stack};
             // if no index is given or current super component is given index
-            @if $_super-component-index == null or $_super-component-index == 0 {
+            @if $_super-component-index == null or $_super-component-index == 0 {                
                 $sub-component-name-for-error: $component;
                 $component-with-identifier: _get-component-identifier($component, $identifier);
                 $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
                 $modifiers: map-get($_registered-modifiers, $component-with-modifier);
                 $is-alias: index($_registered-aliases, str-replace($component-with-identifier, ' &', ''));
-                @if $is-alias or ($modifiers!=null and map-has-key($modifiers, $identifier)) {
-                    $found: true;
+                @if $is-alias or ($modifiers!=null and map-has-key($modifiers, $identifier)) {                    
+                    @if $super-component-index < 0 {
+                        $super-component-index: $super-component-index + 1;
+                    }
+                    @else {
+                        $found: true;
+                    }
                 }
             }
         }
@@ -228,6 +253,10 @@
     // force using 'default' mixin when using modifiers
     @if not _default-mixin-was-already-called() {
         @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/default-is-missing - the "+$original-modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
+    }
+
+    @if $second-param-is-number {
+        $args: pop($args);
     }
 
     $current-modifier: $modifier-name + '(' + $args + ')';
@@ -327,9 +356,11 @@
 
     // check all selectors if wasn't used already
     $i: 0;
+    // for super-state|variant add index string to distinct already used state
+    @if $second-param-index!='' { $second-param-index: '[['+$second-param-index+']]'; }
     @each $single-selector in $selectors {
         $i: $i + 1;
-        $single-selector: _wrap_into_media_selector( str-replace($single-selector+'', '&', &) );
+        $single-selector: _wrap_into_media_selector( str-replace($single-selector+'', '&', &) )+$second-param-index;
         @if index($_already-used-selectors, $single-selector) {
             @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/already-used-modifier - the "+$original-modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }

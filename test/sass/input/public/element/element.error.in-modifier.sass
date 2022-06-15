@@ -1,0 +1,13 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +state(':hover')
+        +element('.wrapper')
+    
+    +default
+        property: value
+
+    +state(':hover')
+        +___________________
+        +element('.wrapper') // throw error - in modifier

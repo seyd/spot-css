@@ -1,6 +1,6 @@
 {
   "name": "spotcss",
-  "version": "1.0.22",
+  "version": "2.0.0",
   "description": "SPOT CSS Framework { Single Place Of Truth Methodology }",
   "main": "index.scss",
   "scripts": {
@@ -45,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/seyd/spot-css/issues"
   },
-  "homepage": "https://www.spotcss.page",
+  "homepage": "https://www.spotcss.io",
   "dependencies": {},
   "devDependencies": {
     "cli-color": "^2.0.0",

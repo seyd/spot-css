@@ -1,0 +1,14 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +state(':hover')
+        +element('.wrapper') // this element has different position in DOM tree
+            +element('.other-parent')
+                +element('.wrapper') // so no error here
+
+    +default
+        property: value
+
+    +state(':hover')
+        property: value-2

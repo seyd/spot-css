@@ -1,0 +1,50 @@
+@import "./src/spot-css"
+
+// element selector
++component('my-component')
+    +register
+        +state('[disabled]')
+        +element('.wrapper')
+            +state('[disabled]')
+            +element('> .wrapper-2')
+                +element('> .wrapper-3')
+                    +state('[disabled]')
+                +element('~ .wrapper-4')
+
+    +default
+        property: value
+
+    +state('[disabled]')
+        property: value-2
+
+    +________________________
+    +element('.wrapper')
+        +default
+            property: value-3
+
+        +state('[disabled]')
+            property: value-4
+
+        +state('[disabled]', -1)
+            property: value-5
+        
+        +________________________
+        +element('> .wrapper-2')
+
+            +________________________
+            +element('> .wrapper-3')
+                +default
+                    property: value-6
+
+                +state('[disabled]')
+                    property: value-7
+                
+                +state('[disabled]', -1)
+                    property: value-8
+                
+                +state('[disabled]', -2)
+                    property: value-9
+
+            +________________________
+            +element('~ .wrapper-4')
+                property: value-10

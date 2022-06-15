@@ -1,0 +1,19 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +state(':hover')
+        +element('.wrapper')
+    
+    +default
+        property: value
+        
+    +state(':hover')
+
+    +___________________
+    +element('.wrapper')
+        property: value-2
+
+    +___________________
+    +element('.wrapper')
+        property: value-3

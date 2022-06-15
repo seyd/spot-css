@@ -378,13 +378,13 @@
 
 @function str-replace($string, $search, $replace: '') {
     $index: str-index($string, $search);
-    
+
     @if $index {
-      @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+        @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
     }
-    
+
     @return $string;
-  }
+}
 
 
 @function str-trim-left($s) {
@@ -420,6 +420,29 @@
     $selector: str-replace(str-replace($selector, '> ', '>'), '>', '> ');
     // unify ' >' with space
     $selector: str-replace(str-replace($selector, ' >', '>'), '>', ' >');
+    @return $selector;
+}
+
+// replace $search from the beginning or from the end of given single selector
+@function selector-trim($selector, $search) {
+    $selector: str-trim($selector);
+    $index: str-index($selector, $search);
+    $max: str-length($selector);
+
+    @while $index==1 or $index==$max  {
+        $selector: str-trim(str-slice($selector, 1, $index - 1) + str-slice($selector, $index + str-length($search)));
+        $index: str-index($selector, $search);
+        $max: str-length($selector);
+    }
+
+    @return $selector;
+}
+
+// it replaces '>', '~', '+' from the beginning or from the end of single selector
+@function selector-trim-combinators($selector) {
+    $selector: selector-trim($selector, '>');
+    $selector: selector-trim($selector, '~');
+    $selector: selector-trim($selector, '+');
     @return $selector;
 }
 

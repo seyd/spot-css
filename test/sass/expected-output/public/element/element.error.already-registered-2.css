@@ -1,0 +1,7 @@
+.component {
+  property: value;
+}
+
+.component:hover {
+  property: value-2;
+}
