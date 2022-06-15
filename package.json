@@ -59,7 +59,7 @@
     "gulp-sass": "^5.0.0",
     "gulp-sourcemaps": "^2.6.5",
     "lodash.template": ">=4.5.0",
-    "node-sass": "^4.12.1",
+    "node-sass": "^7.0.0",
     "sass": "^1.43.2"
   }
 }
