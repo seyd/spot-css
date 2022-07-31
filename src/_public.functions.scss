@@ -95,13 +95,12 @@
 }
 
 
-/// Tests if given selector contains pseudo element 'before' or 'after'.
+/// Tests if given selector contains pseudo element e.g. ::before or ::after.
 /// @access public
 /// @param { String } $selector - single selector
 /// @return { Bool } True if contains pseudo element
 @function contains-pseudo-element($selector) {
-    $last-selector: nth($selector, length($selector));
-    @return str-index($last-selector, ':before')!=null or str-index($last-selector, ':after')!=null;
+    @return _get-pseudo-element($selector)!=null;
 }
 
 

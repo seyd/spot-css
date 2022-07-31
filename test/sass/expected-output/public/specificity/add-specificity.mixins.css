@@ -1,59 +1,59 @@
 div a:not(_) {
-  property: value;
+  property: value-1;
 }
 
 div a:not(_):not(_) {
-  property: value;
+  property: value-2;
 }
 
 div a:not(_)::before {
-  property: value;
+  property: value-3;
+}
+
+div a:not(_):before {
+  property: value-4;
 }
 
 div a:not(_)::before {
-  property: value;
-}
-
-div a:not(_)::before {
-  property: value;
+  property: value-5;
 }
 
 html div a:not(_)::before {
-  property: value;
+  property: value-6;
+}
+
+div a:not(_):after {
+  property: value-7;
 }
 
 div a:not(_)::after {
-  property: value;
-}
-
-div a:not(_)::after {
-  property: value;
+  property: value-8;
 }
 
 html div a:not(_)::after {
-  property: value;
+  property: value-9;
 }
 
 div a:not(._) {
-  property: value;
+  property: value-10;
 }
 
 div a:not(._):not(._) {
-  property: value;
+  property: value-11;
 }
 
 div a:not(#_) {
-  property: value;
+  property: value-12;
 }
 
 div a:not(#_):not(#_) {
-  property: value;
+  property: value-13;
 }
 
 div a:not(_):not(._):not(#_) {
-  property: value;
+  property: value-14;
 }
 
 div .a:not(_), div .b:not(_) {
-  property: value;
+  property: value-15;
 }

@@ -113,6 +113,26 @@ LI.red.level {
   specificity-value: 65537;
 }
 
+input[type="range"]:-webkit-border-fit {
+  specificity: 0, 2, 1;
+  specificity-value: 513;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  specificity: 0, 1, 2;
+  specificity-value: 258;
+}
+
+input[type="range"]::after {
+  specificity: 0, 1, 2;
+  specificity-value: 258;
+}
+
+input[type="range"]::marker {
+  specificity: 0, 1, 2;
+  specificity-value: 258;
+}
+
 /* The highest specificity is the one that's displayed */
 #super_high_specificity, .sorta[low="specificity"] {
   specificity: 1, 0, 0;

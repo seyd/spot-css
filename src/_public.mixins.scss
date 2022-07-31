@@ -705,7 +705,7 @@
 /// @throw SPOT CSS: pseudo-element/no-selectors - at least one pseudo selector is expected.
 /// @throw SPOT CSS: pseudo-element/in-modifier - it is not allowed to use pseudo-element in modifier 'modifier'.
 /// @throw SPOT CSS: pseudo-element/in-default - it is not allowed to call child-element mixin in default mixin (in component 'component').
-/// @throw SPOT CSS: pseudo-element/invalid-selector - Invalid value for pseudo element 'selector'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder' or 'selection'.
+/// @throw SPOT CSS: pseudo-element/invalid-selector - Invalid value for pseudo element 'selector'. Only valid values are 'before', 'after' and other pseudo elements.
 /// @throw SPOT CSS: pseudo-element/already-used - the pseudo-element('selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every pseudo-element.
 /// @output Given selector with given content.
 @mixin pseudo-element($selectors...) {

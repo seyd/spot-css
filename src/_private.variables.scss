@@ -179,3 +179,10 @@ $_super-component-index: null;
 /// @access private
 /// @type Bool
 $_was-used-sub-element-separator: false;
+
+
+/// Standard pseudo elements by https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements
+/// @group Component
+/// @access private
+/// @type List
+$_standard-pseudo-elements: 'before', 'after', 'backdrop', 'cue', 'cue-region', 'first-letter', 'first-line', 'file-selector-button', 'grammar-error', 'marker', 'part(', 'placeholder', 'selection', 'slotted(', 'spelling-error(', 'target-text';

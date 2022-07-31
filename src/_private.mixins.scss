@@ -422,7 +422,7 @@
 /// @throw SPOT CSS: {sub}-element/missing-separator - there is sub-element separator mixin (_______) missing before {sub}-element mixin in component ('component').
 /// @throw SPOT CSS: {sub}-element/single-selector - given selector is not a single selector ('selector'). Just pass it as a separate argument.
 /// @throw SPOT CSS: {sub}-element/multilevel-selector - given selector is not a single selector ('selector'). Just use more {sub}-element mixins nested.
-/// @throw SPOT CSS: pseudo-element/invalid-selector - Invalid value for pseudo element 'selector'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder', 'selection' or with prefix '-'.
+/// @throw SPOT CSS: pseudo-element/invalid-selector - Invalid value for pseudo element 'selector'. Only valid values are 'before', 'after' and other pseudo elements.
 /// @throw SPOT CSS: {sub}-element/already-registered - trying to register already registered sub-element 'selector' for component selector 'current-selector'.
 /// @throw SPOT CSS: {sub}-element/unregistred-sub-element - the {sub}-element('selector') is not registered for component selector 'component()'.
 /// @throw SPOT CSS: {sub}-element/already-used - the {sub}-element('selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every {sub}-element.
@@ -483,8 +483,8 @@
             $pseudo-selector: str-trim(str-replace(str-replace($selector, '::', ''), ':', ''));
 
             // supports also "-" prefix e.g. ::-webkit-scrollbar
-            @if $pseudo-selector!='before' and $pseudo-selector!='after' and $pseudo-selector!='first-letter' and $pseudo-selector!='first-line' and $pseudo-selector!='placeholder' and $pseudo-selector!='selection' and str-index($pseudo-selector, '-')!=1 {
-                @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid-selector - Invalid value for pseudo element '"+$pseudo-selector+"'. Only valid values are 'before', 'after', 'first-letter', 'first-line', 'placeholder', 'selection' or with prefix '-'.";
+            @if contains-pseudo-element('::'+$pseudo-selector)==false {
+                @error $SPOT_ERROR_PREFIX + "pseudo-element/invalid-selector - Invalid value for pseudo element '"+$pseudo-selector+"'. Only valid values are 'before', 'after' and other pseudo elements.";
             }
 
             $selector: & + '::' + $pseudo-selector;

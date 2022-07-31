@@ -4,62 +4,62 @@ div a
 
   // element
   +add-element-specificity(1)
-    property: value
+    property: value-1
 
   +add-element-specificity(2)
-    property: value
+    property: value-2
 
   &::before
     +add-element-specificity(1)
-        property: value
+        property: value-3
   
   // before
   &:before
     +add-element-specificity(1)
-        property: value
+        property: value-4
 
   &::before
     +add-element-specificity(1)
-        property: value
+        property: value-5
 
   html &
     &::before
       +add-element-specificity(1)
-          property: value
+          property: value-6
 
   // after
   &:after
     +add-element-specificity(1)
-        property: value
+        property: value-7
         
   &::after
     +add-element-specificity(1)
-        property: value
+        property: value-8
 
   html &
     &::after
       +add-element-specificity(1)
-          property: value
+          property: value-9
 
   // class
   +add-class-specificity(1)
-    property: value
+    property: value-10
 
   +add-class-specificity(2)
-    property: value
+    property: value-11
 
   // id
   +add-id-specificity(1)
-    property: value
+    property: value-12
 
   +add-id-specificity(2)
-    property: value
+    property: value-13
 
   // mixed
   +add-element-specificity(1)
     +add-class-specificity(1)
       +add-id-specificity(1)
-        property: value
+        property: value-14
 
 
 // multiple selectors
@@ -67,4 +67,4 @@ div .a, div .b
 
   // element
   +add-element-specificity(1)
-    property: value
+    property: value-15

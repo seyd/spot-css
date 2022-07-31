@@ -25,6 +25,10 @@ UL OL LI.red { @include specificity; }
 LI.red.level { @include specificity; }
 #x34y { @include specificity; }
 #s12:not(FOO) { @include specificity; }
+input[type="range"]:-webkit-border-fit { @include specificity; }
+input[type="range"]::-webkit-slider-thumb { @include specificity; }
+input[type="range"]::after { @include specificity; }
+input[type="range"]::marker { @include specificity; }
 
 /* The highest specificity is the one that's displayed */
 #super_high_specificity, .sorta[low="specificity"] {

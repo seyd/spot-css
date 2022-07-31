@@ -29,6 +29,32 @@
 }
 
 
+/// Returns pseudo element from selector if it's present.
+/// @access public
+/// @param { String } $selector - single selector
+/// @return { String | null } Pseudo element or null if not found.
+@function _get-pseudo-element($selector) {
+    $last-selector: nth($selector, length($selector));
+    $len: length($_standard-pseudo-elements);
+    @for $i from 1 through $len - 1 {
+        // check single : for bullet proof reason
+        $index: str-index($last-selector, ':'+nth($_standard-pseudo-elements, $i));
+        @if $index!=null {
+            // check double ::
+            @if str-index($last-selector, '::'+nth($_standard-pseudo-elements, $i)) {
+                $index: $index - 1;
+            }
+            @return str-slice($last-selector, $index, -1);
+        }   
+    }
+    // non-standard pseudo elements, e.g. ::-webkit-
+    $index: str-index($last-selector, '::-');
+    @if $index!=null {
+        @return str-slice($last-selector, $index, -1);
+    }
+    @return null;
+}
+
 // add selector specificity at `given` level
 @function _add-selector-specificity($selector, $n, $not-what-mark) {
     $selectors: selector-parse($selector);
@@ -40,13 +66,10 @@
     // for each selector (if more selectors in $selector)
     @each $single-selector in $selectors {
         $single-selector: to-string($single-selector);
-        @if str-index($single-selector, ':before')!=null {
-            $single-selector: str-replace(str-replace($single-selector, '::before', ''), ':before', '');
-            $single-selector: $single-selector + $addon + '::before';
-        }
-        @else if str-index($single-selector, ':after')!=null {
-            $single-selector: str-replace(str-replace($single-selector, '::after', ''), ':after', '');
-            $single-selector: $single-selector + $addon + '::after';
+        $pseudo-element: _get-pseudo-element($single-selector);
+        @if $pseudo-element!=null {
+            $single-selector: str-replace($single-selector, $pseudo-element, '');
+            $single-selector: $single-selector + $addon + $pseudo-element;
         }
         @else {
             $single-selector: $single-selector + $addon;
@@ -128,12 +151,14 @@
 /// @return {String} specificity type of simple selector - 'a', 'b', 'c', or false
 @function _specificity-type($simple-selector) {
     $types: (
-        c: (':before', ':after', ':first-line', ':first-letter', ':selection'),
+        c: (':before', ':after', ':backdrop', ':cue', ':cue-region', ':first-letter', ':first-line', ':file-selector-button', ':grammar-error', ':marker', ':part(', ':placeholder', ':selection', ':slotted(', ':spelling-error(', ':target-text', '::-'),
         b: ('.', '[', ':'),
         a: ('#')
     );
     
+    $simple-selector: _str-replace-batch($simple-selector, '::-', ':-custom-pseudo-element-');
     $simple-selector: _str-replace-batch($simple-selector, '::', ':');
+    $simple-selector: _str-replace-batch($simple-selector, ':-custom-pseudo-element-', '::-');
     
     @if str-index($simple-selector, ':not(') == 1 {
         $simple-selector: str-slice($simple-selector, 6, -2);
