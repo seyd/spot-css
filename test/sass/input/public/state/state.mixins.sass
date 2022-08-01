@@ -3,7 +3,7 @@
 
 +component("my-component")
     +register
-        +state(':hover')        
+        +state(':hover')       
         +state('.active')
         +state('.a')
         +state('.b')
@@ -28,6 +28,11 @@
 
         +state(':hover')
             property: value-responsive
+
+    +state('.active')
+        +default
+
+        +responsive('{multiple}')
 
     +_______________________
     +child-element('.inner')

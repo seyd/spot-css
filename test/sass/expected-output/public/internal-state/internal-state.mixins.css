@@ -26,6 +26,10 @@ my-component > span {
   property: no-value;
 }
 
+my-component > span.loadedx {
+  property: loaded-inside;
+}
+
 my-component.apple > span, my-component.orange > span {
   property: value;
 }

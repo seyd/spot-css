@@ -7,7 +7,7 @@
     +variant('.apple')
     +variant('.orange')
     +internal-state('.loaded')
-    +child-element('span')
+    +element('> span')
       +internal-state('.loadedx')
 
   +default
@@ -31,12 +31,12 @@
       property: other-value-2
 
   +_____________________
-  +child-element('span')
+  +element('> span')
       +default
         property: no-value
       
-      // +internal-state('.loaded')
-      //   property: loaded-inside
+      +internal-state('.loadedx')
+        property: loaded-inside
 
       +variant('.apple', '.orange')
         property: value

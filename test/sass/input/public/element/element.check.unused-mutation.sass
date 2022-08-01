@@ -1,0 +1,29 @@
+@import "./src/spot-css"
+
++component("my-component-3")
+    +register
+        +state(':active')
+        +element('.first')
+            +state(':active')
+            +element('.second')
+                +state('{hover}', ':hover', '.simulate-hover')
+        +element('.third')
+
+    +default
+
+    +state(':active')
+
+    +____________________
+    +element('.first')
+        +default
+
+        +state(':active')
+
+        +____________________
+        +element('.second')
+            +default
+
+            +state('{hover}')
+
+    +____________________
+    +element('.third')

@@ -14,10 +14,22 @@
             +sub-component("sub-component-2")
             +child-component("child-component")
 
-    property: value
+    +default
+        property: value
+
+    +variant('.active')
+        +default
+        +variant('.pasive')
+        
+    +variant('{priority}')
 
     +_________________________
     +child-element('span.sub')
+        +default
+
+        +variant(':hover')
+            +default
+            +variant('[type="?"]')
 
         +______________________________
         +sub-component("sub-component")

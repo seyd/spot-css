@@ -80,6 +80,13 @@ $_is-sub-component-mode: false;
 $_current_modifier: '';
 
 
+/// All types of modifiers (mixins)
+/// @group Component
+/// @access private
+/// @type List
+$_all_types_of_modifiers: 'state', 'variant', 'context', 'responsive', 'browser', 'internal-state';
+
+
 /// Map of registered modifiers, e.g. state, variant, context, ...
 /// @group Component
 /// @access private
@@ -108,11 +115,12 @@ $_registered-aliases: [];
 $_registered-sub-elements: [];
 
 
-/// List of registered sub-components for guarding uniqueness and required register (per component).
+/// Map of registered sub-components for guarding uniqueness and required register (per component).
+/// Key is component selector(s).
 /// @group Component
 /// @access private
-/// @type List
-$_registered-sub-components: [];
+/// @type Map
+$_registered-sub-components: ();
 
 
 /// List of calling register mixin for each component.
@@ -152,6 +160,13 @@ $_already-used-selectors: [];
 /// @type List
 $_already-used-multiple-selectors: [];
 
+
+/// Map of used modifiers per component - if were used already, e.g. state, variant, context, ...
+/// Key is component selector(s), value is map of "variant .primary": true, "context body.loaded": true
+/// @group Component
+/// @access private
+/// @type Map
+$_checklist-of-used-modifiers: ();
 
 /// Map of used modifiers (nested) per component, e.g. state, variant, context, ...
 /// @group Component

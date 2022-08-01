@@ -15,6 +15,14 @@
     @return $component+'___'+$modifier;
 }
 
+/// Return map of registered mutations on component.
+/// @group Component
+/// @access private
+/// @return { Map } Map uf mutations (key is mutation selector and value mutation props, e.g. alias).
+@function _get-component-modifiers($component, $modifier) {
+    @return map-get($_registered-modifiers, $component+'___'+$modifier);
+}
+
 
 /// @todo tests
 /// @access private

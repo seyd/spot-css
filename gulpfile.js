@@ -24,6 +24,8 @@ var TEST_PATH = 'test/sass',
 
 sass.compiler = require('node-sass');
 
+var WATCH_FILE_NAMES = '*'; //'*.check*'; // default '*' = all
+
 // ---------------------------------------------------------------------
 
 gulp.task('log-start', function(cb){    
@@ -36,13 +38,13 @@ gulp.task('clean', function(){
 });
 
 gulp.task('check-expected-output-files', function() {
-    return gulp.src(FULL_SOURCE_PATH + '/**/*.s[ac]ss')
+    return gulp.src(FULL_SOURCE_PATH + '/**/'+WATCH_FILE_NAMES+'.s[ac]ss')
         // check files if exists in EXPECTED_OUTPUT_PATH
         .pipe(checkFiles(es));
 });
 
 gulp.task('sass', function() {
-    return gulp.src(FULL_SOURCE_PATH + '/**/*.s[ac]ss')
+    return gulp.src(FULL_SOURCE_PATH + '/**/'+WATCH_FILE_NAMES+'.s[ac]ss')
         // gulpFlatmap is used to not fail pasing SASS if one of the files will fail
         .pipe(gulpFlatmap(function (stream) {  // the stream contains a single file 
             return stream
@@ -54,7 +56,7 @@ gulp.task('sass', function() {
 });
 
 gulp.task('check-diff', function() {
-    return gulp.src(FULL_OUTPUT_PATH + '/**/*.css')
+    return gulp.src(FULL_OUTPUT_PATH + '/**/'+WATCH_FILE_NAMES+'.css')
         // compare generated files with expected output (mute )
         .pipe(diff(FULL_EXPECTED_OUTPUT_PATH).on('error', function(e){ 
             // mute this kind of error - it is outputed in task "check-expected-output-files" already
@@ -66,7 +68,7 @@ gulp.task('check-diff', function() {
 });
 
 gulp.task('status', function() {
-    return gulp.src(FULL_OUTPUT_PATH + '/**/*.css')
+    return gulp.src(FULL_OUTPUT_PATH + '/**/'+WATCH_FILE_NAMES+'.css')
         .pipe(finish());
 });
 
@@ -83,8 +85,8 @@ gulp.task('test',
 
 gulp.task('watch', function() {
     return gulp.watch([
-        FULL_SOURCE_PATH + '/**/*.s[ac]ss', 
-        FULL_EXPECTED_OUTPUT_PATH + '/**/*.css', 
+        FULL_SOURCE_PATH + '/**/'+WATCH_FILE_NAMES+'.s[ac]ss', 
+        FULL_EXPECTED_OUTPUT_PATH + '/**/'+WATCH_FILE_NAMES+'.css', 
         './src/**.s[ac]ss'
     ], gulp.series('test'));
 });
@@ -93,7 +95,7 @@ gulp.task('test:watch', gulp.series('test', 'watch'));
 
 // copy generated to expected (sync of directories)
 gulp.task('test:sync', function(){
-    return gulp.src(FULL_OUTPUT_PATH + '/**/*.css')
+    return gulp.src(FULL_OUTPUT_PATH + '/**/'+WATCH_FILE_NAMES+'.css')
         .pipe(gulp.dest(FULL_EXPECTED_OUTPUT_PATH));
 });
 
@@ -106,6 +108,7 @@ function throwSassError(error) {
             targetFile = (sourceFile || originalFile).replace(SOURCE_PATH, OUTPUT_PATH).replace(/\.s[ac]ss$/, '.css'),
             isFwkError = error.messageOriginal.indexOf(FWK_ERROR_PREFIX)===0,
             message = isFwkError ? error.messageOriginal.split(' - ')[0] : error.messageFormatted;
+
         if (isFwkError) {
             // write expected (SPOT CSS framework) error to target file
             fs.mkdir(getPathWithoutFileName(targetFile), { recursive: true }, function(err, cb) {

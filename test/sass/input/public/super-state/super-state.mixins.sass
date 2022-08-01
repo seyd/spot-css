@@ -12,10 +12,22 @@
             +sub-component("sub-component")
             +sub-component("sub-component-2")
 
-    property: value
+    +default
+        property: value
+
+    +state('.active')
+        +default
+        +state('.pasive')
+        
+    +state('{priority}')
 
     +_________________________
     +child-element('span.sub')
+        +default
+
+        +state(':hover')
+            +default
+            +state('[type="?"]')
 
         +______________________________
         +sub-component("sub-component")

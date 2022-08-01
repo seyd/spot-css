@@ -1,0 +1,75 @@
+my-component {
+  property: value;
+}
+
+my-component:active {
+  property: value-active;
+}
+
+my-component:hover, my-component.simulate-hover {
+  property: value-hover;
+}
+
+my-component.internal-loaded {
+  property: internal;
+}
+
+my-component:focus, my-component:simulate-focus {
+  property: value-focus;
+}
+
+my-component.alpha, my-component.beta, my-component.gama {
+  property: value-extra;
+}
+
+html.dark-mode my-component {
+  property: dark;
+}
+
+@media (min-width: 1280px) {
+  my-component {
+    property: large;
+  }
+}
+
+html.firefox my-component {
+  property: fire;
+}
+
+my-component-2 .first {
+  property: value;
+}
+
+my-component-2:active .first {
+  property: value-active;
+}
+
+my-component-2:focus .first, my-component-2:simulate-focus .first {
+  property: value-focus;
+}
+
+my-component-2:hover .first .second, my-component-2.simulate-hover .first .second {
+  property: value-hover;
+}
+
+my-component-2.alpha:hover .first .second, my-component-2.simulate-hover.alpha .first .second, my-component-2.beta:hover .first .second, my-component-2.simulate-hover.beta .first .second, my-component-2.gama:hover .first .second, my-component-2.simulate-hover.gama .first .second {
+  property: value-extra;
+}
+
+my-component-2.internal-loaded:hover .first .second, my-component-2.simulate-hover.internal-loaded .first .second {
+  property: internal;
+}
+
+html.dark-mode my-component-2 .third {
+  property: dark;
+}
+
+@media (min-width: 1280px) {
+  my-component-2 .third {
+    property: large;
+  }
+}
+
+html.firefox my-component-2 .third {
+  property: fire;
+}

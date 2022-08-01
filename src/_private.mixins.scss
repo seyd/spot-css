@@ -78,37 +78,29 @@
     $identifier: _add-default-ampersand-if-context($modifier-name, $identifier);
     $alias_with_ampersand: _add-default-ampersand-if-context($modifier-name, $alias);
     $modifier: str-replace($modifier-name, ' &', '');
-    $is-internal-state: $modifier-name=='internal-state';
-
-    $current-component: component();
-
-    @if $is-internal-state {
-        // for internal-state is relevant whole selector (every sub-child) 
-        $current-component: &;
-    }
 
     @if _is-modifier-context-like($modifier-name) and $_is-sub-component-mode {
-        @error $SPOT_ERROR_PREFIX + "register/sub-component-context - it is not allowed to register "+$modifier+"('"+$original-identifier+"') for sub-component '"+$current-component+"'. Register this "+$modifier+" in top parent component.";
+        @error $SPOT_ERROR_PREFIX + "register/sub-component-context - it is not allowed to register "+$modifier+"('"+$original-identifier+"') for sub-component '"+component()+"'. Register this "+$modifier+" in top parent component.";
     }
 
     @if _is-modifier-context-like($modifier-name) and $_is-child-component-mode {
-        @error $SPOT_ERROR_PREFIX + "register/child-component-context - it is not allowed to register "+$modifier+"('"+$original-identifier+"') for child-component '"+$current-component+"'. Register this "+$modifier+" in top parent component.";
+        @error $SPOT_ERROR_PREFIX + "register/child-component-context - it is not allowed to register "+$modifier+"('"+$original-identifier+"') for child-component '"+component()+"'. Register this "+$modifier+" in top parent component.";
     }
 
     // create unique identifier of component+identifier
-    $component-with-identifier: _get-component-identifier($current-component, $identifier);
+    $component-with-identifier: _get-component-identifier(component(), $identifier);
 
     // create unique modifier of component+modifier-name (without ' &' appendix)
-    $component-with-modifier: str-replace(_get-component-modifier($current-component, $modifier-name), ' &', '');
+    $component-with-modifier: str-replace(_get-component-modifier(component(), $modifier-name), ' &', '');
 
     // @feature Guarding duplicity of modifiers
     @if index($_registered-identifiers, $component-with-identifier) {
-        @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier - trying to register already registered modifier '"+$original-identifier+"' for component '"+$current-component+"'.";
+        @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier - trying to register already registered modifier '"+$original-identifier+"' for component '"+component()+"'.";
     }
 
     // @feature Guarding duplicity of modifiers with aliases
-    @if index($_registered-aliases, _get-component-identifier($current-component, $original-identifier)) {
-        @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-with-alias - trying to register modifier '"+$original-identifier+"' but there is already registered modifier with same alias for component '"+$current-component+"'.";
+    @if index($_registered-aliases, _get-component-identifier(component(), $original-identifier)) {
+        @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-with-alias - trying to register modifier '"+$original-identifier+"' but there is already registered modifier with same alias for component '"+component()+"'.";
     }
 
     // store unique identifier
@@ -116,16 +108,16 @@
 
     @if $alias and $alias!='' and not $do-not-check-alias {
         // @feature Guarding duplicity of alias with modifiers
-        @if index($_registered-identifiers, _get-component-identifier($current-component, $alias_with_ampersand)) {
-            @error $SPOT_ERROR_PREFIX + "register/duplicate-alias-with-modifier - trying to register alias '"+$alias+"' but there is already registered same modifier for component '"+$current-component+"'.";
+        @if index($_registered-identifiers, _get-component-identifier(component(), $alias_with_ampersand)) {
+            @error $SPOT_ERROR_PREFIX + "register/duplicate-alias-with-modifier - trying to register alias '"+$alias+"' but there is already registered same modifier for component '"+component()+"'.";
         }
 
         // create unique identifier of component+identifier
-        $component-with-alias: _get-component-identifier($current-component, $alias);
+        $component-with-alias: _get-component-identifier(component(), $alias);
     
         // @feature Guarding duplicity of modifiers aliases
         @if index($_registered-aliases, $component-with-alias) {
-            @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-alias - trying to register already registered modifier alias '"+$alias+"' for component '"+$current-component+"'.";
+            @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-alias - trying to register already registered modifier alias '"+$alias+"' for component '"+component()+"'.";
         }
 
         // store unique alias
@@ -165,7 +157,6 @@
     $original-modifier-name: str-replace($modifier-name, ' &', '');
     $component: component();
     $component-to-extend: self();
-    $is-internal-state: $modifier-name=='internal-state';
     $is-super-modifier: str-index($modifier-name, 'super-')==1;
     $second-param-is-number: length($args)==2 and type-of(nth($args, 2))=='number';
     $second-param-index: '';
@@ -181,13 +172,7 @@
         $_super-component-index: null !global;
     }
 
-    @if $is-internal-state {
-        // for internal-state is relevant whole selector (every sub-child) 
-        $component: &;
-        $component-to-extend: &;
-       // @TODO internal-state!
-    }
-    @else if _is-modifier-context-like($modifier-name) {
+    @if _is-modifier-context-like($modifier-name) {
         $component: top-component();
     }
     @else {
@@ -290,6 +275,10 @@
         $_used-modifiers: map-merge($_used-modifiers, ($component: $map)) !global;
     }
 
+    // create index of already used modifiers
+    $checklist-of-used-modifiers: map-get($_checklist-of-used-modifiers, $component);
+    @if $checklist-of-used-modifiers==null { $checklist-of-used-modifiers: (); }
+    
     // generate selectors for all args
     @each $identifier in $args {
         $original-identifier: $identifier;
@@ -319,7 +308,9 @@
                             }
                             $selectors: append($selectors, $extended-selector, 'comma');
                         }
-                    }                
+                        // create index of already used modifiers
+                        $checklist-of-used-modifiers: map-merge($checklist-of-used-modifiers, ($original-modifier-name+' '+$extension: true));
+                    }
                 }
             }
             @if length($selectors)==0 and length($medias)==0 {
@@ -345,13 +336,18 @@
                     }
                     $selectors: append($selectors, $extended-selector, 'comma');
                 }
+                // create index of already used modifiers
+                $checklist-of-used-modifiers: map-merge($checklist-of-used-modifiers, ($original-modifier-name+' '+$extension: true));
             }
             @else {
                 // @feature Forcing to register all modifiers at first
                 @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/unknown-modifier - the "+$original-modifier-name+" '"+$identifier+"' is not registered in component '"+&+"'. Use mixin register state() at first!";
             }
         }
-    } 
+    }
+    
+    // create index of already used modifiers
+    $_checklist-of-used-modifiers: map-merge($_checklist-of-used-modifiers, ($component: $checklist-of-used-modifiers)) !global;
 
     // for purpose of mixin only-for 
     $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $selectors) !global;
@@ -574,4 +570,72 @@
 /// @access private
 @mixin _sub-element-separator {
     $_was-used-sub-element-separator: true !global;
+}
+
+
+/// Checks if component used all registered (sub)elements (called from component mixin at the end).
+@mixin _check-if-all-sub-elements-were-used($component) {
+    // @debug $_already-used-multiple-selectors;
+    // for all (sub)elements (a.k.a. sub-components) check mutations
+    $registered-sub-components: map-get($_registered-sub-components, $component);
+    @if $registered-sub-components!=null {
+        @each $sub-component in $registered-sub-components {            
+            @if index($_already-used-multiple-selectors, $sub-component)==null {
+                @error $SPOT_ERROR_PREFIX + "component/unused-element - element '"+$sub-component+"' was registered but never used (in component '"+$component+"').";
+            }
+        }
+    }
+}
+
+/// Checks if component used all registered mutations (called from component mixin at the end).
+@mixin _check-if-all-mutations-were-used($component) {
+    $checklist-of-used-modifiers: map-get($_checklist-of-used-modifiers, $component);
+    @if $checklist-of-used-modifiers==null { $checklist-of-used-modifiers: (); }
+
+    @each $modifier-type in $_all_types_of_modifiers {
+        $mutations: _get-component-modifiers(component(), $modifier-type);
+        @if $mutations {
+            @each $mutation, $mutation-params in $mutations {
+                @if map-get($checklist-of-used-modifiers, $modifier-type+' '+$mutation)==null {
+                    @error $SPOT_ERROR_PREFIX + "component/unused-mutation - "+$modifier-type+" '"+$mutation+"' was registered but never used (in component '"+$component+"').";
+                }
+            }
+        }   
+    }
+
+    // for all (sub)elements (a.k.a. sub-components) check mutations
+    $registered-sub-components: map-get($_registered-sub-components, $component);
+    @if $registered-sub-components!=null {
+        @each $sub-component in $registered-sub-components {
+            $checklist-of-used-modifiers: map-get($_checklist-of-used-modifiers, $sub-component);
+            @if $checklist-of-used-modifiers==null { $checklist-of-used-modifiers: (); }
+
+            @each $modifier-type in $_all_types_of_modifiers {
+                $mutations: _get-component-modifiers($sub-component, $modifier-type);
+                @if $mutations {
+                    @each $mutation, $mutation-params in $mutations {
+                        @if map-get($checklist-of-used-modifiers, $modifier-type+' '+$mutation)==null {
+                            @error $SPOT_ERROR_PREFIX + "component/unused-mutation - "+$modifier-type+" '"+$mutation+"' was registered but never used (in '"+$component+"').";
+                        }
+                    }
+                }   
+            }
+        }
+    }
+}
+
+
+
+/// guarding duplicity of sub-selectors
+@mixin _check-duplicity-of-sub-selectors($node-type, $whole-selector, $registering-end-selector) {
+    $registered-sub-components: map-get($_registered-sub-components, top-component());
+    @if $registered-sub-components==null { $registered-sub-components: []; }
+
+    @if index($_already-used-selectors, $whole-selector) or index($registered-sub-components, $whole-selector) {
+        @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
+    }
+    // store unique sub-component
+    $_already-used-selectors: append($_already-used-selectors, $whole-selector, 'comma') !global;
+    $registered-sub-components: append($registered-sub-components, $whole-selector, 'comma');
+    $_registered-sub-components: map-merge($_registered-sub-components, (top-component(): $registered-sub-components)) !global;
 }

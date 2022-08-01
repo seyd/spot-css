@@ -74,6 +74,11 @@
         @content;
     }
     
+    @if $_current-component-mode!='draft' {
+        @include _check-if-all-sub-elements-were-used( component() );
+        @include _check-if-all-mutations-were-used( component() );
+    }
+    
     // @debug map-get($_used-modifiers, component());
     // @debug map-get($_current-modifiers-stack, component());
 
@@ -130,14 +135,8 @@
     }
     $_was-used-sub-element-separator: false !global;
     
-    @if $_is-register-mode { 
-        // guarding duplicity of sub-components (and all sub selectors)
-        @if index($_already-used-selectors, $sub-component-selector) or index($_registered-sub-components, $sub-component-selector) {
-            @error $SPOT_ERROR_PREFIX + "child-component/already-registered - trying to register already registered sub-component '"+$selector+"' for component '"+component()+"'.";
-        }
-        // store unique sub-component
-        $_already-used-selectors: append($_already-used-selectors, $sub-component-selector, 'comma') !global;
-        $_registered-sub-components: append($_registered-sub-components, $sub-component-selector, 'comma') !global;
+    @if $_is-register-mode {
+        @include _check-duplicity-of-sub-selectors('child-component', $sub-component-selector, $selector);
 
          // store current component selector (into stack)
         $_current-components: append($_current-components, '> '+$selector, 'space') !global;
@@ -167,6 +166,7 @@
         @else {
             // store component selector if is not stored yet
             $_registered-components: append($_registered-components, $sub-component-selector, 'comma') !global;
+            $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sub-component-selector, 'comma') !global;
         }
 
         // 2)
@@ -233,13 +233,7 @@
     $_was-used-sub-element-separator: false !global;
     
     @if $_is-register-mode { 
-        // guarding duplicity of sub-components (and all sub selectors)
-        @if index($_already-used-selectors, $sub-component-selector) or index($_registered-sub-components, $sub-component-selector) {
-            @error $SPOT_ERROR_PREFIX + "sub-component/already-registered - trying to register already registered sub-component '"+$selector+"' for component '"+component()+"'.";
-        }
-        // store unique sub-component
-        $_already-used-selectors: append($_already-used-selectors, $sub-component-selector, 'comma') !global;
-        $_registered-sub-components: append($_registered-sub-components, $sub-component-selector, 'comma') !global;
+        @include _check-duplicity-of-sub-selectors('sub-component', $sub-component-selector, $selector);
 
         // store current component selector (into stack)
         $_current-components: append($_current-components, ' '+$selector, 'space') !global;
@@ -269,6 +263,7 @@
         @else {
             // store component selector if is not stored yet
             $_registered-components: append($_registered-components, $sub-component-selector, 'comma') !global;
+            $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sub-component-selector, 'comma') !global;
         }
 
         // 2)
@@ -465,11 +460,11 @@
 /// @output In register mode outputs nothing OR when not in regiter mode it will output selector extended by given context(s) with given content.
 @mixin context($args...) {
     @if $_is-register-mode {
-        // ' &' appendix signalize different mode of  composint selector
+        // ' &' appendix signalize different mode of composing selector
         @include _register-modifiers('context &', $args...);
     }
     @else {
-        // ' &' appendix signalize different mode of  composint selector
+        // ' &' appendix signalize different mode of composing selector
         @include _apply-modifier('context &', $args...) {        
             @content;
         }
@@ -589,13 +584,7 @@
         @each $selector in $selectors {
             $sub-component-selector: #{ & + ' ' + $selector };
             
-            // guarding duplicity of sub-selectors
-            @if index($_already-used-selectors, $sub-component-selector) or index($_registered-sub-components, $sub-component-selector) {
-                @error $SPOT_ERROR_PREFIX + "element/already-registered - trying to register already registered element '"+$selector+"' for component '"+component()+"'.";
-            }
-            // store unique sub-component
-            $_already-used-selectors: append($_already-used-selectors, $sub-component-selector, 'comma') !global;
-            $_registered-sub-components: append($_registered-sub-components, $sub-component-selector, 'comma') !global;
+            @include _check-duplicity-of-sub-selectors('element', $sub-component-selector, $selector);
 
             // store current component selector (into stack)
             $_current-components: append($_current-components, $selector, 'space') !global;
@@ -633,6 +622,7 @@
             @else {
                 // store component selector if is not stored yet
                 $_registered-components: append($_registered-components, $sub-component-selector, 'comma') !global;
+                $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sub-component-selector, 'comma') !global;
             }
 
             // 2)
@@ -800,6 +790,7 @@
 }
 
 
+// @deprecated
 @mixin already-defined-in($modifiers...) {
     // not allowed in register
     @if $_is-register-mode {

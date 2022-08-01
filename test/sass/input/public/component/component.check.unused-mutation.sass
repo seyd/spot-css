@@ -1,0 +1,115 @@
+@import "./src/spot-css"
+
++component("my-component")
+    +register
+        +state(':active')
+        +state('{hover}', ':hover', '.simulate-hover')
+        +state('{focus}', ':focus', ':simulate-focus')
+        +internal-state('.internal-loaded')
+        +variant('{variants}', '.alpha', '.beta', '.gama')
+        +context('html.dark-mode')
+        +responsive('{large}', '@media (min-width: 1280px)')
+        +browser('html.firefox')
+
+    +default
+        property: value
+
+    +state(':active')
+        property: value-active
+
+    +state('{hover}')
+        property: value-hover
+
+    +internal-state('.internal-loaded')
+        property: internal
+
+    +state(':focus', ':simulate-focus')
+        property: value-focus
+
+    +variant('{variants}')
+        property: value-extra
+
+    +context('html.dark-mode')
+        property: dark
+
+    +responsive('{large}')
+        property: large
+
+    +browser('html.firefox')
+        property: fire
+
+
+
++component("my-component-2")
+    +register
+        +state(':active')
+        +state('{hover}', ':hover', '.simulate-hover')
+        +state('{focus}', ':focus', ':simulate-focus')
+        +internal-state('.internal-loaded')
+        +variant('{variants}', '.alpha', '.beta', '.gama')
+        +context('html.dark-mode')
+        +responsive('{large}', '@media (min-width: 1280px)')
+        +browser('html.firefox')
+        +element('.first')
+            +element('.second')
+        +element('.third')
+
+    +________________________
+    +element('.first')
+        +default
+            property: value
+
+        +state(':active')
+            property: value-active
+
+        +state(':focus', ':simulate-focus')
+            property: value-focus
+
+        +________________________
+        +element('.second')
+            +default
+
+            +state('{hover}')
+                +default
+                    property: value-hover
+
+                +variant('{variants}')
+                    property: value-extra
+
+                +internal-state('.internal-loaded')
+                    property: internal
+
+    +________________________
+    +element('.third')
+        +default
+
+        +context('html.dark-mode')
+            property: dark
+
+        +responsive('{large}')
+            property: large
+
+        +browser('html.firefox')
+            property: fire
+
+
+
+
+
+// do not check used mutations and elements in draft mode
+
++mode('draft')
+
++component("my-component-draft")
+    +register
+        +state(':active')
+        +state('{hover}', ':hover', '.simulate-hover')
+        +state('{focus}', ':focus', ':simulate-focus')
+        +internal-state('.internal-loaded')
+        +variant('{variants}', '.alpha', '.beta', '.gama')
+        +context('html.dark-mode')
+        +responsive('{large}', '@media (min-width: 1280px)')
+        +browser('html.firefox')
+        +element('.first')
+            +element('.second')
+        +element('.third')

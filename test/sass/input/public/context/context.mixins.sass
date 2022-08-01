@@ -3,7 +3,7 @@
 
 +component("my-component")
     +register
-        +context('parent-component')        
+        +context('parent-component')
         +context('direct-parent-component >')
         +context('super-direct-parent-component > * > &') // with ampersand
         +context('html.mobile')
@@ -22,6 +22,10 @@
     +context('super-direct-parent-component > * > &')
         property: value
 
+    +context('html.mobile')
+    
+    +context('html.layout-portrait')
+
     +__________________
     +sub-component('a')
         +default
@@ -39,7 +43,7 @@
 // mergin contexts
 +component("your-component")
     +register
-        +context('parent-component')        
+        +context('parent-component')
         +context('direct-parent-component >')
         +context('previous-component +')
         +context('super-direct-parent-component > * > &') // with ampersand
@@ -62,3 +66,7 @@
 
     +context('other-parent-component > &')
         next: other
+
+    +context('parent-component')
+
+    +context('super-direct-parent-component > * > &')
