@@ -326,10 +326,26 @@
 @function extend($selector, $something, $extension) {
     // for each selector (if more selectors in $selector) check if extended selector is present
     @each $single-selector in $selector {
-        @if str-index($single-selector+'', $something+'')==null {
-            @error 'Extend function has failed! Subselector "'+$something+'" was not found in selector "'+$single-selector+'".';
+        @if str-index($single-selector + '', $something + '') ==null {
+            // fix for new version of SASS which sometimes removes quotes from attribute selectors, e.g: [class^="custom-footer"] ---> [class^=custom-footer]
+            $contains-double-quotes: str-index($something + '', '"') !=null;
+            $contains-single-quotes: str-index($something + '', "'") !=null;
+            $fixed: false;
+            @if $contains-double-quotes or $contains-single-quotes {
+                @if $contains-double-quotes {
+                    $something: str-replace($something + '', '"', '');
+                }
+                @if $contains-single-quotes {
+                    $something: str-replace($something + '', "'", '');
+                }
+
+                $fixed: str-index($single-selector + '', $something + '') !=null;
+            }
+            @if $fixed==false {
+                @error 'Extend function has failed! Subselector "'+$something+'" was not found in selector "'+$single-selector+'".';
+            }
         }
-    }  
+    }
     // if more selector in $extension, breaks it and replace each individual
     // it makes from ($something: '.item', $extenssion: '':first-child, :last-child') => $new-extension: 'item:first-child, item:last-child'
     $parts: selector-parse($extension);
