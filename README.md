@@ -12,6 +12,16 @@ Run `$ npm i --save-dev spotcss` to install SPOT CSS package.
 
 Include line `@import "~spotcss";` into your SCSS/SASS files.
 
+## Naming convention
+
+- **simple selector** - select elements based on name, id, class without relations to parents or siblings (no spaces, +, >, ~), e.g `div.wrapper`.
+
+- **combinator selectors** - select elements based on a specific relationship between them (contains spaces, +, >, or ~), e.g. `.wrapper > a`.
+
+- **single selector** - selector which doesn't contain commas. It could be both: simple selector or combinator selectors.
+
+- **multile selectors** - more single selectors separated by comma, e.g. `div.wrapper, .wrapper > a`.
+
 
 ## For contributors
 ### Development instructions
