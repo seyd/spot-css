@@ -322,40 +322,69 @@
 
 
 
-/// @todo tests
-@function extend($selector, $something, $extension) {
-    // for each selector (if more selectors in $selector) check if extended selector is present
-    @each $single-selector in $selector {
-        @if str-index($single-selector + '', $something + '') ==null {
-            // fix for new version of SASS which sometimes removes quotes from attribute selectors, e.g: [class^="custom-footer"] ---> [class^=custom-footer]
-            $contains-double-quotes: str-index($something + '', '"') !=null;
-            $contains-single-quotes: str-index($something + '', "'") !=null;
-            $fixed: false;
-            @if $contains-double-quotes or $contains-single-quotes {
-                @if $contains-double-quotes {
-                    $something: str-replace($something + '', '"', '');
-                }
-                @if $contains-single-quotes {
-                    $something: str-replace($something + '', "'", '');
-                }
+/// Extend subselector of selector with given extension.
+/// @access public
+/// @param { String } $selectors - single/multiple simple/combinator selectors 
+/// @param { String } $subselectors - single/multiple simple selectors 
+/// @param { String } $extensions - single/multiple simple selectors
+///
+/// @todo if same subselectors, how to address concrete one? 
+// +component('page1')
+//     +register
+//         +element('.wrapper')
+//             +element('.wrapper')
+//                 +state(':hover')
 
-                $fixed: str-index($single-selector + '', $something + '') !=null;
+//     +default
+
+//     +___________________
+//     +element('.wrapper')
+
+//         +___________________
+//         +element('.wrapper')
+//             +default
+//             +state(':hover')
+//                 color: red
+//
+@function extend($selectors, $subselectors, $extensions) {
+    $selector-parts: selector-parse($selectors);
+    $subselector-parts: selector-parse($subselectors);
+    $extension-parts: selector-parse($extensions);
+    $output: ();
+    // for each selector (if more selectors in $selectors) check if extended selector is present
+    @each $selector in $selector-parts {
+        $found: false;
+        @each $subselector in $subselector-parts {
+            @if $found==false {
+                $found: str-index($selector + '', $subselector + '')!=null;
+                @if $found {
+                    // fix for new version of SASS which sometimes removes quotes from attribute selectors, e.g: [class^="custom-footer"] ---> [class^=custom-footer]
+                    $contains-double-quotes: str-index($subselector + '', '"')!=null;
+                    $contains-single-quotes: str-index($subselector + '', "'")!=null;
+                    
+                    @if $contains-double-quotes or $contains-single-quotes {
+                        @if $contains-double-quotes {
+                            $subselector: str-replace($subselector + '', '"', '');
+                        }
+                        @if $contains-single-quotes {
+                            $subselector: str-replace($subselector + '', "'", '');
+                        }
+
+                        $found: str-index($selector + '', $subselector + '')!=null;
+                    }
+                }
             }
-            @if $fixed==false {
-                @error 'Extend function has failed! Subselector "'+$something+'" was not found in selector "'+$single-selector+'".';
+            @each $extension in $extension-parts {
+                $sub: _remove_combinator_selector($subselector);
+                $selector: selector-replace($selector, $sub, $sub+$extension+''); // +'' = convert to string
             }
         }
+        @if $found==false {
+            @error $SPOT_ERROR_PREFIX + 'extend/subselector-not-found - Extend function has failed! Subselector "'+$subselectors+'" was not found in selector "'+$selector+'".';
+        }
+        $output: append($output, $selector, 'comma');
     }
-    // if more selector in $extension, breaks it and replace each individual
-    // it makes from ($something: '.item', $extenssion: '':first-child, :last-child') => $new-extension: 'item:first-child, item:last-child'
-    $parts: selector-parse($extension);
-    $new-extension: ();
-    @each $partial-selector in $parts {
-        $partial-selector: selector-replace($partial-selector, $partial-selector, $something + $partial-selector);
-        $new-extension: append($new-extension, $partial-selector, 'comma');
-    }
-    // now it is safe to use selector-replace
-    @return selector-replace($selector, _remove_combinator_selector($something), $new-extension+''); // +'' = convert to string
+    @return $output;
 }
 
 
@@ -364,8 +393,8 @@
 @function selector-contains($selector, $simple-sub-selector) {
     $selectors: selector-parse($selector);
     @each $single-selector in $selectors {
-        @each $part-selector in $single-selector {
-            @if is-superselector($simple-sub-selector, $part-selector) {
+        @each $simple-selector in $single-selector {
+            @if is-superselector($simple-sub-selector, $simple-selector) {
                 @return true;
             }
         }

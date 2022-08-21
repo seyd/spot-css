@@ -1,0 +1,19 @@
+html body.loaded {
+  property: value;
+}
+
+html body.loaded, html body.secondary.loaded {
+  property: value;
+}
+
+html body.loaded, html body.secondary.loaded, custom-element.loaded {
+  property: value;
+}
+
+html body.loaded.initialized, html body.secondary.loaded.initialized, custom-element.loaded.initialized {
+  property: value;
+}
+
+html body.loaded {
+  property: value;
+}

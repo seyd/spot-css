@@ -1,0 +1,20 @@
+@import "./src/spot-css"
+
+#{extend('html body', 'body', '.loaded')}
+    property: value
+
+
+#{extend('html body, html body.secondary', 'body', '.loaded')}
+    property: value
+
+
+#{extend('html body, html body.secondary, custom-element', 'body, custom-element', '.loaded')}
+    property: value
+
+
+#{extend('html body, html body.secondary, custom-element', 'body, custom-element', '.loaded, .initialized')}
+    property: value
+
+
+#{extend('html body', 'body, div', '.loaded')}
+    property: value
