@@ -1,0 +1,8 @@
+@import "./src/spot-css"
+
+    
+// +global-responsive('{test}', '@media (min-width: 576px)')
+
++component('.component')
+    +register
+        +responsive('{test}')  // error because not registered with global-responsive mixin

@@ -201,3 +201,10 @@ $_was-used-sub-element-separator: false;
 /// @access private
 /// @type List
 $_standard-pseudo-elements: 'before', 'after', 'backdrop', 'cue', 'cue-region', 'first-letter', 'first-line', 'file-selector-button', 'grammar-error', 'marker', 'part(', 'placeholder', 'selection', 'slotted(', 'spelling-error(', 'target-text';
+
+
+/// List of registered global-responsive(s).
+/// @group Global
+/// @access private
+/// @type Map
+$_registered-global-responsives: ();

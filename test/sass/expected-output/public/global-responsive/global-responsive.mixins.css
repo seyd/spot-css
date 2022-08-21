@@ -1,0 +1,17 @@
+@media (min-width: 576px) {
+  .component {
+    prop: val-1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .component {
+    prop: val-2;
+  }
+}
+
+@media (min-width: 1920px) {
+  .component {
+    prop: val-3;
+  }
+}

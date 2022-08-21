@@ -1,0 +1,39 @@
+@import "./src/spot-css"
+
+    
++component("component-1")
+    +register
+        // alias with spaces 
+        +state('{ primary and secondary }', '.primary', '.secondary')
+
+    +default
+
+    // same alias but without spaces
+    +state('{primary and secondary}')
+        property: value
+
+
+
++component("component-2")
+    +register
+        // alias with spaces 
+        +state('{ primary and secondary }', '.primary', '.secondary')
+
+    +default
+
+    // same alias with spaces
+    +state('{ primary and secondary }')
+        property: value
+
+
+
++component("component-3")
+    +register
+        // alias without spaces 
+        +state('{primary and secondary}', '.primary', '.secondary')
+
+    +default
+
+    // same alias with spaces
+    +state('{ primary and secondary }')
+        property: value

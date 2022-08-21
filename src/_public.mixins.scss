@@ -32,8 +32,8 @@
     $first: first($args);
     $selectors: $args;
 
-    @if _is_alias($first) {
-        $alias: nth($args, 1);
+    @if _is-alias($first) {
+        $alias: _normalize-alias(nth($args, 1));
         $selectors: shift($args);
     }
 
@@ -337,7 +337,7 @@
         @error $SPOT_ERROR_PREFIX + "default/in-register - the mixin default doesn't have to be registered in register mixin in component '"+component()+"'.";
     }    
     // run only once per component selector
-    $current-media-selector: _wrap_into_media_selector(&);
+    $current-media-selector: _wrap-into-media-selector(&);
     @if index($_default-called-on, $current-media-selector) {
         @error $SPOT_ERROR_PREFIX + "default/already-called - the mixin default was already called for element '"+$current-media-selector+"'.";
     }
@@ -505,8 +505,21 @@
 /// @access public
 /// @param { String } $args...
 /// @content
+/// @throw SPOT CSS: responsive/no-global-found - you entered only alias of responsive mutation '{alias}'. No global responsive found with this alias or maybe you wanted provide second argument with media query.
 @mixin responsive($args...) {
     @if $_is-register-mode {
+        // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
+        @if length($args)==1 and _is-alias(first($args)) {
+            $alias: _normalize-alias(first($args));
+         
+            $already-registered-alias: map-get($_registered-global-responsives, $alias);
+            @if not $already-registered-alias {
+                @error $SPOT_ERROR_PREFIX + "responsive/no-global-found - you entered only alias of responsive mutation '"+first($args)+"'. No global responsive found with this alias or maybe you wanted provide second argument with media query.";
+            }
+
+            $args: append($args, $already-registered-alias);
+        }
+
         // ' &' appendix signalize different mode of  composint selector
         @include _register-modifiers('responsive &', $args...);
     }
@@ -794,6 +807,37 @@
     @at-root #{only-for(&, $args...)} {
         @content;
     }
+}
+
+
+/// Register global reusable responsive mutation addresable with alias.
+/// You can use it via alias in component register section.
+/// (we recommend to use it in global variables section/file)
+///
+/// @group Global
+/// @access public
+/// @param { String } $alias - Unique alias of registered responsive mutation, e.g. "{mobile}" (must be enclosed in curly brackets).
+/// @param { String } $selectorOrMediaQuery - Context selector or media query.
+/// @throw SPOT CSS: global-responsive/bad-alias - alias must be enclosed in curly brackets.
+/// @throw SPOT CSS: global-responsive/no-alias - alias must contain at least one character.
+/// @throw SPOT CSS: global-responsive/duplicate-alias - alias '{alias}' is already registered as a global alias.
+@mixin global-responsive($alias, $selectorOrMediaQuery) {
+    $alias: _normalize-alias($alias);
+
+    @if _is-alias($alias)==false {
+        @error $SPOT_ERROR_PREFIX + "global-responsive/bad-alias - alias must be enclosed in curly brackets.";
+    }
+    
+    @if str-length(str-replace($alias, ' ', ''))<=2 {
+        @error $SPOT_ERROR_PREFIX + "global-responsive/no-alias - alias must contain at least one character.";
+    }
+    
+    $already-registered-alias: map-get($_registered-global-responsives, $alias);
+    @if $already-registered-alias {
+        @error $SPOT_ERROR_PREFIX + "global-responsive/duplicate-alias - alias '"+$alias+"' is already registered as a global alias.";
+    }
+
+    $_registered-global-responsives: map-merge($_registered-global-responsives, ($alias: $selectorOrMediaQuery)) !global;
 }
 
 

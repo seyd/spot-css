@@ -375,7 +375,7 @@
                 }
             }
             @each $extension in $extension-parts {
-                $sub: _remove_combinator_selector($subselector);
+                $sub: _remove-combinator-selector($subselector);
                 $selector: selector-replace($selector, $sub, $sub+$extension+''); // +'' = convert to string
             }
         }
@@ -573,7 +573,7 @@
                 $i: 0;
                 @each $partial-selector-2 in $sel-2 {
                     $i: $i + 1;
-                    @if not _is_selector_combinator($partial-selector-1) and not _is_selector_combinator($partial-selector-2) {
+                    @if not _is-selector-combinator($partial-selector-1) and not _is-selector-combinator($partial-selector-2) {
                         $first-simple-selector-1: nth(simple-selectors($partial-selector-1), 1);
                         $first-simple-selector-2: nth(simple-selectors($partial-selector-2), 1);
                         @if $first-simple-selector-1!="" and $first-simple-selector-2!="" {
@@ -596,7 +596,7 @@
                 }
             }
             // predend rest of $sel-2 into beginning of $new-selector            
-            $new-selector: _prepend_selector_context($new-selector, $sel-2);
+            $new-selector: _prepend-selector-context($new-selector, $sel-2);
             $output: append-unbracketed($output, $new-selector, 'comma');
         }
     }

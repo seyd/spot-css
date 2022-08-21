@@ -225,14 +225,14 @@
 /// @access private
 /// @return {Boolean} True if mixin register was already called in current selector.
 @function _default-mixin-was-already-called() {
-    $current-media-selector: _wrap_into_media_selector(&);
+    $current-media-selector: _wrap-into-media-selector(&);
     @return index($_default-called-on, $current-media-selector) != null;
 }
 
 
 /// Wraps given selector into current media query stack to return unique selector
 /// to avoid duplicite usage of modifiers.
-@function _wrap_into_media_selector($selector) {
+@function _wrap-into-media-selector($selector) {
     $current-media-selector: '';
     $is_media: length($_current-media-stack)>0;
     @if $is_media {
@@ -255,14 +255,14 @@
 }
 
 
-@function _prepend_selector_context($selector, $context) {
+@function _prepend-selector-context($selector, $context) {
     $html-element-part: [];
     $body-element-part: [];
     $rest-selector-part: [];
     // split selector into 3 parts (html, body and rest)
     @each $partial-selector in $selector {
         $first-part: "";
-        @if not _is_selector_combinator($partial-selector) {
+        @if not _is-selector-combinator($partial-selector) {
             $first-part: to-lower-case(nth(simple-selectors($partial-selector), 1));
         }
         
@@ -279,7 +279,7 @@
     // add context
     @each $partial-selector in $context {
         $first-part: "";
-        @if not _is_selector_combinator($partial-selector) {
+        @if not _is-selector-combinator($partial-selector) {
             $first-part: to-lower-case(nth(simple-selectors($partial-selector), 1));
         }
 
@@ -303,7 +303,7 @@
 /// @access private
 /// @param {String} $simple-selector - simple selector
 /// @return {Boolean} True if iven simple selector is combinator.
-@function _is_selector_combinator($simple-selector) {
+@function _is-selector-combinator($simple-selector) {
     @return $simple-selector==">" or $simple-selector=="+" or $simple-selector=="~";
 }
 
@@ -311,12 +311,18 @@
 /// @access private
 /// @param {String} $simple-selector - simple selector
 /// @return {String} Given selector without combinator selector.
-@function _remove_combinator_selector($simple-selector) {
+@function _remove-combinator-selector($simple-selector) {
     @return str-trim(str-replace(str-replace(str-replace($simple-selector+'', '>', ''), '+', ''), '~', ''));
 }
 
 
 /// Returns if given string starts with char "{" and ends with "}", that means it's alias.
-@function _is_alias($str) {
+@function _is-alias($str) {
     @return str-index($str, '{')==1 and str-index($str, '}')==str-length($str);
+}
+
+
+/// Removes spaces from alias, e.g. "{ Text }" => "{Text}"
+@function _normalize-alias($alias) {
+    @return str-replace(str-replace($alias, '{ ', '{'), ' }', '}');
 }

@@ -1,0 +1,25 @@
+@import "./src/spot-css"
+
+    
++global-responsive('{test1}', '@media (min-width: 576px)')
++global-responsive('{ test2 }', '@media (min-width: 1024px)')
++global-responsive('{test3}', '@media (min-width: 1920px)')
+
+
+
++component('.component')
+    +register
+        +responsive('{test1}')
+        +responsive('{ test2 }')
+        +responsive('{ test3 }')
+
+    +default
+    
+    +responsive('{test1}')
+        prop: val-1
+
+    +responsive('{test2}')
+        prop: val-2
+
+    +responsive('{ test3 }')
+        prop: val-3

@@ -74,7 +74,8 @@
 @mixin _register-individual-modifier($modifier-name, $identifier, $alias: '', $do-not-check-alias: false) {    
     // backup
     $original-identifier: $identifier;    
-
+    
+    $alias: _normalize-alias($alias);
     $identifier: _add-default-ampersand-if-context($modifier-name, $identifier);
     $alias_with_ampersand: _add-default-ampersand-if-context($modifier-name, $alias);
     $modifier: str-replace($modifier-name, ' &', '');
@@ -99,7 +100,7 @@
     }
 
     // @feature Guarding duplicity of modifiers with aliases
-    @if index($_registered-aliases, _get-component-identifier(component(), $original-identifier)) {
+    @if index($_registered-aliases, _get-component-identifier(component(), _normalize-alias($original-identifier))) {
         @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-with-alias - trying to register modifier '"+$original-identifier+"' but there is already registered modifier with same alias for component '"+component()+"'.";
     }
 
@@ -226,7 +227,7 @@
         $component-to-extend: last($sub-component-stack);
     }
     $_current_modifier: $modifier-name !global;
-    $component-to-extend-simplified: _remove_combinator_selector($component-to-extend);
+    $component-to-extend-simplified: _remove-combinator-selector($component-to-extend);
 
     // check if sub elements mixin was not used for current selector
     @if index($_selectors-with-sub-elements, &) {
@@ -283,16 +284,16 @@
     @each $identifier in $args {
         $original-identifier: $identifier;
         $identifier: _add-default-ampersand-if-context($modifier-name, $identifier);
-        $component-with-identifier: _get-component-identifier($component, $identifier);
+        $component-with-identifier-alias: _get-component-identifier($component, _normalize-alias($identifier));
         $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
         $modifiers: map-get($_registered-modifiers, $component-with-modifier);
-        $is-alias: index($_registered-aliases, str-replace($component-with-identifier, ' &', ''));
+        $is-alias: index($_registered-aliases, str-replace($component-with-identifier-alias, ' &', ''));
         @if $is-alias {
             @if $modifiers {
                 // find all modifiers with this alias
                 @each $modifier in $modifiers {
                     $alias: map-get(nth($modifier, 2), 'alias');
-                    @if $original-identifier==$alias {
+                    @if $alias==_normalize-alias($original-identifier) {
                         $extension: nth($modifier, 1);
                         $extended-selector: '';
                         @if str-index($extension, '@media')==1 {
@@ -358,7 +359,7 @@
     @if $second-param-index!='' { $second-param-index: '[['+$second-param-index+']]'; }
     @each $single-selector in $selectors {
         $i: $i + 1;
-        $single-selector: _wrap_into_media_selector( str-replace($single-selector+'', '&', &) )+$second-param-index;
+        $single-selector: _wrap-into-media-selector( str-replace($single-selector+'', '&', &) )+$second-param-index;
         @if index($_already-used-selectors, $single-selector) {
             @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/already-used-modifier - the "+$original-modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }
