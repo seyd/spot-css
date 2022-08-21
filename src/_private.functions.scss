@@ -314,3 +314,9 @@
 @function _remove_combinator_selector($simple-selector) {
     @return str-trim(str-replace(str-replace(str-replace($simple-selector+'', '>', ''), '+', ''), '~', ''));
 }
+
+
+/// Returns if given string starts with char "{" and ends with "}", that means it's alias.
+@function _is_alias($str) {
+    @return str-index($str, '{')==1 and str-index($str, '}')==str-length($str);
+}
