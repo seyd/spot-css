@@ -20,7 +20,11 @@ Include line `@import "~spotcss";` into your SCSS/SASS files.
 
 - **single selector** - selector which doesn't contain commas. It could be both: simple selector or combinator selectors.
 
-- **multile selectors** - more single selectors separated by comma, e.g. `div.wrapper, .wrapper > a`.
+- **multiple selectors** - more single selectors separated by comma, e.g. `div.wrapper, .wrapper > a`.
+
+- **multiple simple selectors** - more simple selectors separated by comma, e.g. `div.wrapper, a.wrapper`.
+
+- **multiple combinator selectors** - more combinator selectors separated by comma, e.g. `div.wrapper span, .wrapper > a`.
 
 
 ## For contributors
