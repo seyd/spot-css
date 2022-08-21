@@ -13,3 +13,35 @@ my-component {
 html {
   property: value;
 }
+
+page1 {
+  property: value;
+}
+
+page1:hover {
+  property: value-hover;
+}
+
+page1 .wrapper {
+  display: block;
+}
+
+page1:hover .wrapper {
+  display: flex;
+}
+
+page2 {
+  property: value;
+}
+
+page2:hover {
+  property: value-hover;
+}
+
+page2 .wrapper {
+  display: block;
+}
+
+page2:hover .wrapper {
+  display: flex;
+}

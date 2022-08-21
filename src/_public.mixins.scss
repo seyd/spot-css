@@ -19,22 +19,25 @@
 ///
 /// @group Component
 /// @access public
-/// @param { String[] } $args... - 1. ($selector),  2. ($alias, $selector)
+/// @param { String[] } $args... - 1. ($selector),  2. ($alias, $selector), 3. ($selector1, $selector2), 4. ($alias, $selector1, $selector2, $selector3)
 /// @content
 /// @throw SPOT CSS: component/no-selector - selector was expected but nothing passed.
 /// @throw SPOT CSS: component/sub-component - you cannot use mixin component in component. Instead use mixin sub-component and also register it in parent component.
 /// @throw SPOT CSS: component/single-selector - given selector is not a single selector ({selector}).
 /// @throw SPOT CSS: component/already-registered - given selector is already registered as component ({selector}).
 /// @output Given selector with given content.
+/// @todo component selector must be a simple selector check
 @mixin component($args...) {
-    $selector: first($args);
+    $alias: null;  // not used later (yet)
+    $first: first($args);
+    $selectors: $args;
 
-    @if length($args)==2 {
-        $alias: nth($args, 1); // not used here (yet)
-        $selector: nth($args, 2);
+    @if _is_alias($first) {
+        $alias: nth($args, 1);
+        $selectors: shift($args);
     }
 
-    @if not $selector or $selector=="" {
+    @if length($selectors)==0 or not first($selectors) or first($selectors)=="" {
         @error $SPOT_ERROR_PREFIX + "component/no-selector - selector was expected but nothing passed.";
     }
 
@@ -42,51 +45,55 @@
         @error $SPOT_ERROR_PREFIX + "component/sub-component - you cannot use mixin component in component. Instead use mixin sub-component and also register it in parent component.";
     }
 
-    $selectors: selector-parse($selector);
-    @if length($selectors)>1 {
-        @error $SPOT_ERROR_PREFIX + "component/single-selector - given selector is not a single selector ('"+$selector+"').";
+    // for all selectors (component alternatives)
+    @each $selector in $selectors {
+        
+        $multiple-selectors: selector-parse($selector);
+        @if length($multiple-selectors)>1 {
+            @error $SPOT_ERROR_PREFIX + "component/single-selector - given selector is not a single selector ('"+$selector+"').";
+        }
+
+        $component-selector: $selector;
+
+        // 1)
+        // if already registred
+        @if index($_registered-components, $component-selector)!=null {
+            @error $SPOT_ERROR_PREFIX + "component/already-registered - given selector is already registered as component ('"+$component-selector+"').";
+        }
+        @else {
+            // store component selector if is not stored yet
+            $_registered-components: append($_registered-components, $component-selector, 'comma') !global;
+        }
+
+        // 2)
+        // store current component selector (into stack)
+        $_current-components: append($_current-components, $component-selector, 'space') !global;
+
+        // // create map for used modifiers (nested) per component
+        // $_used-modifiers: map-merge($_used-modifiers, (component(): ())) !global;
+        // $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): [])) !global;
+
+        // @debug '-------------------------------';
+        // @debug 'Component: '+component();
+
+        #{$component-selector} {
+            @content;
+        }
+        
+        @if $_current-component-mode!='draft' {
+            @include _check-if-all-sub-elements-were-used( component() );
+            @include _check-if-all-mutations-were-used( component() );
+        }
+        
+        // @debug map-get($_used-modifiers, component());
+        // @debug map-get($_current-modifiers-stack, component());
+
+        // remove current component selector (from stack)
+        $_current-components: pop($_current-components) !global;
+
+        // reset current mode to default after each component
+        $_current-component-mode: $_default-component-mode !global;
     }
-    
-    $component-selector: $selector;
-
-    // 1)
-    // if already registred
-    @if index($_registered-components, $component-selector)!=null {
-        @error $SPOT_ERROR_PREFIX + "component/already-registered - given selector is already registered as component ('"+$component-selector+"').";
-    }
-    @else {
-        // store component selector if is not stored yet
-        $_registered-components: append($_registered-components, $component-selector, 'comma') !global;
-    }
-
-    // 2)
-    // store current component selector (into stack)
-    $_current-components: append($_current-components, $component-selector, 'space') !global;
-
-    // // create map for used modifiers (nested) per component
-    // $_used-modifiers: map-merge($_used-modifiers, (component(): ())) !global;
-    // $_current-modifiers-stack: map-merge($_current-modifiers-stack, (component(): [])) !global;
-
-    // @debug '-------------------------------';
-    // @debug 'Component: '+component();
-
-    #{$component-selector} {
-        @content;
-    }
-    
-    @if $_current-component-mode!='draft' {
-        @include _check-if-all-sub-elements-were-used( component() );
-        @include _check-if-all-mutations-were-used( component() );
-    }
-    
-    // @debug map-get($_used-modifiers, component());
-    // @debug map-get($_current-modifiers-stack, component());
-
-    // remove current component selector (from stack)
-    $_current-components: pop($_current-components) !global;
-
-    // reset current mode to default after each component
-    $_current-component-mode: $_default-component-mode !global;
 }
 
 

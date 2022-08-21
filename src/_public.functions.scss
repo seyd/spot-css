@@ -433,6 +433,20 @@
 }
 
 
+// @description Remove the first item in the list.
+// @returns new list, not first item (to do so use first() function)
+@function shift($list) {
+    $result: ();
+    $len: length($list);
+    @if $len>1 {
+        @for $i from 2 through $len {
+            $result: append($result, nth($list, $i));
+        }
+    }
+    @return $result;
+}
+
+
 @function str-replace($string, $search, $replace: '') {
     $index: str-index($string, $search);
 

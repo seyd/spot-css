@@ -13,5 +13,25 @@
     property: value
 
 // component with alias
-+component('Page', 'html')
++component('{Page}', 'html')
     property: value
+
+// component with alternatives
++component('{Page}', 'page1', 'page2')
+    +register
+        +state(':hover')
+        +element('.wrapper')
+
+    +default
+        property: value
+
+    +state(':hover')
+        property: value-hover
+
+    +___________________
+    +element('.wrapper')
+        +default
+            display: block
+
+        +state(':hover')
+            display: flex
