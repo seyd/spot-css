@@ -27,7 +27,7 @@
 
     // if selector contains '?' (e.g. '[type="?"]') character, $args must be provided as expected values
     // expample arguments: ('state', '[type="?"]', 'primary', 'secondary')
-    @if str-index($identifier, '?') or str-index($identifier, '{') {
+    @if str-index($identifier, '?') or _is_alias($identifier) {
         $len: length($args);
         @if $len==0 {
             @error $SPOT_ERROR_PREFIX + "register/missing-values - the mixin register { "+$modifier-name+"("+$identifier+") } uses '?' as value placeholder but no values were provided.";
