@@ -725,6 +725,20 @@
 }
 
 
+/// Add selector specificity at all levels at once.
+/// @access public
+/// @param { Number } $id-spec - How many levels to add at id level (1..n)
+/// @param { Number } $cl-spec - How many levels to add at class level (1..n)
+/// @param { Number } $el-spec - How many levels to add at element level (1..n)
+/// @content
+/// @output Stronger selector(s) with given inner content.
+@mixin add-specificity($id-spec: 0, $cl-spec: 0, $el-spec: 0) {
+    @at-root #{add-specificity(&, $id-spec, $cl-spec, $el-spec)} {
+        @content;
+    }
+}
+
+
 /// Add selector specificity at element level.
 /// @access public
 /// @param { Number } $n - How many levels to add (1..n)
