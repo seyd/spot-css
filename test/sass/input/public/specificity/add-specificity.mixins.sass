@@ -68,3 +68,25 @@ div .a, div .b
   // element
   +add-element-specificity(1)
     property: value-15
+
+
+// add specificity for whole component
++component('{Page}', 'page1', 'page2')
+    +add-specificity(1, 2, 3)
+      +register
+          +state(':hover')
+          +element('.wrapper')
+
+      +default
+          property: value
+
+      +state(':hover')
+          property: value-hover
+
+      +___________________
+      +element('.wrapper')
+          +default
+              display: block
+
+          +state(':hover')
+              display: flex

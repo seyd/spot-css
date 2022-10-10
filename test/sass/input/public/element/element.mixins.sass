@@ -48,3 +48,54 @@
             +________________________
             +element('~ .wrapper-4')
                 property: value-10
+
+
+// aliases
++component('my-component-2')
+    +register
+        +state('[disabled]')
+        +element('{wrap-1}', '.wrapper-x', '.wrapper-y') // multiple elements
+            +state('[disabled]')
+            +element('{wrap-2}', '> .wrapper-x-2')
+                +element('{wrap-3}', '> .wrapper-x-3')
+                    +state('[disabled]')
+                +element('{wrap-4}', '~ .wrapper-x-4')
+
+    +default
+        property: value
+
+    +state('[disabled]')
+        property: value-2
+
+    +________________________
+    +element('{wrap-1}')
+        +default
+            property: value-3
+
+        +state('[disabled]')
+            property: value-4
+
+        +state('[disabled]', -1)
+            property: value-5
+        
+        +________________________
+        +element('{wrap-2}')
+            property: value-5-1
+
+            +________________________
+            +element('{wrap-3}')
+                +default
+                    property: value-6
+
+                +state('[disabled]')
+                    property: value-7
+                
+                +state('[disabled]', -1)
+                    property: value-8
+                
+                +state('[disabled]', -2)
+                    property: value-9
+
+            +________________________
+            +element('{wrap-4}')
+                property: value-10

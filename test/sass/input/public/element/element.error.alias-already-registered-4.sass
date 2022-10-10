@@ -1,0 +1,8 @@
+@import "./src/spot-css"
+
++component('my-component-2')
+    +register
+        +state('[disabled]')
+        +element('{wrap-1}', '.wrapper-x', '.wrapper-y')
+            +state('[disabled]')
+            +element('{wrap-1}', '.wrapper-x', '.wrapper-y') // throw error - already registered

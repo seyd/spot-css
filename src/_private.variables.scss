@@ -101,11 +101,27 @@ $_registered-modifiers: ();
 $_registered-identifiers: [];
 
 
-/// List of registered aliases of identifiers for guarding uniqueness (per component).
+/// List of registered aliases of modifiers for guarding uniqueness (per component).
 /// @group Component
 /// @access private
 /// @type List
-$_registered-aliases: [];
+$_registered-modifier-aliases: [];
+
+
+/// List of registered aliases of elements for guarding uniqueness (per component).
+/// Key is component selector + alias
+/// @group Component
+/// @access private
+/// @type Map
+$_registered-component-aliases: ();
+
+
+/// List of registered aliases of elements for guarding uniqueness (per component element).
+/// Key is component selector + alias
+/// @group Component
+/// @access private
+/// @type Map
+$_registered-component-element-aliases: ();
 
 
 /// List of registered sub-subelements for guarding uniqueness and required register (per component).

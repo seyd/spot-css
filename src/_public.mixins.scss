@@ -555,6 +555,10 @@
 /// @throw SPOT CSS: element/duplicate - given element selector is already used in current block ('{selector}').";
 /// @throw SPOT CSS: element/no-selector - selector was expected but nothing passed.
 /// @throw SPOT CSS: element/single-selector - given selector is not a single selector, because contains comma(s): '{selector}'.
+/// @throw SPOT CSS: element/simple-selector - given selector has to be simple selector withou spaces, '>' and '~' but is: '{selector}'.
+/// @throw SPOT CSS: element-alias/not-first-argument - You can use alias only as a firt argument only. But you are using argument with alias '{alias}' for component selector '{selector}' wrong.
+/// @throw SPOT CSS: element-alias/already-registered - trying to register already registered sub-element '{alias}' for component selector '{selector}'.
+/// @throw SPOT CSS: element-alias/unknown-unregistered - given element '{selector}' is not registered in direct parent component ('{component}').
 /// @output Given selector with given content.
 @mixin element($selectors...) {
     @if length($selectors)==0 {
@@ -587,40 +591,72 @@
         @if not $selector or $selector=="" {
             @error $SPOT_ERROR_PREFIX + "element/no-selector - selector was expected but nothing passed.";
         }
-        $parts: selector-parse($selector);
-        @if length($parts) > 1 {
-            @error $SPOT_ERROR_PREFIX + "element/single-selector - given selector is not a single selector, because contains comma(s): '"+$selector+"'.";
-        }
+        @if not _is-alias($selector) {
+            $parts: selector-parse($selector);
+            @if length($parts) > 1 {
+                @error $SPOT_ERROR_PREFIX + "element/single-selector - given selector is not a single selector, because contains comma(s): '"+$selector+"'.";
+            }
 
-        @if length-of-simple-selector(selector-trim-combinators($selector)) > 1 {            
-            @error $SPOT_ERROR_PREFIX + "element/simple-selector - given selector has to be simple selector withou spaces, '>' and '~' but is: '"+$selector+"'.";
+            @if length-of-simple-selector(selector-trim-combinators($selector)) > 1 {            
+                @error $SPOT_ERROR_PREFIX + "element/simple-selector - given selector has to be simple selector withou spaces, '>' and '~' but is: '"+$selector+"'.";
+            }
         }
     }
     
     @if $_is-register-mode { 
-        // TODOS
-        // {alias} and selector(s)
+        $counter: 0;
+        $selectors-without-alias: shift($selectors); // remove first item (alias)
+        
+        $alias: null;
+        $component-alias-key: null;
+        $registered-component-alias: null;
 
         @each $selector in $selectors {
-            $sub-component-selector: #{ & + ' ' + $selector };
-            
-            @include _check-duplicity-of-sub-selectors('element', $sub-component-selector, $selector);
+            $counter: $counter + 1;
 
-            // store current component selector (into stack)
-            $_current-components: append($_current-components, $selector, 'space') !global;
-
-            $_is-child-component-mode: true !global;
-
-            @at-root
-            #{$sub-component-selector} {
-                @content;
+            @if _is-alias($selector) {
+                @if $counter>1 {
+                    // @TODO test
+                    @error $SPOT_ERROR_PREFIX + "element-alias/not-first-argument - You can use alias only as a firt argument only. But you are using argument with alias '"+$alias+"' for component selector '"+&+"' wrong.";
+                }
+                
+                $alias: _normalize-alias($selector);
+                $component-alias-key: top-component()+' '+$alias;
+                
+                $registered-component-alias: map-get($_registered-component-aliases, $component-alias-key);
+                $registered-component-element-alias: map-get($_registered-component-element-aliases, $component-alias-key);
+                
+                // guarding duplicity of sub-elements alias (for whole component)
+                @if $registered-component-alias and (($registered-component-element-alias and str-index(&+'', $registered-component-element-alias+'')==1) or $registered-component-alias!=$selectors-without-alias) {
+                    @error $SPOT_ERROR_PREFIX + "element-alias/already-registered - trying to register already registered sub-element '"+$alias+"' for component selector '"+&+"'.";
+                }
+                
+                $registered-component-alias: $selectors-without-alias;
+                $_registered-component-aliases: map-merge($_registered-component-aliases, ($component-alias-key: $registered-component-alias)) !global;
+                $_registered-component-element-aliases: map-merge($_registered-component-element-aliases, ($component-alias-key: &)) !global;
             }
+            @else {                
+                // if not alias
+                $sub-component-selector: #{ & + ' ' + str-trim($selector) };
+                
+                @include _check-duplicity-of-sub-selectors('element', $sub-component-selector, $selector);
 
-            $_is-child-component-mode: false !global;
+                // store current component selector (into stack)
+                $_current-components: append($_current-components, $selector, 'space') !global;
 
-            // remove current component selector (from stack)
-            $_current-components: pop($_current-components) !global;
-        }
+                $_is-child-component-mode: true !global;
+
+                @at-root
+                #{$sub-component-selector} {
+                    @content;
+                }
+
+                $_is-child-component-mode: false !global;
+
+                // remove current component selector (from stack)
+                $_current-components: pop($_current-components) !global;
+            }
+        }        
     }
     @else {
         // store appling sub element in current selector to avoid calling state, variant, etc. after element section (see error "/invalid-order")
@@ -628,8 +664,24 @@
             $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
         }
 
+        // expand aliases to selectors
+        @for $i from 1 through length($selectors) {
+            $selector: nth($selectors, $i);
+            @if _is-alias($selector) {
+                $alias: _normalize-alias($selector);
+                $component-alias-key: top-component()+' '+$alias;
+                $registered-component-alias: map-get($_registered-component-aliases, $component-alias-key);
+                
+                @if not $registered-component-alias {
+                    @error $SPOT_ERROR_PREFIX + "element-alias/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
+                }
+
+                $selectors: replace-nth($selectors, $i, $registered-component-alias);
+            }
+        }
+
         @each $selector in $selectors {
-            $sub-component-selector: #{ & + ' ' + $selector };
+            $sub-component-selector: #{ & + ' ' + str-trim($selector) };
             // check if element is registered
             @if not index($_already-used-selectors, $sub-component-selector) and $_current-component-mode!='draft' {
                 @error $SPOT_ERROR_PREFIX + "element/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";

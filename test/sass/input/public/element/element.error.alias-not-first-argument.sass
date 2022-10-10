@@ -1,0 +1,6 @@
+@import "./src/spot-css"
+
++component('my-component-2')
+    +register
+        +state('[disabled]')
+        +element('{wrap-1}', '{wrap-2}', '.wrapper-x', '.wrapper-y') // throw error - alias not first argument

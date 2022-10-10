@@ -1,0 +1,8 @@
+@import "./src/spot-css"
+
+// aliases
++component("my-component-4")
+    +register
+        +pseudo-element('{pseudo}', 'after', 'before')
+        +element('.wrapper')
+            +pseudo-element('{pseudo}', 'before', 'after') // throw error - because already alias must be unique in whole component

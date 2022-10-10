@@ -1,0 +1,8 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +variant('.active')
+        +child-element('span')
+            +pseudo-element('{xxx}', 'before')
+            +pseudo-element('{ xxx }', 'after') // throw error - because already registered alias (even with extra spaces)

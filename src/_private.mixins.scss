@@ -100,7 +100,7 @@
     }
 
     // @feature Guarding duplicity of modifiers with aliases
-    @if index($_registered-aliases, _get-component-identifier(component(), _normalize-alias($original-identifier))) {
+    @if index($_registered-modifier-aliases, _get-component-identifier(component(), _normalize-alias($original-identifier))) {
         @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-with-alias - trying to register modifier '"+$original-identifier+"' but there is already registered modifier with same alias for component '"+component()+"'.";
     }
 
@@ -117,12 +117,12 @@
         $component-with-alias: _get-component-identifier(component(), $alias);
     
         // @feature Guarding duplicity of modifiers aliases
-        @if index($_registered-aliases, $component-with-alias) {
+        @if index($_registered-modifier-aliases, $component-with-alias) {
             @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-alias - trying to register already registered modifier alias '"+$alias+"' for component '"+component()+"'.";
         }
 
         // store unique alias
-        $_registered-aliases: append($_registered-aliases, $component-with-alias) !global;    
+        $_registered-modifier-aliases: append($_registered-modifier-aliases, $component-with-alias) !global;    
     }
     
     // create empty map if does not existes yet
@@ -203,7 +203,7 @@
                 $component-with-identifier: _get-component-identifier($component, $identifier);
                 $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
                 $modifiers: map-get($_registered-modifiers, $component-with-modifier);
-                $is-alias: index($_registered-aliases, str-replace($component-with-identifier, ' &', ''));
+                $is-alias: index($_registered-modifier-aliases, str-replace($component-with-identifier, ' &', ''));
                 @if $is-alias or ($modifiers!=null and map-has-key($modifiers, $identifier)) {                    
                     @if $super-component-index < 0 {
                         $super-component-index: $super-component-index + 1;
@@ -287,7 +287,7 @@
         $component-with-identifier-alias: _get-component-identifier($component, _normalize-alias($identifier));
         $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
         $modifiers: map-get($_registered-modifiers, $component-with-modifier);
-        $is-alias: index($_registered-aliases, str-replace($component-with-identifier-alias, ' &', ''));
+        $is-alias: index($_registered-modifier-aliases, str-replace($component-with-identifier-alias, ' &', ''));
         @if $is-alias {
             @if $modifiers {
                 // find all modifiers with this alias
@@ -423,6 +423,8 @@
 /// @throw SPOT CSS: {sub}-element/already-registered - trying to register already registered sub-element 'selector' for component selector 'current-selector'.
 /// @throw SPOT CSS: {sub}-element/unregistred-sub-element - the {sub}-element('selector') is not registered for component selector 'component()'.
 /// @throw SPOT CSS: {sub}-element/already-used - the {sub}-element('selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every {sub}-element.
+/// @throw SPOT CSS: {sub}-element-alias/already-registered - trying to register already registered sub-element '{alias}' for component selector '{selector}'.
+/// @throw SPOT CSS: {sub}-element-alias/unknown-unregistered - given element '{selector}' is not registered in direct parent component ('{component}').
 /// @output Given selector with given content.
 @mixin _sub-element($sub-element-type, $sub-selectors...) {
     @if length($sub-selectors)==0 {
@@ -446,6 +448,51 @@
         // store appling sub element in current selector to avoid calling state, variant, etc. after that
         @if not index($_selectors-with-sub-elements, &) {
             $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
+        }
+    }
+
+    $counter: 0;
+    $selectors-without-alias: shift($sub-selectors); // remove first item (alias)
+
+    $alias: null;
+    $component-alias-key: null;
+    $registered-component-alias: null;
+
+    @if _is-alias(first($sub-selectors)) {
+        $alias: _normalize-alias(first($sub-selectors));
+        $component-alias-key: top-component()+' '+$alias;
+
+        @if $_is-register-mode {
+            $sub-selectors: shift($sub-selectors);
+            $registered-component-alias: map-get($_registered-component-aliases, $component-alias-key);
+            $registered-component-element-alias: map-get($_registered-component-element-aliases, $component-alias-key);
+
+            // guarding duplicity of sub-elements alias (for whole component)
+            @if $registered-component-alias and (($registered-component-element-alias and str-index(&+'', $registered-component-element-alias+'')==1) or $registered-component-alias!=$selectors-without-alias) {
+                @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element-alias/already-registered - trying to register already registered sub-element '"+$alias+"' for component selector '"+&+"'.";
+            }
+            
+            $registered-component-alias: $selectors-without-alias;
+            $_registered-component-aliases: map-merge($_registered-component-aliases, ($component-alias-key: $registered-component-alias)) !global;
+            $_registered-component-element-aliases: map-merge($_registered-component-element-aliases, ($component-alias-key: &)) !global;
+        }
+    }
+
+    @if not $_is-register-mode {
+        // expand aliases to selectors
+        @for $i from 1 through length($sub-selectors) {
+            $selector: nth($sub-selectors, $i);
+            @if _is-alias($selector) {
+                $alias: _normalize-alias($selector);
+                $component-alias-key: top-component()+' '+$alias;
+                $registered-component-alias: map-get($_registered-component-aliases, $component-alias-key);
+                
+                @if not $registered-component-alias {
+                    @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element-alias/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
+                }
+
+                $sub-selectors: replace-nth($sub-selectors, $i, $registered-component-alias);
+            }
         }
     }
 
@@ -491,7 +538,7 @@
             // guarding duplicity of sub-elements
             @if index($_registered-sub-elements, $selector) {
                 @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/already-registered - trying to register already registered sub-element '"+$selector+"' for component selector '"+&+"'.";
-            }
+            }            
             // store unique sub-component
             $_registered-sub-elements: append($_registered-sub-elements, $selector, 'comma') !global;
         }

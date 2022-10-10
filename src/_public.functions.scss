@@ -457,6 +457,28 @@
     @return $result;
 }
 
+@function replace-nth($list, $index, $value-or-list) {
+    $result: ();
+
+    @for $i from 1 through length($list) {
+        @if $i == $index {
+            @if type-of($value-or-list)=='list' {
+                @each $item in $value-or-list {
+                    $result: append($result, $item);
+                }                
+            }
+            @else {
+                $result: append($result, $value-or-list);
+            }
+        }
+        @else {
+            $result: append($result, nth($list, $i));
+        }
+    }
+
+    @return $result;
+}
+
 
 @function str-replace($string, $search, $replace: '') {
     $index: str-index($string, $search);

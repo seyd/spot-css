@@ -29,3 +29,23 @@ my-component-3::selection {
 my-component-3::-webkit-scrollbar {
   property: value-1;
 }
+
+my-component-4 {
+  property: value-1;
+}
+
+my-component-4::before {
+  property: value-2;
+}
+
+my-component-4::after {
+  property: value-3;
+}
+
+my-component-4 .wrapper {
+  property: value-4;
+}
+
+my-component-4 .wrapper::before, my-component-4 .wrapper::after {
+  property: value-5;
+}

@@ -1,0 +1,14 @@
+@import "./src/spot-css"
+
++component(".component")
+    +register
+        +state(':hover')
+        +element('{wrap-1}', '.wrapper')
+    
+    +default
+        property: value
+        
+    +state(':hover')
+
+    +___________________
+    +element('{wrap-2}') // throw error - element-alias/unknown-unregistered

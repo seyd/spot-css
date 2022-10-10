@@ -57,3 +57,35 @@ div a:not(_):not(._):not(#_) {
 div .a:not(_), div .b:not(_) {
   property: value-15;
 }
+
+page1:not(#_):not(._):not(._):not(_):not(_):not(_) {
+  property: value;
+}
+
+page1:not(#_):not(._):not(._):not(_):not(_):not(_):hover {
+  property: value-hover;
+}
+
+page1:not(#_):not(._):not(._):not(_):not(_):not(_) .wrapper {
+  display: block;
+}
+
+page1:not(#_):not(._):not(._):not(_):not(_):not(_):hover .wrapper {
+  display: flex;
+}
+
+page2:not(#_):not(._):not(._):not(_):not(_):not(_) {
+  property: value;
+}
+
+page2:not(#_):not(._):not(._):not(_):not(_):not(_):hover {
+  property: value-hover;
+}
+
+page2:not(#_):not(._):not(._):not(_):not(_):not(_) .wrapper {
+  display: block;
+}
+
+page2:not(#_):not(._):not(._):not(_):not(_):not(_):hover .wrapper {
+  display: flex;
+}

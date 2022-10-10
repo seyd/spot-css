@@ -30,7 +30,7 @@
 +component("my-component-3")
     +register
         +state('.active')
-        +pseudo-element('after')
+        +pseudo-element('after', 'before')
         +pseudo-element('first-letter')
         +pseudo-element('first-line')
         +pseudo-element('placeholder')
@@ -62,3 +62,30 @@
     +___________________________
     +pseudo-element('-webkit-scrollbar')
         property: value-1
+
+
+
+// aliases
++component("my-component-4")
+    +register
+        +pseudo-element('{pseudo}', 'after', 'before')
+        +element('.wrapper')
+            +pseudo-element('{pseudo-2}', 'before', 'after')
+
+    property: value-1
+
+    +________________________
+    +pseudo-element('before')
+        property: value-2
+
+    +________________________
+    +pseudo-element('after')
+        property: value-3
+
+    +___________________
+    +element('.wrapper')
+        property: value-4
+
+        +________________________
+        +pseudo-element('{pseudo-2}')
+            property: value-5

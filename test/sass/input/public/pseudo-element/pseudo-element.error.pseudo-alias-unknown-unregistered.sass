@@ -1,0 +1,10 @@
+@import "./src/spot-css"
+
+// aliases
++component("my-component-4")
+    +register
+        +pseudo-element('{pseudo}', 'before')
+
+    
+    +____________________________
+    +pseudo-element('{pseudo-2}') // throw error - because unknown/unregistered

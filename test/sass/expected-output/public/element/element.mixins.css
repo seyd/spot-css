@@ -37,3 +37,83 @@ my-component[disabled] .wrapper > .wrapper-2 > .wrapper-3 {
 my-component .wrapper > .wrapper-2 ~ .wrapper-4 {
   property: value-10;
 }
+
+my-component-2 {
+  property: value;
+}
+
+my-component-2[disabled] {
+  property: value-2;
+}
+
+my-component-2 .wrapper-x {
+  property: value-3;
+}
+
+my-component-2 .wrapper-x[disabled] {
+  property: value-4;
+}
+
+my-component-2[disabled] .wrapper-x {
+  property: value-5;
+}
+
+my-component-2 .wrapper-x > .wrapper-x-2 {
+  property: value-5-1;
+}
+
+my-component-2 .wrapper-x > .wrapper-x-2 > .wrapper-x-3 {
+  property: value-6;
+}
+
+my-component-2 .wrapper-x > .wrapper-x-2 > .wrapper-x-3[disabled] {
+  property: value-7;
+}
+
+my-component-2 .wrapper-x[disabled] > .wrapper-x-2 > .wrapper-x-3 {
+  property: value-8;
+}
+
+my-component-2[disabled] .wrapper-x > .wrapper-x-2 > .wrapper-x-3 {
+  property: value-9;
+}
+
+my-component-2 .wrapper-x > .wrapper-x-2 ~ .wrapper-x-4 {
+  property: value-10;
+}
+
+my-component-2 .wrapper-y {
+  property: value-3;
+}
+
+my-component-2 .wrapper-y[disabled] {
+  property: value-4;
+}
+
+my-component-2[disabled] .wrapper-y {
+  property: value-5;
+}
+
+my-component-2 .wrapper-y > .wrapper-x-2 {
+  property: value-5-1;
+}
+
+my-component-2 .wrapper-y > .wrapper-x-2 > .wrapper-x-3 {
+  property: value-6;
+}
+
+my-component-2 .wrapper-y > .wrapper-x-2 > .wrapper-x-3[disabled] {
+  property: value-7;
+}
+
+my-component-2 .wrapper-y[disabled] > .wrapper-x-2 > .wrapper-x-3 {
+  property: value-8;
+}
+
+my-component-2[disabled] .wrapper-y > .wrapper-x-2 > .wrapper-x-3 {
+  property: value-9;
+}
+
+my-component-2 .wrapper-y > .wrapper-x-2 ~ .wrapper-x-4 {
+  property: value-10;
+}
