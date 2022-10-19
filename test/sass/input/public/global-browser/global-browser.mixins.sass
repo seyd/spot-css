@@ -1,0 +1,25 @@
+@import "./src/spot-css"
+
+    
++global-browser('{test1}', 'html.firefox')
++global-browser('{ test2 }', 'html.opera')
++global-browser('{test3}', 'html.safari')
+
+
+
++component('.component')
+    +register
+        +browser('{test1}')
+        +browser('{ test2 }')
+        +browser('{ test3 }')
+
+    +default
+    
+    +browser('{test1}')
+        prop: val-1
+
+    +browser('{test2}')
+        prop: val-2
+
+    +browser('{ test3 }')
+        prop: val-3

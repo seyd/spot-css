@@ -1,0 +1,8 @@
+@import "./src/spot-css"
+
+    
+// +global-context('{test}', 'html.loaded')
+
++component('.component')
+    +register
+        +context('{test}')  // error because not registered with global-context mixin

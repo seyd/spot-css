@@ -1,0 +1,24 @@
+@import "./src/spot-css"
+
+
++global-context('{test1}', 'html.ready')
++global-context('{ test2 }', 'html.loading')
++global-context('{test3}', 'html.overlayed')
+
+
++component('.component')
+    +register
+        +context('{test1}')
+        +context('{ test2 }')
+        +context('{ test3 }')
+
+    +default
+
+    +context('{test1}')
+        prop: val-1
+
+    +context('{test2}')
+        prop: val-2
+
+    +context('{ test3 }')
+        prop: val-3

@@ -1,0 +1,11 @@
+html.firefox .component {
+  prop: val-1;
+}
+
+html.opera .component {
+  prop: val-2;
+}
+
+html.safari .component {
+  prop: val-3;
+}

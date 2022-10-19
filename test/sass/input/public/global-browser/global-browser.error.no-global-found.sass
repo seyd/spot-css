@@ -1,0 +1,8 @@
+@import "./src/spot-css"
+
+    
+// +global-browser('{test}', 'html.firefox')
+
++component('.component')
+    +register
+        +browser('{test}')  // error because not registered with global-browser mixin

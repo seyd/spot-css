@@ -1,0 +1,11 @@
+html.ready .component {
+  prop: val-1;
+}
+
+html.loading .component {
+  prop: val-2;
+}
+
+html.overlayed .component {
+  prop: val-3;
+}

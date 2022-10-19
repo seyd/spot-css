@@ -224,3 +224,17 @@ $_standard-pseudo-elements: 'before', 'after', 'backdrop', 'cue', 'cue-region', 
 /// @access private
 /// @type Map
 $_registered-global-responsives: ();
+
+
+/// List of registered global-context(s).
+/// @group Global
+/// @access private
+/// @type Map
+$_registered-global-contexts: ();
+
+
+/// List of registered global-browser(s).
+/// @group Global
+/// @access private
+/// @type Map
+$_registered-global-browsers: ();
