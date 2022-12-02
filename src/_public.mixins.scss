@@ -138,7 +138,7 @@
 
     // check for separator
     @if not $_is-register-mode and not $_was-used-sub-element-separator {
-        @error $SPOT_ERROR_PREFIX + "child-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('"+$sub-component-selector+"').";
+        @warn $SPOT_ERROR_PREFIX + "child-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('"+$sub-component-selector+"').";
     }
     $_was-used-sub-element-separator: false !global;
     
@@ -235,7 +235,7 @@
 
     // check for separator
     @if not $_is-register-mode and not $_was-used-sub-element-separator {
-        @error $SPOT_ERROR_PREFIX + "sub-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('"+$sub-component-selector+"').";
+        @warn $SPOT_ERROR_PREFIX + "sub-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('"+$sub-component-selector+"').";
     }
     $_was-used-sub-element-separator: false !global;
     
@@ -607,7 +607,7 @@
 
     // check for separator ____________________________
     @if not $_is-register-mode and not $_was-used-sub-element-separator {
-        @error $SPOT_ERROR_PREFIX + "element/missing-separator - there is sub-element separator mixin (_______) missing before element mixin in component ('"+component()+"').";
+        @warn $SPOT_ERROR_PREFIX + "element/missing-separator - there is sub-element separator mixin (_______) missing before element mixin in component ('"+component()+"').";
     }
     // reset flag for next (sub)element
     $_was-used-sub-element-separator: false !global;

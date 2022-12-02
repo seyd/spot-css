@@ -629,7 +629,7 @@
     @if $registered-sub-components!=null {
         @each $sub-component in $registered-sub-components {            
             @if index($_already-used-multiple-selectors, $sub-component)==null {
-                @error $SPOT_ERROR_PREFIX + "component/unused-element - element '"+$sub-component+"' was registered but never used (in component '"+$component+"').";
+                @warn $SPOT_ERROR_PREFIX + "component/unused-element - element '"+$sub-component+"' was registered but never used (in component '"+$component+"').";
             }
         }
     }
@@ -645,7 +645,7 @@
         @if $mutations {
             @each $mutation, $mutation-params in $mutations {
                 @if map-get($checklist-of-used-modifiers, $modifier-type+' '+$mutation)==null {
-                    @error $SPOT_ERROR_PREFIX + "component/unused-mutation - "+$modifier-type+" '"+$mutation+"' was registered but never used (in component '"+$component+"').";
+                    @warn $SPOT_ERROR_PREFIX + "component/unused-mutation - "+$modifier-type+" '"+$mutation+"' was registered but never used (in component '"+$component+"').";
                 }
             }
         }   
@@ -663,7 +663,7 @@
                 @if $mutations {
                     @each $mutation, $mutation-params in $mutations {
                         @if map-get($checklist-of-used-modifiers, $modifier-type+' '+$mutation)==null {
-                            @error $SPOT_ERROR_PREFIX + "component/unused-mutation - "+$modifier-type+" '"+$mutation+"' was registered but never used (in '"+$component+"').";
+                            @warn $SPOT_ERROR_PREFIX + "component/unused-mutation - "+$modifier-type+" '"+$mutation+"' was registered but never used (in '"+$component+"').";
                         }
                     }
                 }   
