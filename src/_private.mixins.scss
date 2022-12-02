@@ -157,7 +157,7 @@
     $medias: ();
     $original-modifier-name: str-replace($modifier-name, ' &', '');
     $component: component();
-    $component-to-extend: self();
+    $component-to-extend: str-trim(self());
     $is-super-modifier: str-index($modifier-name, 'super-')==1;
     $second-param-is-number: length($args)==2 and type-of(nth($args, 2))=='number';
     $second-param-index: '';
@@ -224,10 +224,9 @@
                 }
             }
         }
-        $component-to-extend: last($sub-component-stack);
+        $component-to-extend: str-trim(last($sub-component-stack));
     }
     $_current_modifier: $modifier-name !global;
-    $component-to-extend-simplified: _remove-combinator-selector($component-to-extend);
 
     // check if sub elements mixin was not used for current selector
     @if index($_selectors-with-sub-elements, &) {
@@ -305,7 +304,7 @@
                                 $extended-selector: merge-selectors($context-extension, &);
                             }
                             @else {
-                                $extended-selector: extend(&, $component-to-extend-simplified, $extension);
+                                $extended-selector: _extend_component_selector(&, $component-to-extend, $extension);
                             }
                             $selectors: append($selectors, $extended-selector, 'comma');
                         }
@@ -333,7 +332,7 @@
                         $extended-selector: merge-selectors($context-extension, &);
                     }
                     @else {
-                        $extended-selector: extend(&, $component-to-extend-simplified, $extension);
+                        $extended-selector: _extend_component_selector(&, $component-to-extend, $extension);
                     }
                     $selectors: append($selectors, $extended-selector, 'comma');
                 }

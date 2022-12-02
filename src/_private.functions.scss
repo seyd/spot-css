@@ -312,7 +312,7 @@
 /// @param {String} $simple-selector - simple selector
 /// @return {String} Given selector without combinator selector.
 @function _remove-combinator-selector($simple-selector) {
-    @return str-trim(str-replace(str-replace(str-replace($simple-selector+'', '>', ''), '+', ''), '~', ''));
+    @return str-trim(str-replace(str-replace(str-replace(str-replace($simple-selector+'', '>', ''), '+', ''), '~', ''), '  ', ' '));
 }
 
 
@@ -325,4 +325,17 @@
 /// Removes spaces from alias, e.g. "{ Text }" => "{Text}"
 @function _normalize-alias($alias) {
     @return str-replace(str-replace($alias, '{ ', '{'), ' }', '}');
+}
+
+/// There was problem with extend() function on "combinator selectors" (e.g. "section > div"), so this is the solution => substitution.
+@function _extend_component_selector($selector, $component-to-extend, $extension) {
+    $selectors: selector-parse($selector);
+    $output: ();
+    $substitution: '___COMPONENT_TO_EXTEND___';
+    @each $single-selector in $selectors {
+        $current-selector: str-replace($single-selector+'', $component-to-extend, $substitution);
+        $extended-selector: extend($current-selector, $substitution, $extension);
+        $output: append($output, str-replace($extended-selector+'', $substitution, $component-to-extend), 'comma');
+    }
+    @return #{$output};
 }
