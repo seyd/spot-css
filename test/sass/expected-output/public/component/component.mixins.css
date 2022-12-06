@@ -45,3 +45,51 @@ page2 .wrapper {
 page2:hover .wrapper {
   display: flex;
 }
+
+.menu-level-1 > li {
+  border: 0;
+}
+
+.menu-level-1 > li:first-child {
+  margin-bottom: 20px;
+}
+
+.menu-level-1 > li ~ a {
+  color: white;
+}
+
+.menu-level-1 > li:first-child ~ a {
+  padding: 24px;
+}
+
+.menu-level-1 > li ~ a:hover {
+  color: orange;
+}
+
+.menu-level-1 > li ~ a.active {
+  color: orange;
+}
+
+.menu-level-1 > li.exp ~ a {
+  color: orange;
+}
+
+.menu-level-1 > li.exp ~ a::before {
+  content: '';
+}
+
+.menu-level-1 > li.exp ~ a::after {
+  content: '';
+}
+
+.menu-level-1 > li ~ a > b {
+  font-weight: 400;
+}
+
+.menu-level-1 > li:first-child ~ a > b {
+  color: orange;
+}
+
+ul > li {
+  display: block;
+}

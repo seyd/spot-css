@@ -53,7 +53,7 @@
             @error $SPOT_ERROR_PREFIX + "component/single-selector - given selector is not a single selector ('"+$selector+"').";
         }
 
-        $component-selector: $selector;
+        $component-selector: selector-parse($selector)+''; // normalize selector (e.g. "ul>li" => "ul > li")
 
         // 1)
         // if already registred
@@ -637,7 +637,7 @@
         $component-alias-key: null;
         $registered-component-alias: null;
 
-        @each $selector in $selectors {
+        @each $selector in $selectors {            
             $counter: $counter + 1;
 
             @if _is-alias($selector) {
@@ -661,8 +661,9 @@
                 $_registered-component-aliases: map-merge($_registered-component-aliases, ($component-alias-key: $registered-component-alias)) !global;
                 $_registered-component-element-aliases: map-merge($_registered-component-element-aliases, ($component-alias-key: &)) !global;
             }
-            @else {                
+            @else {
                 // if not alias
+                $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
                 $sub-component-selector: #{ & + ' ' + str-trim($selector) };
                 
                 @include _check-duplicity-of-sub-selectors('element', $sub-component-selector, $selector);
@@ -707,6 +708,7 @@
         }
 
         @each $selector in $selectors {
+            $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
             $sub-component-selector: #{ & + ' ' + str-trim($selector) };
             // check if element is registered
             @if not index($_already-used-selectors, $sub-component-selector) and $_current-component-mode!='draft' {
