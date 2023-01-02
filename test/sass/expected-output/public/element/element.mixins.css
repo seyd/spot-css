@@ -117,3 +117,27 @@ my-component-2[disabled] .wrapper-y > .wrapper-x-2 > .wrapper-x-3 {
 my-component-2 .wrapper-y > .wrapper-x-2 ~ .wrapper-x-4 {
   property: value-10;
 }
+
+my-component-3 {
+  property: value-1;
+}
+
+my-component-3[disabled] {
+  property: value-2;
+}
+
+my-component-3 .wrapper-x {
+  property: value-3;
+}
+
+my-component-3 .wrapper-x[disabled] {
+  property: value-4;
+}
+
+my-component-3 .wrapper-y {
+  property: value-5;
+}
+
+my-component-3 .wrapper-y[disabled] {
+  property: value-6;
+}

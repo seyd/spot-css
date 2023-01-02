@@ -49,3 +49,19 @@ my-component-4 .wrapper {
 my-component-4 .wrapper::before, my-component-4 .wrapper::after {
   property: value-5;
 }
+
+my-component-5 {
+  property: value-1;
+}
+
+my-component-5 .wrapper {
+  property: value-2;
+}
+
+my-component-5 .wrapper::before {
+  property: value-3;
+}
+
+my-component-5 .wrapper::after {
+  property: value-4;
+}

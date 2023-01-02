@@ -99,3 +99,35 @@
             +________________________
             +element('{wrap-4}')
                 property: value-10
+
+
+
+// multiple elements registered in single line
++component('my-component-3')
+    +register
+        +state('[disabled]')
+        +element('.wrapper-x', '.wrapper-y') // multiple elements registered in single line
+            +state('[disabled]')
+
+    +default
+        property: value-1
+
+    +state('[disabled]')
+        property: value-2
+
+    +_______________________
+    +element('.wrapper-x')
+        +default
+            property: value-3
+
+        +state('[disabled]')
+            property: value-4
+
+    +_______________________
+    +element('.wrapper-y')
+        +default
+            property: value-5
+
+        +state('[disabled]')
+            property: value-6
+
