@@ -89,3 +89,25 @@
         +________________________
         +pseudo-element('{pseudo-2}')
             property: value-5
+
+
+
+// more pseudo elements without alias
++component("my-component-5")
+    +register
+        +element('.wrapper')
+            +pseudo-element('after', 'before')            
+
+    property: value-1
+
+    +___________________
+    +element('.wrapper')
+        property: value-2
+
+        +________________________
+        +pseudo-element('before')
+            property: value-3
+
+        +________________________
+        +pseudo-element('after')
+            property: value-4
