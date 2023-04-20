@@ -4,6 +4,7 @@ var TEST_PATH = 'test/sass',
     EXPECTED_OUTPUT_PATH = 'expected-output',
     OUTPUT_PATH = 'generated-output',
     FWK_ERROR_PREFIX = 'SPOT CSS: ',
+    FWK_ERROR_PREFIX_NEW = 'SPOT CSS [',
 
     FULL_SOURCE_PATH = CURRENT_PATH + TEST_PATH + '/' + SOURCE_PATH,
     FULL_EXPECTED_OUTPUT_PATH = CURRENT_PATH + TEST_PATH + '/' + EXPECTED_OUTPUT_PATH,
@@ -106,7 +107,7 @@ function throwSassError(error) {
         var originalFile = error.message.split('\n')[0],
             sourceFile = (error.message.match(new RegExp('from line \\d+ of ('+TEST_PATH + '/' + SOURCE_PATH + '[^,$\n]*)')) || error.message.match(/from line \d+ of (.*)/))[1],
             targetFile = (sourceFile || originalFile).replace(SOURCE_PATH, OUTPUT_PATH).replace(/\.s[ac]ss$/, '.css'),
-            isFwkError = error.messageOriginal.indexOf(FWK_ERROR_PREFIX)===0,
+            isFwkError = error.messageOriginal.indexOf(FWK_ERROR_PREFIX)===0 || error.messageOriginal.indexOf(FWK_ERROR_PREFIX_NEW)===0,
             message = isFwkError ? error.messageOriginal.split(' - ')[0] : error.messageFormatted;
 
         if (isFwkError) {

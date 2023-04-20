@@ -4,6 +4,28 @@
 $SPOT_ERROR_PREFIX: "SPOT CSS: ";
 
 
+/// Default SPOT framework configuration.
+/// @group General
+/// @access private
+/// @type Map
+$_default-spot-config: (
+    // (default true) If true then force using +______________ element separators before every element and pseudo-element.
+    force-element-separator: true,
+    // (default false) If true then there wouldn't be possible to create a component from simple element selector, e.g. +component('a') or +component('header').
+    disallow-simple-element-components: false,
+    // (default '') If `disallow-simple-element-components` is true, you can set expceptions for some elements with multiple selectors, e.g. 'button, select, textarea'.
+    exceptions-of-simple-element-components: '',
+);
+
+
+/// Current SPOT framework configuration. You can use `spot-config` or `spot-set` mixins to override it.
+/// @group General
+/// @access private
+/// @type Map
+/// @see mixin spot-config, function spot-config, mixin spot-set, function spot-get
+$_current-spot-config: $_default-spot-config;
+
+
 /// Map of registered components.
 /// @group Component
 /// @access private
@@ -238,3 +260,14 @@ $_registered-global-contexts: ();
 /// @access private
 /// @type Map
 $_registered-global-browsers: ();
+
+
+
+// source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element (except of the deprecated but some exceptions)
+$_all-html-elements: 'a, abbr, address, area, article, aside, audio, b, base, bdi, bdo, blockquote, body, br, button, '+
+                     'canvas, caption, center, cite, code, col, colgroup, data, datalist, dd, del, details, dfn, dialog, dir, div, dl, dt, '+
+                     'em, embed, fieldset, figcaption, figure, footer, form, frame, frameset, h1, h2, h3, h4, h5, h6, head, header, hgroup, hr, html, '+
+                     'i, iframe, img, input, ins, kbd, label, legend, li, link, main, map, mark, marquee, menu, meta, meter, nav, noscript, '+
+                     'object, ol, optgroup, option, output, p, picture, portal, pre, progress, q, rp, rt, ruby, '+
+                     's, samp, script, section, select, slot, small, source, span, strong, style, sub, summary, sup, '+
+                     'table, tbody, td, template, textarea, tfoot, th, thead, time, title, tr, track, tt, u, ul, var, video, wbr';

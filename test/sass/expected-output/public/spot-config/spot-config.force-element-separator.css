@@ -1,0 +1,7 @@
+a::before {
+  content: '';
+}
+
+a span {
+  display: inline-block;
+}

@@ -339,3 +339,7 @@
     }
     @return #{$output};
 }
+
+@function error($code) {
+    @return 'SPOT CSS ['+$code+']';
+}

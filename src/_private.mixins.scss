@@ -438,7 +438,7 @@
         @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/in-default - it is not allowed to call "+$sub-element-type+"-element mixin in default mixin (in component '"+component()+"').";
     }
     // check for separator
-    @if not $_is-register-mode and not $_was-used-sub-element-separator {
+    @if not $_is-register-mode and not $_was-used-sub-element-separator and spot-get(force-element-separator) {
         @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/missing-separator - there is sub-element separator mixin (_______) missing before "+$sub-element-type+"-element mixin in component ('"+component()+"').";
     }
     $_was-used-sub-element-separator: false !global;

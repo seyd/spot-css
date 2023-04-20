@@ -11,6 +11,25 @@
     @return $_current-component-mode;
 }
 
+
+/// Returns the current SPOT framework configuration.
+/// @group General
+/// @access public
+/// @return { Map } Current SPOT framework configuration.
+@function spot-config() {
+    @return $_current-spot-config;
+}
+
+
+/// Returns a value for given key of the current SPOT framework configuration.
+/// @group General
+/// @access public
+/// @return { any } Value for given key of the current SPOT framework configuration.
+@function spot-get($config-key) {
+    @return map-get($_current-spot-config, $config-key);
+}
+
+
 /// @group Component
 /// @access public
 /// @return { String } Current component selector.
@@ -641,4 +660,24 @@
 // fix because some version of SASS returns bracketed list 
 @function append-unbracketed($list, $item, $separator) {
     @return join([], append($list, $item,  $separator), $separator: auto, $bracketed: false);
+}
+
+// Simple selector is "a" or ".link" but not "a.link"
+@function is-simple-selector($single-selector) {
+    $selectors: simple-selectors($single-selector);
+    @return length($selectors)==1;
+}
+
+// Element selector starts with element
+@function is-element-selector($single-selector) {
+    $first: str-slice($single-selector, 1, 1);
+    @return $first!='#' and $first!='.' and $first!='[' and $first!=':' and $first!='*';
+}
+
+// Check if given element selector is standard html element
+@function is-standard-html-element($single-simple-selector) {
+    @if selector-unify($single-simple-selector, $_all-html-elements) {
+        @return true;
+    }
+    @return false;
 }

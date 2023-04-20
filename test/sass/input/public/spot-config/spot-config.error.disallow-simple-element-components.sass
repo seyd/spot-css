@@ -1,0 +1,7 @@
+@import "./src/spot-css"
+
++spot-set('disallow-simple-element-components', true)
++spot-set('exceptions-of-simple-element-components', 'button, select, textarea')
+
++component('a') // throw error
+    display: block

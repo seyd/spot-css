@@ -1,0 +1,18 @@
+@import "./src/spot-css"
+
++spot-config((test: true))
+
+html
+    // this one should be present because its part of the default configuration (and it was not overrided)
+    force-element-separator: spot-get(force-element-separator)
+    // this one is our test config flag
+    test: spot-get(test)
+
+
+
++spot-set('test', false)
+$config: spot-config()
+
+body
+    force-element-separator: map-get($config, force-element-separator) // should return `true`
+    test: map-get($config, test) // should return `false`

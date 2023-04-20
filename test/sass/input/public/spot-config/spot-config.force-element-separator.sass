@@ -1,0 +1,14 @@
+@import "./src/spot-css"
+
++spot-set('force-element-separator', false)
+
++component('a')
+    +register
+        +pseudo-element('before')
+        +element('span')
+
+    +pseudo-element('before') // doesn't generate "missing-separator" error
+        content: ''
+    
+    +element('span') // doesn't generate "missing-separator" error
+        display: inline-block

@@ -11,6 +11,36 @@
     $new-mode: mode($mode);
 }
 
+
+/// Sets a new configuration of the SPOT CSS framework.
+/// All missing keys in the given $config will be automatically set to default values.
+///
+/// @group General
+/// @access public
+/// @param { Map } $config - New configuration (you can rebound from the $_default-spot-config variable).
+/// @throw SPOT CSS: spot-config/invalid-input - input has to be a Map type.
+/// @output
+@mixin spot-config($config) {
+    @if type_of($config)!='map' {
+        @error $SPOT_ERROR_PREFIX + "spot-config/invalid-input - input has to be a Map type.";
+    }
+    $_current-spot-config: map-merge($_default-spot-config, $config) !global;
+}
+
+
+/// Sets a value for given key of the current SPOT framework configuration.
+///
+/// @group General
+/// @access public
+/// @param { String } $key - A key of the SPOT configuration (see $_default-spot-config variable).
+/// @param { any } $value - A value for the given $key.
+/// @output
+@mixin spot-set($key, $value) {
+    $new: ( $key: $value );
+    $_current-spot-config: map-merge($_current-spot-config, $new) !global;
+}
+
+
 /// Main top-level mixin to define component.
 ///
 /// 1) It checks if same component is defined multiple times. It is not allowed because Single Place Of Truth.
@@ -24,6 +54,7 @@
 /// @throw SPOT CSS: component/no-selector - selector was expected but nothing passed.
 /// @throw SPOT CSS: component/sub-component - you cannot use mixin component in component. Instead use mixin sub-component and also register it in parent component.
 /// @throw SPOT CSS: component/single-selector - given selector is not a single selector ({selector}).
+/// @throw SPOT CSS [component/simple-element-selector] - given selector is a simple element selector ({selector}) but the framework is currently set to not allow such selectors for components. Read more at https://spotcss.io/errors/component/simple-element-selector
 /// @throw SPOT CSS: component/already-registered - given selector is already registered as component ({selector}).
 /// @output Given selector with given content.
 /// @todo component selector must be a simple selector check
@@ -45,6 +76,11 @@
         @error $SPOT_ERROR_PREFIX + "component/sub-component - you cannot use mixin component in component. Instead use mixin sub-component and also register it in parent component.";
     }
 
+    $simple-element-exceptions: spot-get('exceptions-of-simple-element-components');
+    @if $simple-element-exceptions=='' {
+        $simple-element-exceptions: '[at-least-one-non-existing-exception-selector]';
+    }
+
     // for all selectors (component alternatives)
     @each $selector in $selectors {
         
@@ -54,6 +90,11 @@
         }
 
         $component-selector: selector-parse($selector)+''; // normalize selector (e.g. "ul>li" => "ul > li")
+
+        // if simple element selectors are disallowed (is on and is not in ignored element list)
+        @if spot-get('disallow-simple-element-components') and is-standard-html-element($selector) and not selector-unify($selector, $simple-element-exceptions) {
+            @error error('component/simple-element-selector')+" - given selector is a simple element selector ('"+$selector+"') but the framework is currently set to not allow such selectors for components. Read more at https://spotcss.io/errors/component/simple-element-selector";
+        }
 
         // 1)
         // if already registred
@@ -137,7 +178,7 @@
     $sub-component-selector: #{ & + ' > ' + $selector };
 
     // check for separator
-    @if not $_is-register-mode and not $_was-used-sub-element-separator {
+    @if not $_is-register-mode and not $_was-used-sub-element-separator and spot-get(force-element-separator) {
         @warn $SPOT_ERROR_PREFIX + "child-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('"+$sub-component-selector+"').";
     }
     $_was-used-sub-element-separator: false !global;
@@ -234,7 +275,7 @@
     $sub-component-selector: #{ & + ' ' + $selector };
 
     // check for separator
-    @if not $_is-register-mode and not $_was-used-sub-element-separator {
+    @if not $_is-register-mode and not $_was-used-sub-element-separator and spot-get(force-element-separator) {
         @warn $SPOT_ERROR_PREFIX + "sub-component/missing-separator - there is sub-element separator mixin (_______) missing before sub-compomnent mixin in sub-component ('"+$sub-component-selector+"').";
     }
     $_was-used-sub-element-separator: false !global;
@@ -606,7 +647,7 @@
     }
 
     // check for separator ____________________________
-    @if not $_is-register-mode and not $_was-used-sub-element-separator {
+    @if not $_is-register-mode and not $_was-used-sub-element-separator and spot-get(force-element-separator) {
         @warn $SPOT_ERROR_PREFIX + "element/missing-separator - there is sub-element separator mixin (_______) missing before element mixin in component ('"+component()+"').";
     }
     // reset flag for next (sub)element

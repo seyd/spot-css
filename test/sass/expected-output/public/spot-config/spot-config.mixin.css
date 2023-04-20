@@ -1,0 +1,9 @@
+html {
+  force-element-separator: true;
+  test: true;
+}
+
+body {
+  force-element-separator: true;
+  test: false;
+}
