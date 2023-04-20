@@ -31,3 +31,43 @@ my-component > .inner > child-component.x {
 my-component > .inner > child-component sub-sub-component.x {
   property: sub-sub-value;
 }
+
+a.btn {
+  border: 1px solid red;
+}
+
+button.btn {
+  border: 1px solid green;
+}
+
+div.btn {
+  border: 1px solid blue;
+}
+
+ul.btn, ol.btn {
+  border: 1px solid yellow;
+}
+
+a.btn > .icon {
+  background: red;
+}
+
+button.btn > .icon {
+  background: green;
+}
+
+div.btn > .icon {
+  background: blue;
+}
+
+ul.btn > .icon, ol.btn > .icon {
+  background: yellow;
+}
+
+.btn > i.icon {
+  background: black;
+}
+
+header > button.something {
+  border: 1px solid green;
+}

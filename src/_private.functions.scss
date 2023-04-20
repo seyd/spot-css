@@ -311,6 +311,7 @@
 /// @access private
 /// @param {String} $simple-selector - simple selector
 /// @return {String} Given selector without combinator selector.
+/// @see @function selector-trim-combinators($selector)
 @function _remove-combinator-selector($simple-selector) {
     @return str-trim(str-replace(str-replace(str-replace(str-replace($simple-selector+'', '>', ''), '+', ''), '~', ''), '  ', ' '));
 }
@@ -328,18 +329,39 @@
 }
 
 /// There was problem with extend() function on "combinator selectors" (e.g. "section > div"), so this is the solution => substitution.
-@function _extend_component_selector($selector, $component-to-extend, $extension) {
+@function _extend_component_selector($selector, $subselector-to-extend, $extension) {
     $selectors: selector-parse($selector);
     $output: ();
-    $substitution: '___COMPONENT_TO_EXTEND___';
+    
+    $is-element-extension: is-element-selector($extension);
+    
+    $substitution: '___SUBSELECTOR_TO_EXTEND___';
     @each $single-selector in $selectors {
-        $current-selector: str-replace($single-selector+'', $component-to-extend, $substitution);
-        $extended-selector: extend($current-selector, $substitution, $extension);
-        $output: append($output, str-replace($extended-selector+'', $substitution, $component-to-extend), 'comma');
+        $is-combinator-selector: combinator-selector-length($single-selector)>1;
+        // if special case (extension is an element selector, e.g. "i", so ".btn > .icon" is extended with "i" => ".btn > i.icon")
+        @if $is-element-extension and $is-combinator-selector {
+            $extended-selector: _extend-last-element-in-selector-with-element-selector($subselector-to-extend, $extension);
+            $output: append($output, str-replace($single-selector+'', $subselector-to-extend, $extended-selector), 'comma');
+        }
+        @else {
+            $current-selector: str-replace($single-selector+'', $subselector-to-extend, $substitution);
+            $extended-selector: extend($current-selector, $substitution, $extension);
+            $output: append($output, str-replace($extended-selector+'', $substitution, $subselector-to-extend), 'comma');
+        }
     }
     @return #{$output};
 }
 
-@function error($code) {
+@function _error($code) {
     @return 'SPOT CSS ['+$code+']';
+}
+
+// when $single-selector is a combinator selector, e.g. "header > .btn"
+// when $extension is an element selector, e.g. "button"
+// expected output is "header > button.btn"
+@function _extend-last-element-in-selector-with-element-selector($single-selector, $extension) {
+    $parts: nth(selector-parse($single-selector), 1);
+    $last: nth($parts, length($parts));
+    $extended: $extension+$last+'';
+    @return str-replace($single-selector+'', $last+'', $extended);
 }

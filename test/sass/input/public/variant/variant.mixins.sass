@@ -78,3 +78,57 @@
                 +variant('.x')
                     property: sub-sub-value
 
+
+// test of elements variants
++component('.btn')
+    +register
+        +variant('a') // <---
+        +variant('button') // <---
+        +variant('{alias 1}', 'div') // <---
+        +variant('{alias 2}', 'ul', 'ol') // <---
+        +element('> .icon')
+            +variant('i') // <---
+
+    +default
+
+    +variant('a')
+        border: 1px solid red
+
+    +variant('button')
+        border: 1px solid green
+
+    +variant('{alias 1}')
+        border: 1px solid blue
+
+    +variant('{alias 2}')
+        border: 1px solid yellow
+
+    +____________________
+    +element('> .icon')
+        +default
+
+        +variant('a')
+            background: red
+
+        +variant('button')
+            background: green
+
+        +variant('{alias 1}')
+            background: blue
+
+        +variant('{alias 2}')
+            background: yellow
+
+        +variant('i') // special - applies to this sub-element
+            background: black
+
+
+
++component('header > .something')
+    +register
+        +variant('button')
+
+    +default
+
+    +variant('button') //  header > button.something  
+        border: 1px solid green

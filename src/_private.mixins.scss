@@ -20,7 +20,7 @@
     // for variant-like selector extensions only valid first chars are: . # [ : (or '?' or '{' when placeholder is used)
     @if not $is-context-like {
         $first-char: str-slice(str-trim-left($identifier), 1, 1);
-        @if $first-char!='.' and $first-char!='#' and $first-char!='[' and $first-char!=':' and $first-char!='?' and $first-char!='{' and $first-char!='@' {
+        @if $first-char!='.' and $first-char!='#' and $first-char!='[' and $first-char!=':' and $first-char!='?' and $first-char!='{' and $first-char!='@' and is-element-selector(get-last-element-in-combinator-selector(&)) {
             @error $SPOT_ERROR_PREFIX + "register/invalid-selector-extension - the mixin register { "+$modifier-name+"("+$identifier+") } uses invalid selector extension '"+$identifier+"'. The extension can start only with one of these characters: '.', '#', '@', [', ':' (or '?' or '{' when placeholder is used).";
         }
     }

@@ -406,7 +406,12 @@
             }
             @each $extension in $extension-parts {
                 $sub: _remove-combinator-selector($subselector);
-                $selector: selector-replace($selector, $sub, $sub+$extension+''); // +'' = convert to string
+                $replacement: $sub+$extension+''; // +'' = convert to string
+                @if is-element-selector($extension) {
+                    // if "element selector+''" extension e.g. "div", put it at the beginning of the selector
+                    $replacement: $extension+$sub+''; // +'' = convert to string
+                }                
+                $selector: selector-replace($selector, $sub, $replacement);                 
             }
         }
         @if $found==false {
@@ -543,7 +548,15 @@
     $selector: str-replace(str-replace($selector, '> ', '>'), '>', '> ');
     // unify ' >' with space
     $selector: str-replace(str-replace($selector, ' >', '>'), '>', ' >');
-    @return $selector;
+    // unify '> ' with space
+    $selector: str-replace(str-replace($selector, '~ ', '~'), '~', '~ ');
+    // unify ' >' with space
+    $selector: str-replace(str-replace($selector, ' ~', '~'), '~', ' ~');
+    // unify '> ' with space
+    $selector: str-replace(str-replace($selector, '+ ', '+'), '+', '+ ');
+    // unify ' >' with space
+    $selector: str-replace(str-replace($selector, ' +', '+'), '+', ' +');
+    @return str-trim($selector);
 }
 
 // replace $search from the beginning or from the end of given single selector
@@ -562,11 +575,26 @@
 }
 
 // it replaces '>', '~', '+' from the beginning or from the end of single selector
+// @see @function _remove-combinator-selector($simple-selector)
 @function selector-trim-combinators($selector) {
     $selector: selector-trim($selector, '>');
     $selector: selector-trim($selector, '~');
     $selector: selector-trim($selector, '+');
     @return $selector;
+}
+
+// if selector contains/starts with '>', '~', '+', prepend given $extension after the combinator selector
+@function selector-prepend-extension($selector, $extension) {
+    $selector: str-trim($selector+''); 
+    $first: str-slice($selector, 1, 1);
+    $starts_with_combinator: $first=='>' or $first=='~' or $first=='+';
+    // @debug '$starts_with_combinator: '+$selector+' | '+ $first +' | '+$starts_with_combinator;
+    @if $starts_with_combinator {
+        @return $first + ' ' + $extension + str-trim(str-slice($selector, 2, -1));
+    }
+    @else {
+        @return $extension + $selector;
+    }
 }
 
 // It has to be simple selector (not contain comma separated selectors)
@@ -670,8 +698,8 @@
 
 // Element selector starts with element
 @function is-element-selector($single-selector) {
-    $first: str-slice($single-selector, 1, 1);
-    @return $first!='#' and $first!='.' and $first!='[' and $first!=':' and $first!='*';
+    $first: str-slice($single-selector+'', 1, 1);
+    @return $first!='#' and $first!='.' and $first!='[' and $first!=':' and $first!='*' and $first!='_'; // "_" because we are using '___SUbSELECTOR_TO_EXTEND___' and no element starts with _
 }
 
 // Check if given element selector is standard html element
@@ -680,4 +708,16 @@
         @return true;
     }
     @return false;
+}
+
+// returns length of the combinator selector, e.g. 'header > .btn' => 3
+@function combinator-selector-length($combinator-selector) {
+    $selector: nth(selector-parse($combinator-selector), 1);
+    @return length($selector);
+}
+
+// 'header > .btn' => '.btn'
+@function get-last-element-in-combinator-selector($combinator-selector) {
+    $selector: nth(selector-parse($combinator-selector), 1);
+    @return nth($selector, length($selector));
 }

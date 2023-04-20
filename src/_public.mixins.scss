@@ -93,7 +93,7 @@
 
         // if simple element selectors are disallowed (is on and is not in ignored element list)
         @if spot-get('disallow-simple-element-components') and is-standard-html-element($selector) and not selector-unify($selector, $simple-element-exceptions) {
-            @error error('component/simple-element-selector')+" - given selector is a simple element selector ('"+$selector+"') but the framework is currently set to not allow such selectors for components. Read more at https://spotcss.io/errors/component/simple-element-selector";
+            @error _error('component/simple-element-selector')+" - given selector is a simple element selector ('"+$selector+"') but the framework is currently set to not allow such selectors for components. Read more at https://spotcss.io/errors/component/simple-element-selector";
         }
 
         // 1)
