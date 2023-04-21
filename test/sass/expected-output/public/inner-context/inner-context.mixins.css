@@ -1,0 +1,15 @@
+test h1 + span {
+  display: block;
+}
+
+test h2 ~ .description {
+  border: 0;
+}
+
+test h2 ~ .info {
+  border: 0;
+}
+
+test:hover h3 + footer, test.simulate-hover h3 + footer {
+  some: thing;
+}

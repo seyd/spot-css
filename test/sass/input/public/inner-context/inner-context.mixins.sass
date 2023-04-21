@@ -1,0 +1,34 @@
+@import "./src/spot-css"
+
+
++component('test')
+    +register
+        +state('{hover}', ':hover', '.simulate-hover')
+        +element('span')
+        +element('.description')
+        +element('.info')
+        +element('footer')
+    
+    +_____________________
+    +element('span')
+        +default
+
+        +inner-context('h1 +')
+            display: block
+
+    +___________________________________
+    +element('.description', '.info')
+        +default
+
+        +inner-context('h2 ~')
+            border: 0
+
+    +__________________________
+    +element('footer')
+        +default
+
+        +state('{hover}')
+            +default
+
+            +inner-context('h3 +')
+                some: thing
