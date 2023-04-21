@@ -613,6 +613,8 @@
     @else {
         // @TODO should contain "+" or "~" combinator selector (at the end of the selctor)
 
+        // @TODO should not be used in root element of component.
+
         // force using 'default' mixin when using modifiers
         @if not _default-mixin-was-already-called() and $_current-component-mode!='draft' {
             @error $SPOT_ERROR_PREFIX + "inner-context/default-is-missing - the inner-context '"+inspect($selector)+"' in component '"+top-component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
