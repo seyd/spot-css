@@ -763,9 +763,12 @@
 
 @function assert($current-selectors, $asserted-selectors, $throw-warn: true) {
     $current-selectors: selector-parse($current-selectors);
+    $original-selectors-copy: $current-selectors;
     $asserted-selectors: selector-parse($asserted-selectors);
     $matched-count: 0;
+    $j: 0;
     @each $current in $current-selectors {
+        $j: $j + 1;
         $matched: false;
         $i: 0;
         @each $asserted in $asserted-selectors {
@@ -792,12 +795,21 @@
         @if $matched {
             // remove matched selector
             $asserted-selectors: nth-delete($asserted-selectors, $i);
+            $original-selectors-copy: nth-delete($original-selectors-copy, $j);
+            $j: $j - 1;
             $matched-count: $matched-count + 1;
         }
     }
     @if length($asserted-selectors)>0 {
         @if $throw-warn {
             $throw: _warn('selector/assert', 'asserted selector(s) `'+inspect($asserted-selectors)+'` was not found in current selector(s) `'+inspect($current-selectors)+'`.');
+        }
+        @return false;
+    }
+    @if length($original-selectors-copy)>0 {
+        @debug 'some of current selector(s) `'+inspect($original-selectors-copy)+'` was not matched with asserted selector(s) `'+inspect($asserted-selectors)+'`.';
+        @if $throw-warn {
+            $throw: _warn('selector/assert', 'some of current selector(s) `'+inspect($original-selectors-copy)+'` was not matched with asserted selector(s).');
         }
         @return false;
     }

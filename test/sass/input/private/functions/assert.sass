@@ -7,3 +7,4 @@ html
     assert-test-4: assert('.btn div.x.y:hover', '.btn div.y.x:hover', false) // true
     assert-test-5: assert('.btn.active, div.x.y:hover', 'div.y.x:hover, .active.btn', false) // true       // switched order of selectors
     assert-test-6: assert('.btn.active, div.x.y:hover', 'div.y.x:hover, .btn', false) // false
+    assert-test-7: assert('.btn.active, div.x.y:hover', 'div.y.x:hover', false) // false
