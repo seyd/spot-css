@@ -1111,6 +1111,11 @@
     }
 }
 
+@mixin assert($selectors) {
+    $result: assert(&, $selectors, true);
+    // it throws @warn if something wrong
+}
+
 
 /// Mandatory separator before each sub-element modifier. Use as long as you wish.
 @mixin _ { @include _sub-element-separator; }

@@ -1,0 +1,9 @@
+@import "./src/spot-css"
+
+html
+    assert-test-1: assert('.btn:hover', '.btn:hover', false) // true
+    assert-test-2: assert('.btn:hover', '.btn:focus', false) // false
+    assert-test-3: assert('.btn.x.y', '.btn.y.x', false) // true                                           // switched order of classes
+    assert-test-4: assert('.btn div.x.y:hover', '.btn div.y.x:hover', false) // true
+    assert-test-5: assert('.btn.active, div.x.y:hover', 'div.y.x:hover, .active.btn', false) // true       // switched order of selectors
+    assert-test-6: assert('.btn.active, div.x.y:hover', 'div.y.x:hover, .btn', false) // false

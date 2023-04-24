@@ -365,6 +365,11 @@
     @return 'SPOT CSS ['+$code+']';
 }
 
+@function _warn($code, $text) {
+    @warn 'SPOT CSS ['+$code+'] - ' + $text;
+    @return 'SPOT CSS ['+$code+']'; // for unit tests
+}
+
 // when $single-selector is a combinator selector, e.g. "header > .btn"
 // when $extension is an element selector, e.g. "button"
 // expected output is "header > button.btn"

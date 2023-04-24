@@ -700,3 +700,8 @@
     $registered-sub-components: append($registered-sub-components, $whole-selector, 'comma');
     $_registered-sub-components: map-merge($_registered-sub-components, (top-component(): $registered-sub-components)) !global;
 }
+
+
+@mixin _warn($code, $text) {
+    $execute: _warn($code, $text);
+}

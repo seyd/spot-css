@@ -760,3 +760,46 @@
     }
     @return false;
 }
+
+@function assert($current-selectors, $asserted-selectors, $throw-warn: true) {
+    $current-selectors: selector-parse($current-selectors);
+    $asserted-selectors: selector-parse($asserted-selectors);
+    $matched-count: 0;
+    @each $current in $current-selectors {
+        $matched: false;
+        $i: 0;
+        @each $asserted in $asserted-selectors {
+            @if $matched==false {
+                $i: $i + 1;
+                
+                @if (length($current)==length($asserted)) {
+                    $len: length($current);
+                    $counter: 0;
+                    @for $n from 1 through $len {
+                        $a: nth($asserted, $n);
+                        $c: nth($current, $n);
+                        // to match '.btn.x.y' with '.btn.y.x'
+                        @if is-superselector($a, $c) and is-superselector($c, $a) {
+                            $counter: $counter + 1;
+                        }
+                    }                    
+                    @if $counter == $len {
+                       $matched: true; 
+                    }
+                }
+            }
+        }
+        @if $matched {
+            // remove matched selector
+            $asserted-selectors: nth-delete($asserted-selectors, $i);
+            $matched-count: $matched-count + 1;
+        }
+    }
+    @if length($asserted-selectors)>0 {
+        @if $throw-warn {
+            $throw: _warn('selector/assert', 'asserted selector(s) `'+inspect($asserted-selectors)+'` was not found in current selector(s) `'+inspect($current-selectors)+'`.');
+        }
+        @return false;
+    }
+    @return true;
+}
