@@ -307,6 +307,7 @@
         $match: false;
         $sel: to-string($sel);
         @each $branch in $args {
+            $branch: _remove-mutation-wrapper($branch);
             @if selector-contains($sel, $branch) {
                 $match: true;
                 $found: true;

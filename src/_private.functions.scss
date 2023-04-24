@@ -374,3 +374,21 @@
     $extended: $extension+$last+'';
     @return str-replace($single-selector+'', $last+'', $extended);
 }
+
+// Removes "state(...)" or "variant(...)" or "context(...)" wrapper.
+// E.g.  "state(.something)" => ".something"
+@function _remove-mutation-wrapper($simple-selector) {
+    // trim first 8 chars, e.g. 'state("'
+    $start8: str-slice($simple-selector, 1, 8);
+    @if $start8=='state("' {
+        @return str-slice($simple-selector, 9, -3);
+    }
+
+    // trim first 9 chars, e.g. 'variant("' or 'context("'
+    $start9: str-slice($simple-selector, 1, 9);
+    @if $start8=='variant(' or $start8=='context(' {
+        @return str-slice($simple-selector, 10, -3);
+    }
+
+    @return $simple-selector;
+}
