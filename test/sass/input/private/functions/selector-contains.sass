@@ -1,0 +1,13 @@
+@import "./src/spot-css"
+
+html
+    test1: selector-contains('.a, .b, .c', '.c') // true
+    test2: selector-contains('.zzz', '.zz') // false
+    test3: selector-contains('div.btnx.zzz', '.zz') // false
+    test4: selector-contains('div.btnx.zzz', 'div') // true
+    test5: selector-contains('div.btnx.zzz', '.btn') // false
+    test6: selector-contains('div.btnx.zzz', '.btnx') // true
+    test7: selector-contains('div.btnx.zzz', '.btnx.zzz') // true
+    test8: selector-contains('div.btnx.zzz', '.zzz.btnx') // true
+    test9: selector-contains('a div.btnx.zzz', '.zzz.btnx') // true
+    test10: selector-contains('a.btn div, a div.btnx.zzz', '.zzz.btnx') // true

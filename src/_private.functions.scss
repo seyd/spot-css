@@ -333,9 +333,9 @@
     $selectors: selector-parse($selector);
     $output: ();
     
+    $is-subselector-extension: is-element-selector($subselector-to-extend);
     $is-element-extension: is-element-selector($extension);
     
-    $substitution: '___SUBSELECTOR_TO_EXTEND___';
     @each $single-selector in $selectors {
         $is-combinator-selector: combinator-selector-length($single-selector)>1;
         // if special case (extension is an element selector, e.g. "i", so ".btn > .icon" is extended with "i" => ".btn > i.icon")
@@ -344,6 +344,15 @@
             $output: append($output, str-replace($single-selector+'', $subselector-to-extend, $extended-selector), 'comma');
         }
         @else {
+            $substitution: '';
+
+            @if $is-subselector-extension==false and is-part-of-element-subselector($single-selector, $subselector-to-extend) {
+                $substitution: ':is(___SUBSELECTOR_TO_EXTEND___)';
+            }
+            @else {
+                $substitution: '___SUBSELECTOR_TO_EXTEND___';
+            }
+
             $current-selector: str-replace($single-selector+'', $subselector-to-extend, $substitution);
             $extended-selector: extend($current-selector, $substitution, $extension);
             $output: append($output, str-replace($extended-selector+'', $substitution, $subselector-to-extend), 'comma');

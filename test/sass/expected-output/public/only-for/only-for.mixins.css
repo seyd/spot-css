@@ -2,7 +2,7 @@ my-component {
   prop: val;
 }
 
-my-component.apple, my-component.orange {
+my-component.apple, my-component.orange, my-component.orange-juice {
   property: value;
 }
 
@@ -14,11 +14,15 @@ my-component.orange {
   property: other-value-2;
 }
 
-my-component.apple:first-child, my-component.orange:first-child {
+my-component.orange-juice {
+  property: other-value-juice;
+}
+
+my-component.apple:first-child, my-component.orange:first-child, my-component.orange-juice:first-child {
   property: other-value-3;
 }
 
-my-component.apple:first-of-type, my-component.orange:first-of-type {
+my-component.apple:first-of-type, my-component.orange:first-of-type, my-component.orange-juice:first-of-type {
   property: other-value-4;
 }
 

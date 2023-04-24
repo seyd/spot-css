@@ -307,7 +307,7 @@
         $match: false;
         $sel: to-string($sel);
         @each $branch in $args {
-            @if str-index($sel, $branch) {
+            @if selector-contains($sel, $branch) {
                 $match: true;
                 $found: true;
                 $found-branch: $branch;
@@ -720,4 +720,42 @@
 @function get-last-element-in-combinator-selector($combinator-selector) {
     $selector: nth(selector-parse($combinator-selector), 1);
     @return nth($selector, length($selector));
+}
+
+// ('my-component .x > .i', '.x') => false
+// ('my-component .inner-wrapper.x > .i', '.x') => false
+// ('my-component .inner-wrapper > .i', '.x') => false
+// ('my-component div.inner-wrapper.x > .i', '.x') => true  (the "div" matters")
+@function is-part-of-element-subselector($single-selector, $sub-selector) {
+    $selector: nth(selector-parse($single-selector), 1);
+    @each $part-selector in $selector {
+        @if is-superselector($sub-selector, $part-selector) {
+            @if is-element-selector($part-selector) {
+                @return true;
+            }
+            @else {
+                @return false;
+            }
+        }
+    }
+    @return false;
+}
+
+/// Finds given sub-selector in given selectors
+/// selector-contains('a.btn div, a div.btnx.zzz', '.zzz.btnx') => true
+@function selector-contains($combinator-selector, $sub-single-selector) {
+    // split $sub-single-selector to single selectors, e.g. ".something.huge" => (".something", ".huge")
+    $sub-parts: nth(selector-parse($sub-single-selector), 1); // take first selector (it doesn't expect multiple)
+    $sub-selector: nth($sub-parts, length($sub-parts)); // take last (it expect just one, but for sure)
+
+    // for eeach of multiple selectors
+    $selector: selector-parse($combinator-selector);
+    @each $single-selector in $selector {
+        @each $part-selector in $single-selector {
+            @if is-superselector($sub-selector, $part-selector) {
+                @return true;
+            }
+        }
+    }
+    @return false;
 }

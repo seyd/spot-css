@@ -33,3 +33,11 @@ previous-component + your-component {
 other-parent-component > your-component {
   next: other;
 }
+
+.section {
+  margin: 1em;
+}
+
+.section + .section {
+  margin: 2em;
+}

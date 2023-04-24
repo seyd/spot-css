@@ -301,7 +301,14 @@
                         @else {   
                             @if str-index($extension, '&') {
                                 $context-extension: str-replace($extension, ' &', '');
-                                $extended-selector: merge-selectors($context-extension, &);
+                                // when context is the same as component (.same + .same)
+                                @if str-index($extension, $component) {
+                                    $selector: str-replace(&+'', $component, '[___COMPONENT___]'); 
+                                    $extended-selector: str-replace(merge-selectors($context-extension, $selector), '[___COMPONENT___]', $component);
+                                }
+                                @else {
+                                    $extended-selector: merge-selectors($context-extension, &);
+                                }
                             }
                             @else {
                                 $extended-selector: _extend_component_selector(&, $component-to-extend, $extension);
@@ -326,10 +333,17 @@
                 @if str-index($extension, '@media')==1 {
                     $medias: append($medias, str-replace(str-replace($extension, '@media ', ''), ' &', ''), 'comma');
                 }
-                @else {          
+                @else {    
                     @if str-index($extension, '&') {
                         $context-extension: str-replace($extension, ' &', '');
-                        $extended-selector: merge-selectors($context-extension, &);
+                        // when context is the same as component (.same + .same)
+                        @if str-index($extension, $component) {
+                            $selector: str-replace(&+'', $component, '[___COMPONENT___]'); 
+                            $extended-selector: str-replace(merge-selectors($context-extension, $selector), '[___COMPONENT___]', $component);
+                        }
+                        @else {
+                            $extended-selector: merge-selectors($context-extension, &);
+                        }
                     }
                     @else {
                         $extended-selector: _extend_component_selector(&, $component-to-extend, $extension);

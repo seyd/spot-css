@@ -70,3 +70,15 @@
     +context('parent-component')
 
     +context('super-direct-parent-component > * > &')
+
+    
+
++component('.section')
+    +register
+        +context('.section +')
+
+    +default
+        margin: 1em
+
+    +context('.section +')
+        margin: 2em

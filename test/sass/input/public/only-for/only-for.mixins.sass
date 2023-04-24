@@ -5,12 +5,13 @@
   +register
     +variant('.apple')
     +variant('.orange')
+    +variant('.orange-juice')
     +child-element('span')
   
   +default
     prop: val
 
-  +variant('.apple', '.orange')
+  +variant('.apple', '.orange', '.orange-juice')
     +default
       property: value
 
@@ -19,6 +20,9 @@
 
     +only-for('.orange')
       property: other-value-2
+
+    +only-for('.orange-juice')
+      property: other-value-juice
 
     +only-for(':first-child')
       property: other-value-3
