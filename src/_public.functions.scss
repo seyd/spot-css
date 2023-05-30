@@ -807,7 +807,6 @@
         @return false;
     }
     @if length($original-selectors-copy)>0 {
-        @debug 'some of current selector(s) `'+inspect($original-selectors-copy)+'` was not matched with asserted selector(s) `'+inspect($asserted-selectors)+'`.';
         @if $throw-warn {
             $throw: _warn('selector/assert', 'some of current selector(s) `'+inspect($original-selectors-copy)+'` was not matched with asserted selector(s).');
         }
