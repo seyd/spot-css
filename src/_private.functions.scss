@@ -397,3 +397,29 @@
 
     @return $simple-selector;
 }
+
+// Creates from "div .parent .child" => "div .parent > .child"
+@function _create-direct-child-from-last-element($single-selector) {
+    $parts: nth(selector-parse($single-selector), 1);
+    $len: length($parts);
+    @if $len==1 {
+        @return $single-selector;
+    }
+
+    $output: '';
+    @for $i from 1 through $len {
+        // all except last one
+        @if $i<$len {
+            $output: $output + nth($parts, $i) + ' ';
+        }
+        // if there is already '>'
+        @else if str-trim(nth($parts, $i - 1))=='>' {
+            $output: $output + nth($parts, $i);
+        }
+        // last one
+        @else {
+            $output: $output + ' > ' + nth($parts, $i);
+        }
+    }
+    @return $output;
+}

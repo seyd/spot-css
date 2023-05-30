@@ -299,7 +299,7 @@
 /// @throw SPOT CSS: only-for/not-found - given branch selector was not found at the end of current selector ('selector').
 /// @return { String } Filtered selector(s).
 @function only-for($selector, $args...) {
-    $selectors: selector-parse($selector);
+    $selectors: selector-parse($selector);    
     $output: (); 
     $found: false;
     $found-branch: '';
@@ -319,7 +319,7 @@
             //   :nth-*   [:nth-child(n), :nth-last-child(n), :nth-last-of-type(n), :nth-of-type(n)]
             //   :only-*  [:only-of-type, :only-child]
             //   :empty
-            @else if str-index($branch, ':first-') or  str-index($branch, ':last-') or str-index($branch, ':nth-') or str-index($branch, ':only-') or str-index($branch, ':empty') {
+            @else if str-index($branch, ':first-') or str-index($branch, ':last-') or str-index($branch, ':nth-') or str-index($branch, ':only-') or str-index($branch, ':empty') {
                 // except pseudo elements ::first-letter and ::first-line (but check for one ':')
                 @if str-index($branch, '::')==null and str-index($branch, ':first-letter')==null and str-index($branch, ':first-line')==null {
                     $found: true;
@@ -335,7 +335,13 @@
                     @error $SPOT_ERROR_PREFIX + "only-for/pseudo-element - given selector ('"+$selector+"') is a pseudo selector. Use mixin pseudo-element for this job.";
                 }
             }
+            // special case: +only-for('>')
+            @else if length($args)==1 and str-trim(nth($args, 1))=='>' {
+                $output: append($output, _create-direct-child-from-last-element($sel), 'comma');
+                $found: true;
+            }
         }
+
         @if $match {
             @if index($_already-used-multiple-selectors, $sel) {
                 @error $SPOT_ERROR_PREFIX + "only-for/already-used-selector - the only-for('" + $found-branch + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.";

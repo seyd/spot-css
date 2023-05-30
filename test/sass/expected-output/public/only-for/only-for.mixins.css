@@ -69,3 +69,23 @@ my-component.apple > span:only-of-type, my-component.orange > span:only-of-type 
 my-component.apple > span:only-child, my-component.orange > span:only-child {
   property: other-value-10;
 }
+
+my-component-2 .parent .child {
+  property: value-1;
+}
+
+my-component-2 .parent .child:hover {
+  property: value-2;
+}
+
+my-component-2 .parent > .child {
+  property: value-3;
+}
+
+my-component-2 .parent > .child:hover {
+  property: value-4;
+}
+
+my-component-2:focus .parent > .child {
+  property: value-5;
+}

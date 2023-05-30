@@ -67,3 +67,33 @@
       
       +only-for(':only-child')
         property: other-value-10
+
+
+
++component('my-component-2')
+    +register
+      +state(':focus')
+      +element('.parent')
+        +element('.child')
+          +state(':hover')
+
+    +__________________________
+    +element('.parent')
+      
+      +__________________________
+      +element('.child')
+        +default
+          property: value-1
+
+        +state(':hover')
+          property: value-2
+
+        +only-for('>')
+          +default
+            property: value-3
+
+          +state(':hover')
+            property: value-4
+
+          +state(':focus')
+            property: value-5
