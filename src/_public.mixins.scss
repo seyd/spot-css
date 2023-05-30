@@ -620,7 +620,7 @@
             @error $SPOT_ERROR_PREFIX + "inner-context/default-is-missing - the inner-context '"+inspect($selector)+"' in component '"+top-component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
         }
         
-        @at-root #{str-replace(&+'', self(), $selector+self())} {
+        @at-root #{str-replace(&+'', self(), str-trim($selector)+' '+self())} {
             @content;
         }
     }
