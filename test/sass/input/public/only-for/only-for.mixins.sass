@@ -97,3 +97,22 @@
 
           +state(':focus')
             property: value-5
+
+
+
+// only-for for elements:
++component('my-component-3')
+    +register
+      +element('a', 'span')
+
+    +_______________________
+    +element('a', 'span')
+      +default
+        property: value-1
+      
+      +only-for('a')
+        property: value-2
+
+      +only-for('span')
+        property: value-3
+

@@ -111,6 +111,22 @@
     @return $combinations;
 }
 
+// Native join() function didn't worked. Maybe because different versions of SASS.
+@function join-list-to-string($list, $separator) {
+    $len: length($list);
+    $output: '';
+
+    @for $i from 1 through $len {
+        $output: $output + nth($list, $i);
+
+        @if $i < $len {
+            $output: $output + $separator;
+        }
+    }
+
+    @return $output;
+}
+
  
 /// SCSS Specificity Calculator
 ///

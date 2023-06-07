@@ -262,6 +262,12 @@ $_registered-global-contexts: ();
 $_registered-global-browsers: ();
 
 
+/// Helpper variable for +elements filtering in +only-for mixin.
+/// @group Global
+/// @access private
+/// @type String
+$_current-element-selectors-for-only-for: '';
+
 
 // source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element (except of the deprecated but some exceptions)
 $_all-html-elements: 'a, abbr, address, area, article, aside, audio, b, base, bdi, bdo, blockquote, body, br, button, '+

@@ -89,3 +89,19 @@ my-component-2 .parent > .child:hover {
 my-component-2:focus .parent > .child {
   property: value-5;
 }
+
+my-component-3 a {
+  property: value-1;
+}
+
+my-component-3 a {
+  property: value-2;
+}
+
+my-component-3 span {
+  property: value-1;
+}
+
+my-component-3 span {
+  property: value-3;
+}

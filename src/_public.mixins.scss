@@ -776,6 +776,11 @@
             }
         }
 
+        // set for function only-for
+        @if length($selectors)>1 {
+            $_current-element-selectors-for-only-for: #{join-list-to-string($selectors, ', ')} !global;
+        }
+
         @each $selector in $selectors {
             $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
             $sub-component-selector: #{ & + ' ' + str-trim($selector) };
@@ -810,6 +815,9 @@
             // remove current component selector (from stack)
             $_current-components: pop($_current-components) !global;
         }
+
+        // unset
+        $_current-element-selectors-for-only-for: '' !global;
     }
 }
 
@@ -967,8 +975,12 @@
         @error $SPOT_ERROR_PREFIX + "only-for/default-is-missing - the only-for '"+inspect($args)+"' in component '"+component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
     }
 
-    @at-root #{only-for(&, $args...)} {
-        @content;
+    $selector: only-for(&, $args...);
+
+    @if $selector!='' {
+        @at-root #{$selector} {
+            @content;
+        }
     }
 }
 

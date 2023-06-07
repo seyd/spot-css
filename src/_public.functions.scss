@@ -303,6 +303,15 @@
     $output: (); 
     $found: false;
     $found-branch: '';
+
+    // for +elements filtering (not mutations or pseudo-classes)
+    $found-for-element-branching: false;
+    @each $branch in $args {
+        @if selector-contains($_current-element-selectors-for-only-for, $branch) {
+            $found-for-element-branching: true;
+        }
+    }
+
     @each $sel in $selectors {
         $match: false;
         $sel: to-string($sel);
@@ -341,17 +350,20 @@
                 $found: true;
             }
         }
-
+        
         @if $match {
-            @if index($_already-used-multiple-selectors, $sel) {
-                @error $SPOT_ERROR_PREFIX + "only-for/already-used-selector - the only-for('" + $found-branch + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.";
+            @if not $found-for-element-branching {
+                @if index($_already-used-multiple-selectors, $sel) {
+                    @error $SPOT_ERROR_PREFIX + "only-for/already-used-selector - the only-for('" + $found-branch + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.";
+                }
+                $_already-used-selectors: append($_already-used-selectors, $sel) !global;
+                $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sel) !global;
             }
-            $_already-used-selectors: append($_already-used-selectors, $sel) !global;
-            $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sel) !global;
+
             $output: append($output, $sel, 'comma');
         }
     }
-    @if not $found {
+    @if not $found and not $found-for-element-branching {
         @error $SPOT_ERROR_PREFIX + "only-for/not-found - given branch selector was not found at the end of current selector ('"+$selector+"').";
     }
     @return #{$output};
@@ -430,19 +442,6 @@
 }
 
 
-/// @todo tests
-// test if selector contains simple subselector
-@function selector-contains($selector, $simple-sub-selector) {
-    $selectors: selector-parse($selector);
-    @each $single-selector in $selectors {
-        @each $simple-selector in $single-selector {
-            @if is-superselector($simple-sub-selector, $simple-selector) {
-                @return true;
-            }
-        }
-    }
-    @return false;
-}
 
 
 @function first($list) {
@@ -751,11 +750,14 @@
 /// Finds given sub-selector in given selectors
 /// selector-contains('a.btn div, a div.btnx.zzz', '.zzz.btnx') => true
 @function selector-contains($combinator-selector, $sub-single-selector) {
+    @if $combinator-selector=='' {
+        @return false;
+    }
     // split $sub-single-selector to single selectors, e.g. ".something.huge" => (".something", ".huge")
     $sub-parts: nth(selector-parse($sub-single-selector), 1); // take first selector (it doesn't expect multiple)
     $sub-selector: nth($sub-parts, length($sub-parts)); // take last (it expect just one, but for sure)
 
-    // for eeach of multiple selectors
+    // for each of multiple selectors
     $selector: selector-parse($combinator-selector);
     @each $single-selector in $selector {
         @each $part-selector in $single-selector {
