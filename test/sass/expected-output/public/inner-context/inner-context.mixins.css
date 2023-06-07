@@ -13,3 +13,7 @@ test h2 ~ .info {
 test:hover h3 + footer, test.simulate-hover h3 + footer {
   some: thing;
 }
+
+test:hover h4 + footer, test.simulate-hover h4 + footer {
+  some: thing;
+}

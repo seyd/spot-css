@@ -601,12 +601,12 @@
 /// Prepend inner context to sub element of the component.
 /// @group Component
 /// @access public
-/// @param { String } $selector Context selector with "+" or "~" combinator selector.
+/// @param { String } $single-combinator-selector Context selector with "+" or "~" combinator selector, it could be multiple selectors.
 /// @content
 /// @example
 ///   +inner-context('h1 +')
-///   +inner-context('h2 ~')
-@mixin inner-context($selector) {
+///   +inner-context('h1 ~', 'h2 ~')
+@mixin inner-context($single-combinator-selector...) {
     @if $_is-register-mode {
         @error $SPOT_ERROR_PREFIX + "inner-context/in-register - the mixin inner-context doesn't have to be registered in register mixin in component '"+component()+"'.";
     }
@@ -617,11 +617,17 @@
 
         // force using 'default' mixin when using modifiers
         @if not _default-mixin-was-already-called() and $_current-component-mode!='draft' {
-            @error $SPOT_ERROR_PREFIX + "inner-context/default-is-missing - the inner-context '"+inspect($selector)+"' in component '"+top-component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
+            @error $SPOT_ERROR_PREFIX + "inner-context/default-is-missing - the inner-context '"+inspect($single-combinator-selector)+"' in component '"+top-component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
         }
         
-        @at-root #{str-replace(&+'', self(), str-trim($selector)+' '+self())} {
-            @content;
+        @each $selector in $single-combinator-selector {
+            $analyze: selector-parse(#{$selector});
+            @if length($analyze)>1 {
+                @error $SPOT_ERROR_PREFIX + "inner-context/single-selector - given selector is not a single selector, because contains comma(s): '"+$selector+"'.";
+            }
+            @at-root #{str-replace(&+'', self(), str-trim($selector+'')+' '+self())} {
+                @content;
+            }
         }
     }
 }
