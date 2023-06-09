@@ -379,7 +379,7 @@
     }    
     // run only once per component selector
     $current-media-selector: _wrap-into-media-selector(&);
-    @if index($_default-called-on, $current-media-selector) {
+    @if index($_default-called-on, $current-media-selector) and $_is-in-only-for-block==false {
         @error $SPOT_ERROR_PREFIX + "default/already-called - the mixin default was already called for element '"+$current-media-selector+"'.";
     }
     $_default-called-on: append($_default-called-on, $current-media-selector) !global;
@@ -991,11 +991,15 @@
 
     $selector: only-for(&, $args...);
 
+    $_is-in-only-for-block: true !global;
+
     @if $selector!='' {
         @at-root #{$selector} {
             @content;
         }
     }
+
+    $_is-in-only-for-block: false !global;
 }
 
 

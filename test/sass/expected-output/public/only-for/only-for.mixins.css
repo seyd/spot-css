@@ -105,3 +105,43 @@ my-component-3 span {
 my-component-3 span {
   property: value-3;
 }
+
+my-component-4 ul {
+  property: value-1;
+}
+
+my-component-4 ul li + li {
+  property: value-2;
+}
+
+my-component-4 ul li a {
+  property: value-3;
+}
+
+my-component-4 ul li a.-active {
+  property: value-5;
+}
+
+my-component-4 ul li a.-disabled {
+  property: value-6;
+}
+
+my-component-4 ul li a:not(.-active):hover {
+  property: value-8;
+}
+
+my-component-4 ul li span {
+  property: value-3;
+}
+
+my-component-4 ul li span.-active {
+  property: value-5;
+}
+
+my-component-4 ul li span.-disabled {
+  property: value-6;
+}
+
+my-component-4 ul li span {
+  property: value-7;
+}

@@ -102,17 +102,72 @@
 
 // only-for for elements:
 +component('my-component-3')
-    +register
-      +element('a', 'span')
-
-    +_______________________
+  +register
     +element('a', 'span')
+
+  +_______________________
+  +element('a', 'span')
+    +default
+      property: value-1
+    
+    +only-for('a')
+      property: value-2
+
+    +only-for('span')
+      property: value-3
+
+
+
+
++component('my-component-4')
+  +register
+    +element('ul')
+      +element('li')
+        +element('a', 'span')
+          +state(':hover')
+          +state('.-active')
+          +state(':not(.-active)')
+          +state('.-disabled')
+
+  +_____________________
+  +element('ul')
+    property: value-1
+
+    +_____________________
+    +element('li')
       +default
-        property: value-1
-      
-      +only-for('a')
+
+      +inner-context('li +')
         property: value-2
 
-      +only-for('span')
-        property: value-3
+      +_____________________
+      +element('a', 'span')
+        +default
+          property: value-3
+
+        +state('.-active')
+          property: value-5
+
+        +state('.-disabled')
+          property: value-6
+
+        +only-for('span')
+          +default
+            property: value-7
+
+          +state(':not(.-active)')
+            // to prevent warning of unused mutation
+
+          +state(':hover')
+            // to prevent warning of unused mutation
+
+        +only-for('a')
+            +default
+
+            +state(':not(.-active)')
+                +default
+
+                +state(':hover')
+                    property: value-8
+
 

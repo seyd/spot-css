@@ -95,6 +95,13 @@ $_is-child-component-mode: false;
 $_is-sub-component-mode: false;
 
 
+/// Flag of only-for block - if parser enters mixin only-for.
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-in-only-for-block: false;
+
+
 /// Last used modifier name ('variant', 'state', 'context', 'browser' or 'responsive').
 /// @group Component
 /// @access private
