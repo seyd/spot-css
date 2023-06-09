@@ -306,9 +306,11 @@
 
     // for +elements filtering (not mutations or pseudo-classes)
     $found-for-element-branching: false;
-    @each $branch in $args {
-        @if selector-contains($_current-element-selectors-for-only-for, $branch) {
-            $found-for-element-branching: true;
+    @if $_current-element-selectors-for-only-for!='' {
+        @each $branch in $args {
+            @if selector-contains($_current-element-selectors-for-only-for, $branch) {
+                $found-for-element-branching: true;
+            }
         }
     }
 
@@ -541,6 +543,11 @@
 
 @function str-trim($s) {
     @return str-trim-left(str-trim-right($s));
+}
+
+
+@function str-first-char($s) {
+    @return str-slice($s, 1, 1);
 }
 
 
