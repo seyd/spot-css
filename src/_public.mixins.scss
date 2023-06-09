@@ -787,8 +787,10 @@
         }
 
         // set for function only-for
-        @if length($selectors)>1 {
+        $was-set-here: false;
+        @if length($selectors)>1 and $_current-element-selectors-for-only-for=='' {
             $_current-element-selectors-for-only-for: #{join-list-to-string($selectors, ', ')} !global;
+            $was-set-here: true;
         }
 
         @each $selector in $selectors {
@@ -827,7 +829,9 @@
         }
 
         // unset
-        $_current-element-selectors-for-only-for: '' !global;
+        @if $_current-element-selectors-for-only-for!='' and $was-set-here {
+            $_current-element-selectors-for-only-for: '' !global;
+        }
     }
 }
 
