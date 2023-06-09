@@ -17,3 +17,27 @@ test:hover h3 + footer, test.simulate-hover h3 + footer {
 test:hover h4 + footer, test.simulate-hover h4 + footer {
   some: thing;
 }
+
+test:hover h3 + footer, test.simulate-hover h3 + footer, test:hover h4 + footer, test.simulate-hover h4 + footer {
+  some: other-thing;
+}
+
+test:hover .footer-info, test.simulate-hover .footer-info {
+  some: thing-1;
+}
+
+test:hover h3 + .footer-info, test.simulate-hover h3 + .footer-info {
+  some: thing-2;
+}
+
+test:active h3 + .footer-info {
+  some: thing-3;
+}
+
+test:hover h4 + .footer-info, test.simulate-hover h4 + .footer-info {
+  some: thing-2;
+}
+
+test:active h4 + .footer-info {
+  some: thing-3;
+}

@@ -4,10 +4,12 @@
 +component('test')
     +register
         +state('{hover}', ':hover', '.simulate-hover')
+        +state(':active')
         +element('span')
         +element('.description')
         +element('.info')
         +element('footer')
+        +element('.footer-info')
     
     +_____________________
     +element('span')
@@ -32,3 +34,22 @@
 
             +inner-context('h3 +', 'h4 +')
                 some: thing
+
+            +inner-context('h3 +, h4 +')
+                some: other-thing
+
+    +__________________________
+    +element('.footer-info')
+        +default
+
+        +state('{hover}')
+                some: thing-1
+
+        +inner-context('h3 +', 'h4 +')
+            +default
+
+            +state('{hover}')
+                some: thing-2
+
+            +state(':active')
+                some: thing-3
