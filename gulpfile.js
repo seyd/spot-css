@@ -111,9 +111,9 @@ function throwSassError(error) {
             message = isFwkError ? error.messageOriginal.split(' - ')[0] : error.messageFormatted;
 
         // uncomment when debugging for full errors
-        // if (targetFile.indexOf('variant.mixins.')!==-1) {
-        //     console.log(error);
-        // }
+        if (targetFile.indexOf('only-for.mixins.')!==-1) {
+            console.log(error);
+        }
 
         if (isFwkError) {
             // write expected (SPOT CSS framework) error to target file
