@@ -345,7 +345,7 @@
 }
 
 /// There was problem with extend() function on "combinator selectors" (e.g. "section > div"), so this is the solution => substitution.
-@function _extend_component_selector($selector, $subselector-to-extend, $extension) {
+@function _extend-component-selector($selector, $subselector-to-extend, $extension) {
     $selectors: selector-parse($selector);
     $output: ();
     
@@ -438,4 +438,93 @@
         }
     }
     @return $output;
+}
+
+
+// Returns all occurences of substring (array of index starts).
+// E.g. for (".p .p-in .p-in-in", ".p") => [1, 4, 10]
+@function _find_all_occurences($string, $substring) {
+    $str: $string;
+    $offset: 0;
+    $pos: str-index($str, $substring);
+    $len: str-length($substring);
+    $output: [];
+    @while $pos {
+        $output: append($output, $pos+$offset, 'comma');
+        $str: str-slice($str, $pos + $len, -1);
+        $offset: $offset + $len + $pos - 1;
+        $pos: str-index($str, $substring);
+    }
+    @return $output;
+}
+
+@function _replace-component-subselector($selector, $component-subselector, $replacement) {
+    $replacement: $replacement + '';
+    $component-subselector: $component-subselector + '';
+
+    // quick check if $component-subselector is (not) present
+    @if not str-index($selector + '', $component-subselector) {
+        @return $selector;
+    }
+
+    $selectors: selector-parse($selector);
+    $output: (); // when composing selectors, it is better () instead of [] (because some older SASS compilers)
+    @each $single-selector in $selectors {
+        $pos: str-index($single-selector + '', $component-subselector);
+        // quick check if $component-subselector is (not) present
+        @if not $pos {
+            $output: append($output, $single-selector, 'comma');
+        } @else {
+            $sel: $single-selector+'';
+            $occurences: _find_all_occurences($sel, $component-subselector);            
+            // just for sure
+            @if length($occurences)==0 {
+                $output: append($output, $single-selector, 'comma');
+            }
+            @else {
+                $sel-output: '';
+                $first: nth($occurences, 1);
+                $sel-len: str-length($sel);
+                $needle-len: str-length($component-subselector);
+                $last-pos-end: 1;
+                @if $first!=1 {
+                    $sel-output: str-slice($sel, 1, $first - 1);
+                }
+
+                @each $pos in $occurences {
+                    @if $last-pos-end!=1 {
+                        $sel-output: $sel-output + str-slice($sel, $last-pos-end, $pos - 1);
+                    }
+                    $is-start: $pos==1;
+                    $is-end: $pos + $needle-len - 1 == $sel-len;
+                    $char-before: str-nth-char($sel, $pos - 1);
+                    $char-after: str-nth-char($sel, $pos + $needle-len);
+                    // char before the start of the found substring AND char after the end of the found substring
+                    @if ($is-start or _is-char-left-selector-separator(str-nth-char($sel, $pos - 1))) and ($is-end or _is-char-right-selector-separator(str-nth-char($sel, $pos + $needle-len))) {
+                        $sel-output: $sel-output + $replacement;
+                    }
+                    @else {
+                        $sel-output: $sel-output + $component-subselector;
+                    }
+                    $last-pos-end: $pos + $needle-len;
+                }
+
+                @if $last-pos-end!=$sel-len {
+                    $sel-output: $sel-output + str-slice($sel, $last-pos-end, $sel-len);
+                }
+
+                $output: append($output, $sel-output, 'comma');
+            }
+        }
+    }
+
+    @return #{$output};
+}
+
+@function _is-char-left-selector-separator($char) {
+    @return $char==' ' or $char=='>' or $char=='+' or $char=='~' or $char==']' or $char==')';
+}
+
+@function _is-char-right-selector-separator($char) {
+    @return $char==' ' or $char=='>' or $char=='+' or $char=='~' or $char==':' or $char=='#' or $char=='.' or $char=='[';
 }

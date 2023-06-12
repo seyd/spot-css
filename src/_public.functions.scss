@@ -550,6 +550,9 @@
     @return str-slice($s, 1, 1);
 }
 
+@function str-nth-char($s, $n) {
+    @return str-slice($s, $n, $n);
+}
 
 @function str-last-char($s) {
     @return str-slice(str-trim-right($s), -1);

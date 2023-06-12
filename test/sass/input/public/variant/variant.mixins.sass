@@ -132,3 +132,23 @@
 
     +variant('button') //  header > button.something  
         border: 1px solid green
+
+
+
++component('.button')
+    +register
+        +variant('.primary')
+        +element('.button--inner')
+            +element('.button--text')
+            
+    +____________________________
+    +element('.button--inner')
+
+        +____________________________
+        +element('.button--text')
+
+            +default
+
+            +variant('.primary')
+                border: 1px solid green
+            

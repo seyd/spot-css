@@ -82,3 +82,118 @@
 
     +context('.section +')
         margin: 2em
+
+
+
++component('.p')
+    +register        
+        +context('.products-alternative')
+        +element('.image')
+            +element('> img')
+            +element('.flags.flags-default')                
+        +element('.p-in')
+            +element('.ratings-wrapper')
+                +element('.stars-placeholder')
+            +element('.p-in-in')
+                +element('.name')
+                +element('.category-appendix')
+            +element('.p-bottom')
+                +element('> div')
+                    +element('.prices')
+                        +element('.price')
+                            +element('> strong')                                                      
+                        +variant('.price-standard')                                                  
+                    +element('.p-tools')
+                        +element('> .pr-action') 
+
+    +default
+
+    +context('.products-alternative')
+        display: grid
+    
+    +________________________________
+    +element('.image')
+        +default
+            margin-bottom: 24px
+    
+        +context('.products-alternative')
+            margin-bottom: 0
+    
+        +________________________________
+        +element('> img')
+            +default
+            +context('.products-alternative')
+                width: 100%
+           
+        +________________________________
+        +element('.flags.flags-default')
+            padding: 8px
+    
+    +________________________________
+    +element('.p-in')
+        +default
+
+        +context('.products-alternative')
+            display: flex
+           
+        +________________________________
+        +element('.ratings-wrapper')
+            position: static
+          
+            +________________________________
+            +element('.stars-placeholder')
+        
+        +________________________________
+        +element('.p-in-in')
+            +default
+                padding-left: 16px
+
+            +context('.products-alternative')
+                padding: 0
+            
+            +________________________________
+            +element('.name')
+                +default
+                    text-align: left
+                
+                +context('.products-alternative')
+                    margin: 0
+
+            +________________________________
+            +element('.category-appendix')
+                position: static
+
+        +________________________________
+        +element('.p-bottom')
+            +________________________________
+            +element('> div')
+                +________________________________
+                +element('.prices')
+                    +default
+                        padding-left: 16px
+                        
+                    +context('.products-alternative')
+                        padding: 0
+                        
+                    +________________________________                
+                    +element('.price')
+                        +default
+                            white-space: nowrap
+
+                        +context('.products-alternative')
+                            width: 100%
+                            
+                        +variant('.price-standard')
+                            text-align: left
+                            
+                        +________________________________
+                        +element('> strong')                            
+                            font-family: arial
+                            
+                +________________________________
+                +element('.p-tools')
+
+                    +________________________________
+                    +element('> .pr-action')
+                        padding-left: 16px 
+                        

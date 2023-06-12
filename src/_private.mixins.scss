@@ -303,7 +303,7 @@
                                 $context-extension: str-replace($extension, ' &', '');
                                 // when context is the same as component (.same + .same)
                                 @if str-index($extension, $component) {
-                                    $selector: str-replace(&+'', $component, '[___COMPONENT___]'); 
+                                    $selector: _replace-component-subselector(&+'', $component, '[___COMPONENT___]');
                                     $extended-selector: str-replace(merge-selectors($context-extension, $selector), '[___COMPONENT___]', $component);
                                 }
                                 @else {
@@ -311,7 +311,7 @@
                                 }
                             }
                             @else {
-                                $extended-selector: _extend_component_selector(&, $component-to-extend, $extension);
+                                $extended-selector: _extend-component-selector(&, $component-to-extend, $extension);
                             }
                             $selectors: append($selectors, $extended-selector, 'comma');
                         }
@@ -338,7 +338,7 @@
                         $context-extension: str-replace($extension, ' &', '');
                         // when context is the same as component (.same + .same)
                         @if str-index($extension, $component) {
-                            $selector: str-replace(&+'', $component, '[___COMPONENT___]'); 
+                            $selector: _replace-component-subselector(&+'', $component, '[___COMPONENT___]');
                             $extended-selector: str-replace(merge-selectors($context-extension, $selector), '[___COMPONENT___]', $component);
                         }
                         @else {

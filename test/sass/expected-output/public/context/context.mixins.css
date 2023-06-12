@@ -41,3 +41,79 @@ other-parent-component > your-component {
 .section + .section {
   margin: 2em;
 }
+
+.products-alternative .p {
+  display: grid;
+}
+
+.p .image {
+  margin-bottom: 24px;
+}
+
+.products-alternative .p .image {
+  margin-bottom: 0;
+}
+
+.products-alternative .p .image > img {
+  width: 100%;
+}
+
+.p .image .flags.flags-default {
+  padding: 8px;
+}
+
+.products-alternative .p .p-in {
+  display: flex;
+}
+
+.p .p-in .ratings-wrapper {
+  position: static;
+}
+
+.p .p-in .p-in-in {
+  padding-left: 16px;
+}
+
+.products-alternative .p .p-in .p-in-in {
+  padding: 0;
+}
+
+.p .p-in .p-in-in .name {
+  text-align: left;
+}
+
+.products-alternative .p .p-in .p-in-in .name {
+  margin: 0;
+}
+
+.p .p-in .p-in-in .category-appendix {
+  position: static;
+}
+
+.p .p-in .p-bottom > div .prices {
+  padding-left: 16px;
+}
+
+.products-alternative .p .p-in .p-bottom > div .prices {
+  padding: 0;
+}
+
+.p .p-in .p-bottom > div .prices .price {
+  white-space: nowrap;
+}
+
+.products-alternative .p .p-in .p-bottom > div .prices .price {
+  width: 100%;
+}
+
+.p .p-in .p-bottom > div .prices.price-standard .price {
+  text-align: left;
+}
+
+.p .p-in .p-bottom > div .prices .price > strong {
+  font-family: arial;
+}
+
+.p .p-in .p-bottom > div .p-tools > .pr-action {
+  padding-left: 16px;
+}

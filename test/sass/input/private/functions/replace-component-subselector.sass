@@ -1,0 +1,54 @@
+@import "./src/spot-css"
+
+/* #{ _replace-component-subselector('html.mobile my-component', 'html.layout', '.replacement') } */
+// Expected output:  html.mobile.layout-portrait my-component
+
+/* #{ _replace-component-subselector('html.mobile my-component, .btn', '.btn', '.replacement') } */
+// Expected output:  html.mobile.layout-portrait my-component
+
+/* #{ _replace-component-subselector('html.mobile my-component, .p .p-in .p-in-in .p', '.p', '.replacement') } */
+// Expected output:  html.mobile my-component, .replacement .p-in .p-in-in .replacement
+
+/* #{ _replace-component-subselector('.button .button--text .button--appendix', '.button', '[replacement]') } */
+// Expected output:  [replacement] .button--text .button--appendix
+
+/* #{ _replace-component-subselector('.button>.else .button--text', '.button', '[replacement]') } */
+// Expected output:  [replacement] > .else .button--text
+
+/* #{ _replace-component-subselector('.button+.else .button--text', '.button', '[replacement]') } */
+// Expected output:  [replacement] + .else .button--text
+
+/* #{ _replace-component-subselector('.button~.else .button--text', '.button', '[replacement]') } */
+// Expected output:  [replacement] ~ .else .button--text
+
+/* #{ _replace-component-subselector('.button:not(.else) .button--text', '.button', '[replacement]') } */
+// Expected output:  [replacement]:not(.else) .button--text
+
+/* #{ _replace-component-subselector('.button#id .button--text', '.button', '[replacement]') } */
+// Expected output:  [replacement]#id .button--text
+
+/* #{ _replace-component-subselector('.button.active', '.button', '[replacement]') } */
+// Expected output:  [replacement].active 
+
+/* #{ _replace-component-subselector('.button[disabled] .button--text', '.button', '[replacement]') } */
+// Expected output:  [replacement][disabled] .button--text
+
+/* #{ _replace-component-subselector('.context .button .button--text', '.button', '[replacement]') } */
+// Expected output:  .context [replacement] .button--text 
+
+/* #{ _replace-component-subselector('.context>.button .button--text', '.button', '[replacement]') } */
+// Expected output:  .context > [replacement] .button--text 
+
+/* #{ _replace-component-subselector('.context+.button .button--text', '.button', '[replacement]') } */
+// Expected output:  .context + [replacement] .button--text 
+
+/* #{ _replace-component-subselector('.context~.button .button--text', '.button', '[replacement]') } */
+// Expected output:  .context ~ [replacement] .button--text 
+
+/* #{ _replace-component-subselector('[disabled].button .button--text', '.button', '[replacement]') } */
+// Expected output:  [disabled][replacement] .button--text 
+
+/* #{ _replace-component-subselector(':not([disabled]).button .button--text', '.button', '[replacement]') } */
+// Expected output:  :not([disabled])[replacement] .button--text 
+
+/* #{inspect(_find_all_occurences(".p .p-in .p-in-in", '.p'))} */

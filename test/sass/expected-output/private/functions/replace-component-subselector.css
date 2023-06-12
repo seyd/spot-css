@@ -1,0 +1,18 @@
+/* html.mobile my-component */
+/* html.mobile my-component, .replacement */
+/* html.mobile my-component, .replacement .p-in .p-in-in .replacement */
+/* [replacement] .button--text .button--appendix */
+/* [replacement] > .else .button--text */
+/* [replacement] + .else .button--text */
+/* [replacement] ~ .else .button--text */
+/* [replacement]:not(.else) .button--text */
+/* [replacement]#id .button--text */
+/* [replacement].active */
+/* [replacement][disabled] .button--text */
+/* .context [replacement] .button--text */
+/* .context > [replacement] .button--text */
+/* .context + [replacement] .button--text */
+/* .context ~ [replacement] .button--text */
+/* [disabled][replacement] .button--text */
+/* :not([disabled])[replacement] .button--text */
+/* [1, 4, 10] */
