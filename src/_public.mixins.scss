@@ -636,7 +636,7 @@
             $output: [];            
             @each $sel in $multiple-selectors {
 
-                $output: append($output, str-replace(&+'', self(), str-trim($sel+'')+' '+self()), 'comma');
+                $output: append($output, _replace-component-subselector(&, self(), str-trim($sel+'')+' '+self()), 'comma');
             }
             @at-root #{$output} {
                 @content;

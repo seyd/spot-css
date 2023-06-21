@@ -53,3 +53,20 @@
 
             +state(':active')
                 some: thing-3
+
+
+
++component('.test')
+    +register
+        +element('.days')
+            +element('.day')
+
+    +________________________
+    +element('.days')
+
+        +________________________
+        +element('.day')
+            +default
+
+            +inner-context('.insert +')
+                prop: val

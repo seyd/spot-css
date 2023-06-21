@@ -41,3 +41,7 @@ test:hover h4 + .footer-info, test.simulate-hover h4 + .footer-info {
 test:active h4 + .footer-info {
   some: thing-3;
 }
+
+.test .days .insert + .day {
+  prop: val;
+}

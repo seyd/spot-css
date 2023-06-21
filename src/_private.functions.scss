@@ -357,7 +357,7 @@
         // if special case (extension is an element selector, e.g. "i", so ".btn > .icon" is extended with "i" => ".btn > i.icon")
         @if $is-element-extension and $is-combinator-selector {
             $extended-selector: _extend-last-element-in-selector-with-element-selector($subselector-to-extend, $extension);
-            $output: append($output, str-replace($single-selector+'', $subselector-to-extend, $extended-selector), 'comma');
+            $output: append($output, _replace-component-subselector($single-selector+'', $subselector-to-extend, $extended-selector), 'comma');
         }
         @else {
             $substitution: '';
@@ -393,7 +393,8 @@
     $parts: nth(selector-parse($single-selector), 1);
     $last: nth($parts, length($parts));
     $extended: $extension+$last+'';
-    @return str-replace($single-selector+'', $last+'', $extended);
+    $without-last: pop($parts);
+    @return #{append($without-last, $extended)};
 }
 
 // Removes "state(...)" or "variant(...)" or "context(...)" wrapper.
