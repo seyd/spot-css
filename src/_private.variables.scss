@@ -269,6 +269,13 @@ $_registered-global-contexts: ();
 $_registered-global-browsers: ();
 
 
+/// Helpper variable for +component filtering in +only-for mixin (if multiple selectors).
+/// @group Global
+/// @access private
+/// @type String
+$_current-component-selectors-for-only-for: '';
+
+
 /// Helpper variable for +elements filtering in +only-for mixin.
 /// @group Global
 /// @access private

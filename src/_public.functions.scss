@@ -304,6 +304,16 @@
     $found: false;
     $found-branch: '';
 
+    // for multiple selector +component filtering (not mutations or pseudo-classes)
+    $found-for-component-branching: false;
+    @if $_current-component-selectors-for-only-for!='' {
+        @each $branch in $args {
+            @if selector-contains($_current-component-selectors-for-only-for, $branch) {
+                $found-for-component-branching: true;
+            }
+        }
+    }
+
     // for +elements filtering (not mutations or pseudo-classes)
     $found-for-element-branching: false;
     @if $_current-element-selectors-for-only-for!='' {
@@ -354,7 +364,7 @@
         }
         
         @if $match {
-            @if not $found-for-element-branching {
+            @if not $found-for-element-branching and not $found-for-component-branching {
                 @if index($_already-used-multiple-selectors, $sel) {
                     @error $SPOT_ERROR_PREFIX + "only-for/already-used-selector - the only-for('" + $found-branch + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.";
                 }
@@ -365,7 +375,7 @@
             $output: append($output, $sel, 'comma');
         }
     }
-    @if not $found and not $found-for-element-branching {
+    @if not $found and not $found-for-element-branching and not $found-for-component-branching {
         @error $SPOT_ERROR_PREFIX + "only-for/not-found - given branch selector was not found at the end of current selector ('"+$selector+"').";
     }
     @return #{$output};

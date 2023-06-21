@@ -81,6 +81,10 @@
         $simple-element-exceptions: '[at-least-one-non-existing-exception-selector]';
     }
 
+    @if length($selectors)>1 {
+        $_current-component-selectors-for-only-for: #{join-list-to-string($selectors, ', ')} !global;
+    }
+
     // for all selectors (component alternatives)
     @each $selector in $selectors {
         
@@ -134,6 +138,11 @@
 
         // reset current mode to default after each component
         $_current-component-mode: $_default-component-mode !global;
+    }
+
+    // unset
+    @if $_current-component-selectors-for-only-for!='' {
+        $_current-component-selectors-for-only-for: '' !global;
     }
 }
 

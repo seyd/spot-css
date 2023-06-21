@@ -162,12 +162,68 @@
             // to prevent warning of unused mutation
 
         +only-for('a')
+          +default
+
+          +state(':not(.-active)')
             +default
 
-            +state(':not(.-active)')
+            +state(':hover')
+              property: value-8
+
+
+
++component('.c-checkbox', '.c-radio', '.c-selector')
+    +register
+        +state(':checked')
+        +state(':focus')
+        +state(':disabled')
+        +element('+ label')
+            +state(':hover')
+            +pseudo-element('{pseudo}', 'before', 'after')
+
+    position: absolute
+    opacity: 0
+    
+    +_________________________
+    +element('+ label')
+        +default
+            position: relative
+
+        +state(':disabled')
+            cursor: auto
+
+        +_________________________
+        +pseudo-element('{pseudo}')
+            +default
+                content: ''
+
+            +only-for('::before')
                 +default
+                    border-radius: 0
+
+                +only-for('.c-radio')
+                    +default
+                        border-radius: 50%
+                    
+                    +state(':checked')
+                        border-radius: 10%
 
                 +state(':hover')
-                    property: value-8
+                    border-color: black
+                
+                +state(':focus')
+                    box-shadow: 0 0 0 3px black
 
+                +state(':disabled')
+                    border-color: gray
 
+            +only-for('::after')
+                +default
+                    opacity: 0
+
+                +state(':checked')
+                    +default
+                        opacity: 1
+
+                    +only-for('.c-radio')
+                        content: ''

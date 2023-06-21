@@ -71,3 +71,7 @@ ul.btn > .icon, ol.btn > .icon {
 header > button.something {
   border: 1px solid green;
 }
+
+.button.primary .button--inner .button--text {
+  border: 1px solid green;
+}

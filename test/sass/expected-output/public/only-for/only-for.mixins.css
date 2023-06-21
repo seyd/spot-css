@@ -145,3 +145,138 @@ my-component-4 ul li span.-disabled {
 my-component-4 ul li span {
   property: value-7;
 }
+
+.c-checkbox {
+  position: absolute;
+  opacity: 0;
+}
+
+.c-checkbox + label {
+  position: relative;
+}
+
+.c-checkbox:disabled + label {
+  cursor: auto;
+}
+
+.c-checkbox + label::before, .c-checkbox + label::after {
+  content: '';
+}
+
+.c-checkbox + label::before {
+  border-radius: 0;
+}
+
+.c-checkbox + label:hover::before {
+  border-color: black;
+}
+
+.c-checkbox:focus + label::before {
+  box-shadow: 0 0 0 3px black;
+}
+
+.c-checkbox:disabled + label::before {
+  border-color: gray;
+}
+
+.c-checkbox + label::after {
+  opacity: 0;
+}
+
+.c-checkbox:checked + label::after {
+  opacity: 1;
+}
+
+.c-radio {
+  position: absolute;
+  opacity: 0;
+}
+
+.c-radio + label {
+  position: relative;
+}
+
+.c-radio:disabled + label {
+  cursor: auto;
+}
+
+.c-radio + label::before, .c-radio + label::after {
+  content: '';
+}
+
+.c-radio + label::before {
+  border-radius: 0;
+}
+
+.c-radio + label::before {
+  border-radius: 50%;
+}
+
+.c-radio:checked + label::before {
+  border-radius: 10%;
+}
+
+.c-radio + label:hover::before {
+  border-color: black;
+}
+
+.c-radio:focus + label::before {
+  box-shadow: 0 0 0 3px black;
+}
+
+.c-radio:disabled + label::before {
+  border-color: gray;
+}
+
+.c-radio + label::after {
+  opacity: 0;
+}
+
+.c-radio:checked + label::after {
+  opacity: 1;
+}
+
+.c-radio:checked + label::after {
+  content: '';
+}
+
+.c-selector {
+  position: absolute;
+  opacity: 0;
+}
+
+.c-selector + label {
+  position: relative;
+}
+
+.c-selector:disabled + label {
+  cursor: auto;
+}
+
+.c-selector + label::before, .c-selector + label::after {
+  content: '';
+}
+
+.c-selector + label::before {
+  border-radius: 0;
+}
+
+.c-selector + label:hover::before {
+  border-color: black;
+}
+
+.c-selector:focus + label::before {
+  box-shadow: 0 0 0 3px black;
+}
+
+.c-selector:disabled + label::before {
+  border-color: gray;
+}
+
+.c-selector + label::after {
+  opacity: 0;
+}
+
+.c-selector:checked + label::after {
+  opacity: 1;
+}
