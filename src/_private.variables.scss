@@ -31,7 +31,8 @@ $_current-spot-config: $_default-spot-config;
 /// @access private
 /// @type Map
 $_registered-components: ();
-$_registered-components-for-spot-exception: ();
+$_registered-components-for-spot-exception-element: ();
+$_registered-components-for-spot-exception-selector: ();
 
 
 /// Current component or stack of current components (if multiple are nested).
@@ -167,7 +168,8 @@ $_registered-sub-elements: [];
 /// @access private
 /// @type Map
 $_registered-sub-components: ();
-$_registered-sub-components-for-spot-exception: ();
+$_registered-sub-components-for-spot-exception-element: ();
+$_registered-sub-components-for-spot-exception-selector: ();
 
 
 /// List of calling register mixin for each component.
@@ -198,7 +200,8 @@ $_selectors-with-sub-elements: [];
 /// @access private
 /// @type List
 $_already-used-selectors: [];
-$_already-used-selectors-for-spot-exception: [];
+$_already-used-selectors-for-spot-exception-element: [];
+$_already-used-selectors-for-spot-exception-selector: [];
 
 
 /// List of already used selectors (also multiple) for watching multiple using
@@ -207,7 +210,8 @@ $_already-used-selectors-for-spot-exception: [];
 /// @access private
 /// @type List
 $_already-used-multiple-selectors: [];
-$_already-used-multiple-selectors-for-spot-exception: [];
+$_already-used-multiple-selectors-for-spot-exception-element: [];
+$_already-used-multiple-selectors-for-spot-exception-selector: [];
 
 
 /// Map of used modifiers per component - if were used already, e.g. state, variant, context, ...

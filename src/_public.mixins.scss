@@ -875,7 +875,7 @@
     }
 
     @if component()=='' {
-        @error $SPOT_ERROR_PREFIX + "spot-exception-element/no-component - you cannot use mixin element outside of component.";
+        @error $SPOT_ERROR_PREFIX + "spot-exception-element/no-component - you cannot use this mixin outside of component.";
     }
 
     // do not allow in modifier
@@ -945,7 +945,7 @@
                 $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
                 $sub-component-selector: #{ & + ' ' + str-trim($selector) };
                 
-                @include _check-duplicity-of-sub-selectors-for-spot-exception('spot-exception-element', $sub-component-selector, $selector);
+                @include _check-duplicity-of-sub-selectors-for-spot-exception-element('spot-exception-element', $sub-component-selector, $selector);
 
                 // store current component selector (into stack)
                 $_current-components: append($_current-components, $selector, 'space') !global;
@@ -997,18 +997,189 @@
             $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
             $sub-component-selector: #{ & + ' ' + str-trim($selector) };
             // check if element is registered
-            @if not index($_already-used-selectors-for-spot-exception, $sub-component-selector) and $_current-component-mode!='draft' {
+            @if not index($_already-used-selectors-for-spot-exception-element, $sub-component-selector) and $_current-component-mode!='draft' {
                 @error $SPOT_ERROR_PREFIX + "spot-exception-element/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
             }
             // 1)
             // if already registred
-            @if index($_registered-components-for-spot-exception, $sub-component-selector)!=null {
+            @if index($_registered-components-for-spot-exception-element, $sub-component-selector)!=null {
                 @error $SPOT_ERROR_PREFIX + "spot-exception-element/duplicate - given element selector is already used in current block ('"+$sub-component-selector+"').";
             }
             @else {
                 // store component selector if is not stored yet
-                $_registered-components-for-spot-exception: append($_registered-components-for-spot-exception, $sub-component-selector, 'comma') !global;
-                $_already-used-multiple-selectors-for-spot-exception: append($_already-used-multiple-selectors-for-spot-exception, $sub-component-selector, 'comma') !global;
+                $_registered-components-for-spot-exception-element: append($_registered-components-for-spot-exception-element, $sub-component-selector, 'comma') !global;
+                $_already-used-multiple-selectors-for-spot-exception-element: append($_already-used-multiple-selectors-for-spot-exception-element, $sub-component-selector, 'comma') !global;
+            }
+
+            // 2)
+            // store current component selector (into stack)
+            $_current-components: append($_current-components, $selector, 'space') !global;
+
+            $_is-child-component-mode: true !global;
+
+            @at-root
+            #{$sub-component-selector} {
+                @content;
+            }
+
+            $_is-child-component-mode: false !global;
+
+            // remove current component selector (from stack)
+            $_current-components: pop($_current-components) !global;
+        }
+
+        // unset
+        @if $_current-element-selectors-for-only-for!='' and $was-set-here {
+            $_current-element-selectors-for-only-for: '' !global;
+        }
+    }
+}
+
+
+/// SPOT exception selector mixin to define sub elements in component when SPOT rule is broken.
+/// It doesn't have to be a simle selector!
+/// Aliases must be unique also in +element scope, but selectors can have duplicities with +element (because +spot-exception-element).
+/// @example +spot-exception-element('>*+*') - addressing all direct children even if it is part of another component or concrete sub-elements are adressed later.
+///
+/// @group Component
+/// @access public
+/// @since from version 2.0.0
+/// @param { String } $selector - single selector of sub element of component. 
+/// @content
+/// @throw SPOT CSS: spot-exception-selector/no-selectors - at least one selector is expected.
+/// @throw SPOT CSS: spot-exception-selector/no-component - you cannot use mixin element outside of component.
+/// @throw SPOT CSS: spot-exception-selector/already-registered - trying to register already registered element '{selector}' for component '{component}'.
+/// @throw SPOT CSS: spot-exception-selector/unknown-unregistered - given element '{selector}' is not registered in direct parent component ('{component}').
+/// @throw SPOT CSS: spot-exception-selector/duplicate - given element selector is already used in current block ('{selector}').";
+/// @throw SPOT CSS: spot-exception-selector/no-selector - selector was expected but nothing passed.
+/// @throw SPOT CSS: spot-exception-selector/single-selector - given selector is not a single selector, because contains comma(s): '{selector}'.
+/// @throw SPOT CSS: spot-exception-selector/alias-not-first-argument - You can use alias only as a firt argument only. But you are using argument with alias '{alias}' for component selector '{selector}' wrong.
+/// @throw SPOT CSS: spot-exception-selector/alias-already-registered - trying to register already registered sub-element '{alias}' for component selector '{selector}'.
+/// @throw SPOT CSS: spot-exception-selector/alias-unknown-unregistered - given element '{selector}' is not registered in direct parent component ('{component}').
+/// @output Given selector with given content.
+@mixin spot-exception-selector($selectors...) {
+    @if length($selectors)==0 {
+        @error $SPOT_ERROR_PREFIX + "spot-exception-selector/no-selectors - at least one selector is expected.";
+    }
+
+    @if component()=='' {
+        @error $SPOT_ERROR_PREFIX + "spot-exception-selector/no-component - you cannot use mixin element outside of component.";
+    }
+
+    // test for not empty and single selector
+    @each $selector in $selectors {
+        @if not $selector or $selector=="" {
+            @error $SPOT_ERROR_PREFIX + "spot-exception-selector/no-selector - selector was expected but nothing passed.";
+        }
+        @if not _is-alias($selector) {
+            $parts: selector-parse($selector);
+            @if length($parts) > 1 {
+                @error $SPOT_ERROR_PREFIX + "spot-exception-selector/single-selector - given selector is not a single selector, because contains comma(s): '"+$selector+"'.";
+            }
+        }
+    }
+    
+    @if $_is-register-mode { 
+        $counter: 0;
+        $selectors-without-alias: shift($selectors); // remove first item (alias)
+        
+        $alias: null;
+        $component-alias-key: null;
+        $registered-component-alias: null;
+
+        @each $selector in $selectors {            
+            $counter: $counter + 1;
+
+            @if _is-alias($selector) {
+                @if $counter>1 {
+                    // @TODO test
+                    @error $SPOT_ERROR_PREFIX + "spot-exception-selector/alias-not-first-argument - You can use alias only as a firt argument only. But you are using argument with alias '"+$alias+"' for component selector '"+&+"' wrong.";
+                }
+                
+                $alias: _normalize-alias($selector);
+                $component-alias-key: top-component()+' '+$alias;
+                
+                $registered-component-alias: map-get($_registered-component-aliases, $component-alias-key);
+                $registered-component-element-alias: map-get($_registered-component-element-aliases, $component-alias-key);
+                
+                // guarding duplicity of sub-elements alias (for whole component)
+                @if $registered-component-alias and (($registered-component-element-alias and str-index(&+'', $registered-component-element-alias+'')==1) or $registered-component-alias!=$selectors-without-alias) {
+                    @error $SPOT_ERROR_PREFIX + "spot-exception-selector/alias-already-registered - trying to register already registered sub-element '"+$alias+"' for component selector '"+&+"'.";
+                }
+                
+                $registered-component-alias: $selectors-without-alias;
+                $_registered-component-aliases: map-merge($_registered-component-aliases, ($component-alias-key: $registered-component-alias)) !global;
+                $_registered-component-element-aliases: map-merge($_registered-component-element-aliases, ($component-alias-key: &)) !global;
+            }
+            @else {
+                // if not alias
+                $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
+                $sub-component-selector: #{ str-trim($selector) };
+                
+                @include _check-duplicity-of-sub-selectors-for-spot-exception-selector('spot-exception-selector', $sub-component-selector, $selector);
+
+                // store current component selector (into stack)
+                $_current-components: append($_current-components, $selector, 'space') !global;
+
+                $_is-child-component-mode: true !global;
+
+                @at-root
+                #{$sub-component-selector} {
+                    @content;
+                }
+
+                $_is-child-component-mode: false !global;
+
+                // remove current component selector (from stack)
+                $_current-components: pop($_current-components) !global;
+            }
+        }        
+    }
+    @else {
+        // store appling sub element in current selector to avoid calling state, variant, etc. after element section (see error "/invalid-order")
+        @if not index($_selectors-with-sub-elements, &) {
+            $_selectors-with-sub-elements: append($_selectors-with-sub-elements, &) !global;
+        }
+
+        // expand aliases to selectors
+        @for $i from 1 through length($selectors) {
+            $selector: nth($selectors, $i);
+            @if _is-alias($selector) {
+                $alias: _normalize-alias($selector);
+                $component-alias-key: top-component()+' '+$alias;
+                $registered-component-alias: map-get($_registered-component-aliases, $component-alias-key);
+                
+                @if not $registered-component-alias {
+                    @error $SPOT_ERROR_PREFIX + "spot-exception-selector/alias-unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
+                }
+
+                $selectors: replace-nth($selectors, $i, $registered-component-alias);
+            }
+        }
+
+        // set for function only-for
+        $was-set-here: false;
+        @if length($selectors)>1 and $_current-element-selectors-for-only-for=='' {
+            $_current-element-selectors-for-only-for: #{join-list-to-string($selectors, ', ')} !global;
+            $was-set-here: true;
+        }
+
+        @each $selector in $selectors {
+            $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
+            $sub-component-selector: #{ str-trim($selector) };
+            // check if element is registered
+            @if not index($_already-used-selectors-for-spot-exception-selector, $sub-component-selector) and $_current-component-mode!='draft' {
+                @error $SPOT_ERROR_PREFIX + "spot-exception-selector/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
+            }
+            // 1)
+            // if already registred
+            @if index($_registered-components-for-spot-exception-selector, $sub-component-selector)!=null {
+                @error $SPOT_ERROR_PREFIX + "spot-exception-selector/duplicate - given element selector is already used in current block ('"+$sub-component-selector+"').";
+            }
+            @else {
+                // store component selector if is not stored yet
+                $_registered-components-for-spot-exception-selector: append($_registered-components-for-spot-exception-selector, $sub-component-selector, 'comma') !global;
+                $_already-used-multiple-selectors-for-spot-exception-selector: append($_already-used-multiple-selectors-for-spot-exception-selector, $sub-component-selector, 'comma') !global;
             }
 
             // 2)

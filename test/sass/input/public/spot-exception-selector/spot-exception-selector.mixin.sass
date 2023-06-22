@@ -1,0 +1,14 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +spot-exception-selector('.my-other-selector')
+        +spot-exception-selector('{alias}', '.my-other-selector .like [this]')
+
+   
+    +spot-exception-selector('.my-other-selector')
+        prop: val-1
+
+    +spot-exception-selector('{alias}')
+        prop: val-2

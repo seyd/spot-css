@@ -1,0 +1,7 @@
+.my-other-selector {
+  prop: val-1;
+}
+
+.my-other-selector .like [this] {
+  prop: val-2;
+}

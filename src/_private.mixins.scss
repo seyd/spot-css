@@ -646,6 +646,26 @@
             }
         }
     }
+
+    // for spot-exception-element(s)
+    $registered-sub-components: map-get($_registered-sub-components-for-spot-exception-element, $component);
+    @if $registered-sub-components!=null {
+        @each $sub-component in $registered-sub-components {            
+            @if index($_already-used-multiple-selectors-for-spot-exception-element, $sub-component)==null {
+                @warn $SPOT_ERROR_PREFIX + "component/unused-element - spot-exception-element '"+$sub-component+"' was registered but never used (in component '"+$component+"').";
+            }
+        }
+    }
+
+    // for spot-exception-selector(s)
+    $registered-sub-components: map-get($_registered-sub-components-for-spot-exception-selector, $component);
+    @if $registered-sub-components!=null {
+        @each $sub-component in $registered-sub-components {            
+            @if index($_already-used-multiple-selectors-for-spot-exception-selector, $sub-component)==null {
+                @warn $SPOT_ERROR_PREFIX + "component/unused-element - spot-exception-selector '"+$sub-component+"' was registered but never used (in component '"+$component+"').";
+            }
+        }
+    }
 }
 
 /// Checks if component used all registered mutations (called from component mixin at the end).
@@ -704,17 +724,32 @@
 
 
 /// guarding duplicity of sub-selectors for SPOT exceptions
-@mixin _check-duplicity-of-sub-selectors-for-spot-exception($node-type, $whole-selector, $registering-end-selector) {
-    $registered-sub-components: map-get($_registered-sub-components-for-spot-exception, top-component());
+@mixin _check-duplicity-of-sub-selectors-for-spot-exception-element($node-type, $whole-selector, $registering-end-selector) {
+    $registered-sub-components: map-get($_registered-sub-components-for-spot-exception-element, top-component());
     @if $registered-sub-components==null { $registered-sub-components: []; }
 
-    @if index($_already-used-selectors-for-spot-exception, $whole-selector) or index($registered-sub-components, $whole-selector) {
+    @if index($_already-used-selectors-for-spot-exception-element, $whole-selector) or index($registered-sub-components, $whole-selector) {
         @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
     }
     // store unique sub-component
-    $_already-used-selectors-for-spot-exception: append($_already-used-selectors-for-spot-exception, $whole-selector, 'comma') !global;
+    $_already-used-selectors-for-spot-exception-element: append($_already-used-selectors-for-spot-exception-element, $whole-selector, 'comma') !global;
     $registered-sub-components: append($registered-sub-components, $whole-selector, 'comma');
-    $_registered-sub-components-for-spot-exception: map-merge($_registered-sub-components-for-spot-exception, (top-component(): $registered-sub-components)) !global;
+    $_registered-sub-components-for-spot-exception-element: map-merge($_registered-sub-components-for-spot-exception-element, (top-component(): $registered-sub-components)) !global;
+}
+
+
+/// guarding duplicity of sub-selectors for SPOT exceptions
+@mixin _check-duplicity-of-sub-selectors-for-spot-exception-selector($node-type, $whole-selector, $registering-end-selector) {
+    $registered-sub-components: map-get($_registered-sub-components-for-spot-exception-selector, top-component());
+    @if $registered-sub-components==null { $registered-sub-components: []; }
+
+    @if index($_already-used-selectors-for-spot-exception-selector, $whole-selector) or index($registered-sub-components, $whole-selector) {
+        @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
+    }
+    // store unique sub-component
+    $_already-used-selectors-for-spot-exception-selector: append($_already-used-selectors-for-spot-exception-selector, $whole-selector, 'comma') !global;
+    $registered-sub-components: append($registered-sub-components, $whole-selector, 'comma');
+    $_registered-sub-components-for-spot-exception-selector: map-merge($_registered-sub-components-for-spot-exception-selector, (top-component(): $registered-sub-components)) !global;
 }
 
 
