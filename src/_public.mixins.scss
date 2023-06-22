@@ -389,7 +389,14 @@
 @mixin default {
     @if $_is-register-mode {
         @error $SPOT_ERROR_PREFIX + "default/in-register - the mixin default doesn't have to be registered in register mixin in component '"+component()+"'.";
-    }    
+    }
+    
+    // because separator was used wrong check for separator ____________________________ (SHOULD NOT BE USED before mutations and default)
+    @if $_was-used-sub-element-separator {
+        @warn $SPOT_ERROR_PREFIX + "default/unexpected-separator - separator mixin (_______) was used before the +default mixin in component ('"+component()+"'). But it should be used only before element mixins to bound the element code (before mixin +element, +pseudo-element and +spot-exception-element).";
+        $_was-used-sub-element-separator: false !global;
+    }
+
     // run only once per component selector
     $current-media-selector: _wrap-into-media-selector(&);
     @if index($_default-called-on, $current-media-selector) and $_is-in-only-for-block==false {

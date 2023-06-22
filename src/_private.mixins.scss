@@ -173,6 +173,12 @@
         $_super-component-index: null !global;
     }
 
+    // because separator was used wrong check for separator ____________________________ (SHOULD NOT BE USED before mutations)
+    @if $_was-used-sub-element-separator {
+        @warn $SPOT_ERROR_PREFIX + $original-modifier-name+"/unexpected-separator - separator mixin (_______) was used before the "+$original-modifier-name+" "+inspect($args)+" in component ('"+component()+"'). But it should be used only before element mixins to bound the element code (before mixin +element, +pseudo-element and +spot-exception-element).";
+        $_was-used-sub-element-separator: false !global;
+    }
+
     @if _is-modifier-context-like($modifier-name) {
         $component: top-component();
     }
