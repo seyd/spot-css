@@ -756,3 +756,33 @@
 @mixin _warn($code, $text) {
     $execute: _warn($code, $text);
 }
+
+
+@mixin _print_messages {
+    @at-root body::before {
+        position: fixed !important;
+        z-index: 2147483647 !important;
+        left: 0 !important;
+        top: 0 !important;
+        right: 0 !important;
+        max-height: 100vh !important;
+        overflow: auto !important;
+        font-size: 16px !important;
+        padding: clamp(15px, 2vw, 20px) !important;
+        font-size: 16px !important;
+        font-size: clamp(15px, 2vw, 20px) !important;
+        background: #FED !important;
+        color: black !important;
+        font-family: "Courier New", Courier, monospace !important;
+        font-weight: normal !important;
+        font-style: normal !important;
+        letter-spacing: normal !important;
+        text-shadow: none !important;
+        box-shadow: 0 0.15em 0.35em rgba(black, 0.25) !important;
+        white-space: pre-wrap !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        content: 'SPOT CSS debug message:\a#{join-list-to-string($_component_messages, '\a')}' !important;
+    }
+}

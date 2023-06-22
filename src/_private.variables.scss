@@ -291,6 +291,13 @@ $_current-component-selectors-for-only-for: '';
 $_current-element-selectors-for-only-for: '';
 
 
+/// List of all messages collected when calling the +print mixin.
+/// @group Component
+/// @access private
+/// @type List
+$_component_messages: [];
+
+
 // source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element (except of the deprecated but some exceptions)
 $_all-html-elements: 'a, abbr, address, area, article, aside, audio, b, base, bdi, bdo, blockquote, body, br, button, '+
                      'canvas, caption, center, cite, code, col, colgroup, data, datalist, dd, del, details, dfn, dialog, dir, div, dl, dt, '+

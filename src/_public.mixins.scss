@@ -144,6 +144,10 @@
     @if $_current-component-selectors-for-only-for!='' {
         $_current-component-selectors-for-only-for: '' !global;
     }
+
+    @if length($_component_messages)>0 {
+        @include _print_messages();   
+    }
 }
 
 
@@ -1516,6 +1520,30 @@
     $result: assert(&, $selectors, true);
     // it throws @warn if something wrong
 }
+
+
+@mixin print($message: 'print current selector info') {
+    $text: '_______________________\a';
+
+    @if $message=='print current selector info' {
+        $current-selector: &;
+
+        $current: '\a>>> Current selector:\a#{$current-selector}';
+        // @TODO
+        // current component
+        // $previous: '>>> Previous selector:\a#{$selector}';
+        // $path: '>>> Current path:\a+component(.comp) +variant(.primary)';
+        // content: 'SPOT CSS debug message:\a\a_______________________\a\a#{$previous}\a\a#{$current}\a\a#{$path}'
+        $text: $text + $current;
+    }
+    @else {
+        $text: $text + '\a> ' + $message;
+    }
+
+    $_component_messages: append($_component_messages, $text, 'comma') !global;    
+}
+
+
 
 
 /// Mandatory separator before each sub-element modifier. Use as long as you wish.
