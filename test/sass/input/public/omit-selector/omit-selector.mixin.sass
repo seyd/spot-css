@@ -1,0 +1,56 @@
+@import "./src/spot-css"
+
++component('.chooze-items')
+    +register
+        +element('.chooze-item')
+            +variant('.x')
+            +variant('.y')
+            +element('.chooze-item-actions')
+        +element('.apple', '.peach')
+            +element('span')
+                +element('i')
+                    
+    +____________________________
+    +element('.chooze-item')
+
+        +________________________________
+        +element('.chooze-item-actions')
+            +default
+                +omit-selector('.chooze-items', '.chooze-item')
+                    prop: val-1
+
+            +variant('.x')
+                +default
+
+                +variant('.y')
+                    +omit-selector('.chooze-item.x.y')
+                        prop: val-2
+
+                    +omit-selector('.chooze-item.y.x') // reverse order (do not replace) - must be exact match
+                        prop: val-3
+
+                    +omit-selector('.chooze-item-actions')
+                        prop: val-4
+
+    +________________________________
+    +element('.apple', '.peach')
+        
+        +________________________________
+        +element('span')
+            +omit-selector('span')
+                // .chooze-items .apple, .chooze-items .peach
+                prop: val-5
+
+            +omit-selector('.apple')
+                // .chooze-items span, .chooze-items .peach span
+                prop: val-6
+
+            +________________________________
+            +element('i')
+                +omit-selector('span')
+                    // .chooze-items .apple i, .chooze-items .peach i
+                    prop: val-7
+
+                +omit-selector('.peach')
+                    // .chooze-items .apple span i, .chooze-items span i
+                    prop: val-8

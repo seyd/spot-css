@@ -1523,19 +1523,25 @@
 
 
 @mixin omit-selector($selectors...) {
-    $current-selector: &;
+    $output: [];
+    
+    @each $current-selector in & {
 
-    @each $selector in $selectors {
-        $multiple-selectors: selector-parse(#{$selector});
+        @each $selector in $selectors {
+            $multiple-selectors: selector-parse(#{$selector});
+            
+            // @TODO - test for simple selector
 
-        $output: [];            
-        @each $sel in $multiple-selectors {
-
-            $output: append($output, _replace-component-subselector(&, $sel, ''), 'comma');
+            $current-selector: _replace-component-subselector($current-selector, $selector, '')
         }
-        @at-root #{$output} {
-            @content;
-        }
+
+        @if str-trim($current-selector+'')!='' {
+            $output: append($output, $current-selector, 'comma');
+        }            
+    }
+    
+    @at-root #{$output} {
+        @content;
     }
 }
 

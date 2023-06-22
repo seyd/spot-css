@@ -510,7 +510,7 @@
                     $last-pos-end: $pos + $needle-len;
                 }
 
-                @if $last-pos-end!=$sel-len {
+                @if $last-pos-end<=$sel-len {
                     $sel-output: $sel-output + str-slice($sel, $last-pos-end, $sel-len);
                 }
 

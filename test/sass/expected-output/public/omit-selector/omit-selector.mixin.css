@@ -1,0 +1,47 @@
+.chooze-item-actions {
+  prop: val-1;
+}
+
+.chooze-items .chooze-item-actions {
+  prop: val-2;
+}
+
+.chooze-items .chooze-item.x.y .chooze-item-actions {
+  prop: val-3;
+}
+
+.chooze-items .chooze-item.x.y {
+  prop: val-4;
+}
+
+.chooze-items .apple {
+  prop: val-5;
+}
+
+.chooze-items span {
+  prop: val-6;
+}
+
+.chooze-items .apple i {
+  prop: val-7;
+}
+
+.chooze-items .apple span i {
+  prop: val-8;
+}
+
+.chooze-items .peach {
+  prop: val-5;
+}
+
+.chooze-items .peach span {
+  prop: val-6;
+}
+
+.chooze-items .peach i {
+  prop: val-7;
+}
+
+.chooze-items span i {
+  prop: val-8;
+}

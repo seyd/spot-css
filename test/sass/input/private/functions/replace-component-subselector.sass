@@ -51,4 +51,10 @@
 /* #{ _replace-component-subselector(':not([disabled]).button .button--text', '.button', '[replacement]') } */
 // Expected output:  :not([disabled])[replacement] .button--text 
 
+/* #{ _replace-component-subselector('.chooze-items .chooze-item-actions .xxx', '.chooze-item-action', '[replacement]') } */
+// Expected output:  .chooze-items .chooze-item-action .xxx  (no change) 
+
+/* #{ _replace-component-subselector('.chooze-items .chooze-item-actions', '.chooze-item-action', '[replacement]') } */
+// Expected output:  .chooze-items .chooze-item-action  (no change) 
+
 /* #{inspect(_find_all_occurences(".p .p-in .p-in-in", '.p'))} */

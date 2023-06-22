@@ -716,10 +716,21 @@
     @return join([], append($list, $item,  $separator), $separator: auto, $bracketed: false);
 }
 
-// Simple selector is "a" or ".link" but not "a.link"
-@function is-simple-selector($single-selector) {
+// Simple selector is "a" or ".link" or "[disabled]" but not "a.link"
+@function is-scalar-selector($single-selector) {
     $selectors: simple-selectors($single-selector);
     @return length($selectors)==1;
+}
+
+// Simple selector is "a" or ".link" or "a.link" or "a.link:not([disabled]" - no spaces and combinator selectors (+, >, ~)
+@function is-simple-selector($selector) {
+    $selectors: selector-parse($selector);
+    @if length($selectors)>1 or length(nth($selectors, 1))>1 {
+        @return false;
+    }
+    @else {
+        @return true;
+    }
 }
 
 // Element selector starts with element
