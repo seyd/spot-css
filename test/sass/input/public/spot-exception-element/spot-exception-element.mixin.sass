@@ -1,0 +1,27 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +spot-exception-element('>*+*')
+        +spot-exception-element('{alias}', '>*~*')
+        // +spot-exception-element('>*+*') // should make conflict
+        
+        +spot-exception-element('.list')  // these 2 lines should NOT make conflict
+        +element('.list')
+
+    +_________________________________
+    +spot-exception-element('>*+*')
+        prop: val-1
+
+    +_________________________________
+    +spot-exception-element('{alias}')
+        prop: val-2
+
+    +_________________________________
+    +spot-exception-element('.list')
+        prop: val-3
+    
+    +_________________________________
+    +element('.list')
+        prop: val-4

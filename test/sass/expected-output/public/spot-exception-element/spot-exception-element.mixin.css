@@ -1,0 +1,15 @@
+my-component > * + * {
+  prop: val-1;
+}
+
+my-component > * ~ * {
+  prop: val-2;
+}
+
+my-component .list {
+  prop: val-3;
+}
+
+my-component .list {
+  prop: val-4;
+}

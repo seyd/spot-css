@@ -702,6 +702,22 @@
 }
 
 
+
+/// guarding duplicity of sub-selectors for SPOT exceptions
+@mixin _check-duplicity-of-sub-selectors-for-spot-exception($node-type, $whole-selector, $registering-end-selector) {
+    $registered-sub-components: map-get($_registered-sub-components-for-spot-exception, top-component());
+    @if $registered-sub-components==null { $registered-sub-components: []; }
+
+    @if index($_already-used-selectors-for-spot-exception, $whole-selector) or index($registered-sub-components, $whole-selector) {
+        @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
+    }
+    // store unique sub-component
+    $_already-used-selectors-for-spot-exception: append($_already-used-selectors-for-spot-exception, $whole-selector, 'comma') !global;
+    $registered-sub-components: append($registered-sub-components, $whole-selector, 'comma');
+    $_registered-sub-components-for-spot-exception: map-merge($_registered-sub-components-for-spot-exception, (top-component(): $registered-sub-components)) !global;
+}
+
+
 @mixin _warn($code, $text) {
     $execute: _warn($code, $text);
 }
