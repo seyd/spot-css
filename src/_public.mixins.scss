@@ -1522,6 +1522,24 @@
 }
 
 
+@mixin omit-selector($selectors...) {
+    $current-selector: &;
+
+    @each $selector in $selectors {
+        $multiple-selectors: selector-parse(#{$selector});
+
+        $output: [];            
+        @each $sel in $multiple-selectors {
+
+            $output: append($output, _replace-component-subselector(&, $sel, ''), 'comma');
+        }
+        @at-root #{$output} {
+            @content;
+        }
+    }
+}
+
+
 @mixin print($message: 'print current selector info') {
     $text: '_______________________\a';
 
@@ -1542,8 +1560,6 @@
 
     $_component_messages: append($_component_messages, $text, 'comma') !global;    
 }
-
-
 
 
 /// Mandatory separator before each sub-element modifier. Use as long as you wish.
