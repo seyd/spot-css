@@ -649,7 +649,7 @@
         @each $selector in $selectors {
             $multiple-selectors: selector-parse(#{$selector});
 
-            $output: [];            
+            $output: (); // not []; because error "Expected identifier." @at-root #{$output} of some versions of SASS
             @each $sel in $multiple-selectors {
 
                 $output: append($output, _replace-component-subselector(&, self(), str-trim($sel+'')+' '+self()), 'comma');
