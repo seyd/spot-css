@@ -145,6 +145,11 @@
         $_current-component-selectors-for-only-for: '' !global;
     }
 
+    // check for useless +_________ separator at the end of component
+    @if $_was-used-sub-element-separator==true {
+        @warn $SPOT_ERROR_PREFIX + "component/unexpected-separator - separator mixin (_______) was used but no element mixin come after it (in component "+inspect($args)+"). But it should be used only before element mixins to bound the element code (before mixin +element, +pseudo-element and +spot-exception-element).";
+    }
+
     @if length($_component_messages)>0 {
         @include _print_messages();   
     }
