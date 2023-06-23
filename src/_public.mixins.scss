@@ -1077,6 +1077,10 @@
         @error $SPOT_ERROR_PREFIX + "spot-exception-selector/no-component - you cannot use mixin element outside of component.";
     }
 
+    // there can be but it is not required to have +____________ separator before this mixin
+    // reset flag for next (sub)element
+    $_was-used-sub-element-separator: false !global;
+
     // test for not empty and single selector
     @each $selector in $selectors {
         @if not $selector or $selector=="" {
