@@ -432,10 +432,18 @@
         @include _register-modifiers('variant', $args...);
     }
     @else {
-        @include _apply-modifier('variant', $args...) {        
+        @include _apply-modifier('variant', $args...) {
             @content;
         }
     }   
+}
+
+/// Alias for mixin variant. Just to point out a variant is beaking the SPOT CSS rules.
+/// For example variant is using a component selector of other component, e.g. +spot-exception-variant('.ui-button')
+@mixin spot-exception-variant($args...) {
+    @include variant($args...) {
+        @content;
+    }
 }
 
 

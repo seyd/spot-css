@@ -1,0 +1,16 @@
+@import "./src/spot-css"
+
+
++component(".ui-card")
+    +register
+        +spot-exception-variant('.ui-button')
+        +spot-exception-variant('{alias}', '.ui-box')
+
+    +default
+        prop: val-0
+
+    +spot-exception-variant('.ui-button')
+        prop: val-1
+
+    +spot-exception-variant('{alias}')
+        prop: val-2

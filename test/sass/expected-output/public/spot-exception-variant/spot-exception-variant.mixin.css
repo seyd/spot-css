@@ -1,0 +1,11 @@
+.ui-card {
+  prop: val-0;
+}
+
+.ui-card.ui-button {
+  prop: val-1;
+}
+
+.ui-card.ui-box {
+  prop: val-2;
+}
