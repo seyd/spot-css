@@ -60,13 +60,16 @@
         property: other-value-11
 
       +only-for(':nth-of-type(3+2)')
-        property: other-value-8
+        property: other-value-12
 
       +only-for(':only-of-type')
-        property: other-value-9
+        property: other-value-13
       
       +only-for(':only-child')
-        property: other-value-10
+        property: other-value-14
+
+      +only-for(':not(:first-child):not(:empty)')
+        property: other-value-15
 
 
 
