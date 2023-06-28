@@ -70,3 +70,33 @@
 
             +inner-context('.insert +')
                 prop: val
+
+
+// // @TODO - registered +inner-context with alias
+// +component('.card-listing')
+//     +register
+//         +state(':hover')
+//         +element('.listing-content')
+//             +element('.listing-actions')
+//                 +inner-context('{inside a card}', '.card') // @TODO - registered +inner-context has to have {alias}
+//                 +spot-exception-element('{direct child elements except first-child}', '>*+*')
+    
+//     +_______________________________
+//     +element('.listing-content')
+        
+//         +_______________________________
+//         +element('.listing-actions')
+       
+//             // @TODO this is the block above the right way
+//             +_____________________________________________________________________
+//             +spot-exception-element('{direct child elements except first-child}')
+//                 +default
+
+//                 +inner-context('{inside a card}')
+//                     +assert('.card-listing .listing-content .card .listing-actions > * + *')
+//                     +default
+//                         margin-left: 10px
+
+//                     +state(':hover')
+//                         margin-left: 5px
+                
