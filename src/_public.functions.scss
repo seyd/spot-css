@@ -123,6 +123,20 @@
 }
 
 
+/// Remove from given selector all pseudo element selectors.
+/// @access public
+/// @param { String } $selector - single selector
+/// @return { String } Result selector(s).
+@function remove-pseudo-element($selector) {
+    $pseudo: _get-pseudo-element($selector);
+    @while $pseudo!=null {    
+        $selector: str-replace($selector, $pseudo, '');
+        $pseudo: _get-pseudo-element($selector);
+    }
+    @return $selector;
+}
+
+
 /// Add selector specificity at all levels at once.
 /// @access public
 /// @param { String } $selector - Selector(s)
@@ -375,9 +389,10 @@
             $output: append($output, $sel, 'comma');
         }
     }
-    @if not $found and not $found-for-element-branching and not $found-for-component-branching {
-        @error $SPOT_ERROR_PREFIX + "only-for/not-found - given branch selector was not found at the end of current selector ('"+$selector+"').";
-    }
+    // We would rather not checking if it was found (because element('.branch-a', '.branch-b') branching)
+    // @if not $found and not $found-for-element-branching and not $found-for-component-branching {
+    //     @error $SPOT_ERROR_PREFIX + "only-for/not-found - given branch selector was not found at the end of current selector ('"+$selector+"').";
+    // }
     @return #{$output};
 }
 
@@ -788,11 +803,17 @@
     $sub-parts: nth(selector-parse($sub-single-selector), 1); // take first selector (it doesn't expect multiple)
     $sub-selector: nth($sub-parts, length($sub-parts)); // take last (it expect just one, but for sure)
 
+    // to find '.branch' in '.branch::before'
+    $needle-contains-pseudo-selector: contains-pseudo-element($sub-selector);        
+
     // for each of multiple selectors
     $selector: selector-parse($combinator-selector);
     @each $single-selector in $selector {
-        @each $part-selector in $single-selector {
-            @if is-superselector($sub-selector, $part-selector) {
+        $len: length($single-selector);
+        // @each $part-selector in $single-selector {
+        @for $i from 1 through $len {
+            $part-selector: nth($single-selector, $i);
+            @if is-superselector($sub-selector, $part-selector) or ($i==$len and $needle-contains-pseudo-selector==false and is-superselector($sub-selector, remove-pseudo-element($part-selector))) {
                 @return true;
             }
         }

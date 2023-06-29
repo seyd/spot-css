@@ -284,3 +284,19 @@ my-component-4 ul li span {
 .c-selector:checked + label::after {
   opacity: 1;
 }
+
+my-component-5 .branch-a::before {
+  property: value-1;
+}
+
+my-component-5 .branch-a::before {
+  property: value-2;
+}
+
+my-component-5 .branch-b::before {
+  property: value-1;
+}
+
+my-component-5 .branch-b::before {
+  property: value-3;
+}

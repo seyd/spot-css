@@ -230,3 +230,23 @@
 
                     +only-for('.c-radio')
                         content: ''
+
+
++component('my-component-5')
+  +register
+    +element('.branch-a', '.branch-b')
+      +pseudo-element('before')
+
+  +__________________________________  
+  +element('.branch-a', '.branch-b')
+    
+    +__________________________________
+    +pseudo-element('before')
+      +default
+        property: value-1        
+        
+      +only-for('.branch-a::before')
+        property: value-2
+
+      +only-for('.branch-b')
+        property: value-3
