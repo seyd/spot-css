@@ -81,3 +81,69 @@
                 +state(':hover')
                     property: sub-sub-value
 
+
++component('article')
+    +register
+        +state(':hover')
+        +state(':focus')
+        +element('.header')
+            +state(':hover')
+            +state(':focus')
+            +element('.collapse')
+                +state(':hover')
+                +state(':focus')
+
+    display: inline-flex
+
+    +________________________
+    +element('.header')
+        position: relative
+
+        +________________________
+        +element('.collapse')
+            +default
+                background: grey
+
+            +state(':hover', 0)
+                background: blue
+
+            +state(':hover', -1)
+                background: red
+
+            +state(':hover', -2)
+                background: green
+
+            +state(':focus', 1)
+                background: magenta
+
+            +state(':focus', 2)
+                background: cyan
+
+            +state(':focus', 0)
+                background: yellow
+
+
+
++component('article-2')
+    +register
+        +state(':focus')
+        +element('.header')
+            +element('.collapse')
+                +state(':focus')
+
+    display: inline-flex
+
+    +________________________
+    +element('.header')
+        position: relative
+
+        +________________________
+        +element('.collapse')
+            +default
+                background: grey
+
+            +state(':focus', 1)
+                background: magenta
+
+            +state(':focus', 2)
+                background: cyan

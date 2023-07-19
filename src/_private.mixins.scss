@@ -159,12 +159,24 @@
     $component: component();
     $component-to-extend: str-trim(self());
     $is-super-modifier: str-index($modifier-name, 'super-')==1;
-    $second-param-is-number: length($args)==2 and type-of(nth($args, 2))=='number';
+    $last-param-is-number: type-of(nth($args, length($args)))=='number';
     $second-param-index: '';
     $super-component-index: 0;
-    @if $second-param-is-number { 
-        $second-param-index: nth($args, 2); 
-        $super-component-index: $second-param-index;
+    $search-super-other-way: false;
+    @if $last-param-is-number { 
+        $last-param-is-number: false;
+
+        $index: nth($args, length($args)); 
+        @if $index > 0 {
+            $search-super-other-way: true;
+            $index: $index * -1;
+        }
+        @if $index!=0 {
+            $modifier-name: 'super-' + $modifier-name;
+            $is-super-modifier: true;
+        }
+        $_super-component-index: $index !global;
+        $args: nth-delete($args, length($args));
     }
 
     // for all non "super-" modifiers clear this index
@@ -186,7 +198,11 @@
         // convert super-state and super-variant into modifier state and variant
         $modifier-name: str-replace($modifier-name, 'super-', '');
         $sub-component-stack: $_current-components;
-        @if not $is-super-modifier {
+        $full-sub-component-stack: $sub-component-stack;
+        @if $search-super-other-way {
+            $sub-component-stack: ();
+        }
+        @if not $is-super-modifier and not $search-super-other-way {
             // changing logic to parse as super-modifier also state and variant, we add extra (useless) item here
             $sub-component-stack: append($_current-components, 'PLACEHOLDER_TO_REMOVE', 'space');
         }
@@ -197,31 +213,39 @@
         $identifier: first($args);
 
         // find $identifier in parent component
-        @while not $found and length($sub-component-stack)>1 {
-            @if $_super-component-index != null {
+        @while not $found and ((not $search-super-other-way and length($sub-component-stack)>1) or ($search-super-other-way and length($sub-component-stack)!=length($full-sub-component-stack))) {
+            @if $_super-component-index != null and $_super-component-index != 0 {
                 $_super-component-index: $_super-component-index + 1 !global;
             }
-            $sub-component-stack: pop($sub-component-stack);
-            $component: #{$sub-component-stack};
-            // if no index is given or current super component is given index
-            @if $_super-component-index == null or $_super-component-index == 0 {                
-                $sub-component-name-for-error: $component;
+            
+            @while not $found and ((not $search-super-other-way and length($sub-component-stack)>1) or ($search-super-other-way and length($sub-component-stack)!=length($full-sub-component-stack))) {
+                @if $search-super-other-way {
+                    // search from the root component to current component
+                    $sub-component-stack: append($sub-component-stack, nth($full-sub-component-stack, length($sub-component-stack)+1));
+                }
+                @else {
+                    // search from the current component to root component
+                    $sub-component-stack: pop($sub-component-stack);
+                }
+                $component: #{$sub-component-stack};
+
                 $component-with-identifier: _get-component-identifier($component, $identifier);
                 $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
                 $modifiers: map-get($_registered-modifiers, $component-with-modifier);
                 $is-alias: index($_registered-modifier-aliases, str-replace($component-with-identifier, ' &', ''));
                 @if $is-alias or ($modifiers!=null and map-has-key($modifiers, $identifier)) {                    
-                    @if $super-component-index < 0 {
-                        $super-component-index: $super-component-index + 1;
-                    }
-                    @else {
-                        $found: true;
-                    }
+                    $found: true;
                 }
+                @else {
+                    $sub-component-name-for-error: $component;
+                }
+            }
+            @if $found and $_super-component-index != null and $_super-component-index < 0 {
+                $found: false; // ...and continue searching for higher component                    
             }
         }
         @if not $found {
-            @if $is-super-modifier or ($second-param-is-number and $second-param-index<0) {
+            @if $is-super-modifier or ($last-param-is-number and $second-param-index<0) {
                 @if $_super-component-index == null {
                     @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/super-unknown-modifier - the "+$original-modifier-name+" '"+$identifier+"' is not registered in any super component '"+&+"'.";
                 }
@@ -248,7 +272,7 @@
         @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/default-is-missing - the "+$original-modifier-name+" '"+inspect($args)+"' in component '"+$component+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
     }
 
-    @if $second-param-is-number {
+    @if $last-param-is-number {
         $args: pop($args);
     }
 

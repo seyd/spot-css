@@ -31,3 +31,59 @@ my-component > .inner > child-component:hover {
 my-component > .inner > child-component sub-sub-component:hover {
   property: sub-sub-value;
 }
+
+article {
+  display: inline-flex;
+}
+
+article .header {
+  position: relative;
+}
+
+article .header .collapse {
+  background: grey;
+}
+
+article .header .collapse:hover {
+  background: blue;
+}
+
+article .header:hover .collapse {
+  background: red;
+}
+
+article:hover .header .collapse {
+  background: green;
+}
+
+article:focus .header .collapse {
+  background: magenta;
+}
+
+article .header:focus .collapse {
+  background: cyan;
+}
+
+article .header .collapse:focus {
+  background: yellow;
+}
+
+article-2 {
+  display: inline-flex;
+}
+
+article-2 .header {
+  position: relative;
+}
+
+article-2 .header .collapse {
+  background: grey;
+}
+
+article-2:focus .header .collapse {
+  background: magenta;
+}
+
+article-2 .header .collapse:focus {
+  background: cyan;
+}
