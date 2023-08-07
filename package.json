@@ -37,8 +37,14 @@
     "responsive",
     "frontend",
     "front-end",
+    "refactor",
+    "component based",
+    "utility-last approach",
     "styling",
-    "web"
+    "web",
+    "css framework",
+    "sass framework",
+    "scss framework"
   ],
   "author": "Johnny Seyd (johnnyseyd@gmail.com)",
   "license": "MIT",
