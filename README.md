@@ -1,10 +1,31 @@
-![SPOT CSS](https://spotcss.io/img/spot-css-logo-white-cropped.png)
+<p align="center">
+  <a href="https://spotcss.io/" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: light)" srcset="https://spotcss.io/img/spot-css-logo-white-small.png">
+      <source media="(prefers-color-scheme: dark)" srcset="https://spotcss.io/img/spot-css-logo-black-small.png">
+      <img alt="SPOT CSS" src="https://spotcss.io/img/spot-css-logo-white-small.png" width="376" height="140" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
 
-This is the official repository of SPOT CSS framework and Single Place Of Truth Methodology. 
+<p align="center">
+    <a href="https://www.npmjs.com/package/spotcss"><img src="https://img.shields.io/badge/npm-spotcss-blue" alt="NPM Package"></a>
+    <a href="https://github.com/seyd/spot-css/releases"><img src="https://img.shields.io/badge/version-v2.2.18-green" alt="Latest Release"></a>
+    <a href="https://github.com/seyd/spot-css/blob/v2.2.18/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License"></a>
+    <img src="https://img.shields.io/badge/coverage-100%25-green" alt="Unit tests coverage">
+</p>
 
-Handle your styles properly! 
+<p align="center">
+  SPOT CSS stands for "Single Place of Truth" Methodology. <br />
+  The ultimate SASS framework and CSS methodology for sustainable styling.<br />
+  A clear and semantic way to write CSS.
+</p>
 
-Powered by SASS/SCSS.
+------
+
+## Documentation
+
+For full documentation, visit [spotcss.io](https://spotcss.io/).
 
 
 ## Install instructions
