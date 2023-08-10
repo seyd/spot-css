@@ -10,7 +10,7 @@
 
 <p align="center">
     <a href="https://www.npmjs.com/package/spotcss"><img src="https://img.shields.io/badge/npm-spotcss-blue" alt="NPM Package"></a>
-    <a href="https://github.com/seyd/spot-css/releases"><img src="https://img.shields.io/badge/version-v2.2.18-green" alt="Latest Release"></a>
+    <a href="https://github.com/seyd/spot-css/releases"><img src="https://img.shields.io/badge/version-v2.2.19-green" alt="Latest Release"></a>
     <a href="https://github.com/seyd/spot-css/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License"></a>
     <img src="https://img.shields.io/badge/coverage-100%25-green" alt="Unit tests coverage">
 </p>
