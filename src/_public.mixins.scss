@@ -403,7 +403,7 @@
     }
 
     // run only once per component selector
-    $current-media-selector: _wrap-into-media-selector(&);
+    $current-media-selector: _wrap-into-media-selector(_wrap-into-container-selector(&));
     @if index($_default-called-on, $current-media-selector) and $_is-in-only-for-block==false {
         @error $SPOT_ERROR_PREFIX + "default/already-called - the mixin default was already called for element '"+$current-media-selector+"'.";
     }

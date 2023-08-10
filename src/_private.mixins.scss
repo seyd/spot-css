@@ -155,6 +155,7 @@
 @mixin _apply-modifier($modifier-name, $args...) {
     $selectors: ();
     $medias: ();
+    $containers: ();
     $original-modifier-name: str-replace($modifier-name, ' &', '');
     $component: component();
     $component-to-extend: str-trim(self());
@@ -328,6 +329,9 @@
                         @if str-index($extension, '@media')==1 {
                             $medias: append($medias, str-replace(str-replace($extension, '@media ', ''), ' &', ''), 'comma');
                         }
+                        @else if str-index($extension, '@container')==1 {
+                            $containers: append($containers, str-replace(str-replace($extension, '@container ', ''), ' &', ''), 'comma');
+                        }
                         @else {   
                             @if str-index($extension, '&') {
                                 $context-extension: str-replace($extension, ' &', '');
@@ -350,7 +354,7 @@
                     }
                 }
             }
-            @if length($selectors)==0 and length($medias)==0 {
+            @if length($selectors)==0 and length($medias)==0 and length($containers)==0 {
                 // @feature Forcing to register all modifiers at first
                 @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/wrong-modifier-type - the modifier '"+$identifier+"' is not registered in component '"+&+"' as "+$modifier-name+". Check it out!";
             }
@@ -362,6 +366,9 @@
                 $extended-selector: '';
                 @if str-index($extension, '@media')==1 {
                     $medias: append($medias, str-replace(str-replace($extension, '@media ', ''), ' &', ''), 'comma');
+                }
+                @else if str-index($extension, '@container')==1 {
+                    $containers: append($containers, str-replace(str-replace($extension, '@container ', ''), ' &', ''), 'comma');
                 }
                 @else {    
                     @if str-index($extension, '&') {
@@ -402,7 +409,7 @@
     @if $second-param-index!='' { $second-param-index: '[['+$second-param-index+']]'; }
     @each $single-selector in $selectors {
         $i: $i + 1;
-        $single-selector: _wrap-into-media-selector( str-replace($single-selector+'', '&', &) )+$second-param-index;
+        $single-selector: _wrap-into-media-selector( _wrap-into-container-selector( str-replace($single-selector+'', '&', &) ) )+$second-param-index;
         @if index($_already-used-selectors, $single-selector) {
             @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/already-used-modifier - the "+$original-modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }
@@ -422,7 +429,18 @@
         $_current-media-stack: pop($_current-media-stack) !global;
     }
 
-    @if length($selectors)>0 {
+    @else if length($containers)>0 {
+        // store current container selector (into stack)
+        $_current-container-stack: append($_current-container-stack, $containers, 'space') !global;
+        
+        @container #{$containers} {
+            @content;
+        }        
+        // remove current container selector (from stack)
+        $_current-container-stack: pop($_current-container-stack) !global;
+    }
+
+    @else if length($selectors)>0 {
         @at-root #{$selectors} {
             @content;
         }

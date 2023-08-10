@@ -62,6 +62,13 @@ $_current-component-mode: $_default-component-mode;
 $_current-media-stack: [];
 
 
+/// Current container or stack of current container queries (if multiple are used).
+/// @group Component
+/// @access private
+/// @type List
+$_current-container-stack: [];
+
+
 /// Flag of register mode - if parser enters mixin register.
 /// @group Component
 /// @access private

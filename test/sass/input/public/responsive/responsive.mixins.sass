@@ -68,3 +68,39 @@
     +responsive('{lg}')
 
     +responsive('{xl}')
+
+
+
+  
++component("my-component-3")
+    +register
+        +state(':hover')
+        +responsive('@container (max-width: 1024px)')
+        +responsive('{container}', '@container (min-width: 700px)')
+        +responsive('{container-with-name}', '@container nickname (min-width: 450px)')
+        +element('.wrapper')
+
+    +default
+        display: block
+
+    +responsive('@container (max-width: 1024px)')
+        display: table
+
+    +responsive('{container}')
+        display: flex
+
+    +responsive('{container-with-name}')
+        display: grid
+
+    +______________________
+    +element('.wrapper')
+        +default
+
+        +state(':hover')
+            +default
+                color: blue
+
+            +responsive('{container-with-name}')
+                color: green
+            
+

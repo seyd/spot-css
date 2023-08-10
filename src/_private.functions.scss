@@ -241,7 +241,7 @@
 /// @access private
 /// @return {Boolean} True if mixin register was already called in current selector.
 @function _default-mixin-was-already-called() {
-    $current-media-selector: _wrap-into-media-selector(&);
+    $current-media-selector: _wrap-into-media-selector(_wrap-into-container-selector(&));
     @return index($_default-called-on, $current-media-selector) != null;
 }
 
@@ -259,6 +259,22 @@
         $current-media-selector:  $current-media-selector + inspect($_current-media-stack) + ' }';
     }    
     @return $current-media-selector;
+}
+
+
+/// Wraps given selector into current container query stack to return unique selector
+/// to avoid duplicite usage of modifiers.
+@function _wrap-into-container-selector($selector) {
+    $current-container-selector: '';
+    $is_container: length($_current-container-stack)>0;
+    @if $is_container {
+        $current-container-selector: '@container ' + inspect($_current-container-stack) + ' { ';
+    }    
+    $current-container-selector: $current-container-selector + $selector;
+    @if $is_container {
+        $current-container-selector:  $current-container-selector + inspect($_current-container-stack) + ' }';
+    }    
+    @return $current-container-selector;
 }
 
 
