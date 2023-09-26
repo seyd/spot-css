@@ -1,9 +1,9 @@
 /// Reusable mixin for registering states, variants, contexts, browsers, responsive...
 /// @group Component
 /// @access private
-/// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive'
+/// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive' | 'theme'
 /// @param { String } $identifier - selector extension
-/// @param { String } $args... - extra arguments for input values for placeholder '?' or alias name when context-like modifier ('context' | 'browser' | 'responsive')
+/// @param { String } $args... - extra arguments for input values for placeholder '?' or alias name when context-like modifier ('context' | 'browser' | 'responsive' | 'theme')
 /// @throw SPOT CSS: register/invalid-selector-extension - the mixin register { modifier-name(identifier) } uses invalid selector extension 'identifier'. The extension can start only with one of these characters: '.', '#', '@', '[', ':' (or '?' or '{' when placeholder is used).
 /// @throw SPOT CSS: register/no-component - the mixin register { modifier-name(identifier) } must be used inside a component selector.
 /// @throw SPOT CSS: register/missing-values - the mixin register { modifier-name(identifier) } uses '?' as value placeholder but no values were provided.
@@ -14,7 +14,7 @@
         @error $SPOT_ERROR_PREFIX + "register/no-component - the mixin register { "+$modifier-name+"("+$identifier+") } must be used inside a component selector.";
     }
 
-    // is context-like (context, browser or responsive) or vriation-like (state or variant)
+    // is context-like (context, browser, theme or responsive) or vriation-like (state or variant)
     $is-context-like: str-index($modifier-name, '&');
 
     // for variant-like selector extensions only valid first chars are: . # [ : (or '?' or '{' when placeholder is used)
@@ -37,8 +37,15 @@
             $placeholder-start: str-index($identifier, '?') or str-index($identifier, '{');
             $placeholder-end: str-index($identifier, '?') or str-index($identifier, '}');
             // register modifier for each given value individualy
-            @for $i from 1 through $len {                 
-                $selector: str-slice($identifier, 1, $placeholder-start - 1) + nth($args, $i) + str-slice($identifier, $placeholder-end + 1 );
+            @for $i from 1 through $len {
+                $orig-selector: nth($args, $i);
+                $selector: str-slice($identifier, 1, $placeholder-start - 1) + $orig-selector + str-slice($identifier, $placeholder-end + 1 );
+
+                // pass just bool value when TRUE or FALSE
+                @if type-of($orig-selector)=='bool' {
+                    $selector: $orig-selector; 
+                }
+                
                 @include _register-individual-modifier($modifier-name, $selector, $alias, $do-not-check-alias: $i!=1); // check alias only for first modifier
             }
         }
@@ -71,7 +78,10 @@
 /// @throw SPOT CSS: register/duplicate-alias-with-modifier - trying to register alias 'alias' but there is already registered same modifier for component 'component'.
 /// @throw SPOT CSS: register/duplicate-modifier-alias - trying to register already registered modifier alias 'alias' for component 'component'.
 /// @output Nothing.
-@mixin _register-individual-modifier($modifier-name, $identifier, $alias: '', $do-not-check-alias: false) {    
+@mixin _register-individual-modifier($modifier-name, $identifier, $alias: '', $do-not-check-alias: false) {
+    @if type-of($identifier)==bool {
+        $identifier: '`'+$identifier+'` '+$alias; // special wrapper for bool value, e.g =>"`true` {theme 1}" and later "`true` {theme 1} &"
+    }
     // backup
     $original-identifier: $identifier;    
     
@@ -138,10 +148,10 @@
 }
 
 
-/// Reusable mixin for applying states, variants, contexts, browsers, responsive...
+/// Reusable mixin for applying states, variants, contexts, browsers, responsive, theme...
 /// @group Component
 /// @access private
-/// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive'
+/// @param { String } $modifier-name - 'state' | 'variant' | 'context' | 'browser' | 'responsive' | 'theme'
 /// @param { String } $args... - selector extension(s)
 /// @content
 /// @throw SPOT CSS: modifier/super-unknown-modifier - the modifier-name 'identifier' is not registered in any super component 'component'.
@@ -164,6 +174,8 @@
     $second-param-index: '';
     $super-component-index: 0;
     $search-super-other-way: false;
+    $is-expression-and-truthy: false;
+
     @if $last-param-is-number { 
         $last-param-is-number: false;
 
@@ -310,6 +322,8 @@
     $checklist-of-used-modifiers: map-get($_checklist-of-used-modifiers, $component);
     @if $checklist-of-used-modifiers==null { $checklist-of-used-modifiers: (); }
     
+    $was-expression-instead-of-selector: false;
+
     // generate selectors for all args
     @each $identifier in $args {
         $original-identifier: $identifier;
@@ -318,6 +332,7 @@
         $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
         $modifiers: map-get($_registered-modifiers, $component-with-modifier);
         $is-alias: index($_registered-modifier-aliases, str-replace($component-with-identifier-alias, ' &', ''));
+        $bool-count: 0;
         @if $is-alias {
             @if $modifiers {
                 // find all modifiers with this alias
@@ -325,36 +340,49 @@
                     $alias: map-get(nth($modifier, 2), 'alias');
                     @if $alias==_normalize-alias($original-identifier) {
                         $extension: nth($modifier, 1);
-                        $extended-selector: '';
+                        // START - SAME BLOCK -----------------------------------------------------------------------------------------------------------
+                        $extended-selector: '';                        
                         @if str-index($extension, '@media')==1 {
                             $medias: append($medias, str-replace(str-replace($extension, '@media ', ''), ' &', ''), 'comma');
                         }
                         @else if str-index($extension, '@container')==1 {
                             $containers: append($containers, str-replace(str-replace($extension, '@container ', ''), ' &', ''), 'comma');
                         }
-                        @else {   
-                            @if str-index($extension, '&') {
-                                $context-extension: str-replace($extension, ' &', '');
-                                // when context is the same as component (.same + .same)
-                                @if str-index($extension, $component) {
-                                    $selector: _replace-component-subselector(&+'', $component, '[___COMPONENT___]');
-                                    $extended-selector: str-replace(merge-selectors($context-extension, $selector), '[___COMPONENT___]', $component);
-                                }
-                                @else {
-                                    $extended-selector: merge-selectors($context-extension, &);
+                        @else {
+                            // if +theme('{name}', $bool-expression) was used
+                            @if str-index($extension, '`true`')==1 or str-index($extension, '`false`')==1 {
+                                $bool-count: $bool-count + 1;
+                                $was-expression-instead-of-selector: true;
+                                // generate code block (with selector) only for TRUE value (and for FALSE skip output = @content)
+                                @if str-index($extension, '`true`')==1 {
+                                    $selectors: append($selectors, &, 'comma');
                                 }
                             }
                             @else {
-                                $extended-selector: _extend-component-selector(&, $component-to-extend, $extension);
+                                @if str-index($extension, '&') {
+                                    $context-extension: str-replace($extension, ' &', '');
+                                    // when context is the same as component (.same + .same)
+                                    @if str-index($extension, $component) {
+                                        $selector: _replace-component-subselector(&+'', $component, '[___COMPONENT___]');
+                                        $extended-selector: str-replace(merge-selectors($context-extension, $selector), '[___COMPONENT___]', $component);
+                                    }
+                                    @else {
+                                        $extended-selector: merge-selectors($context-extension, &);
+                                    }
+                                }
+                                @else {
+                                    $extended-selector: _extend-component-selector(&, $component-to-extend, $extension);
+                                }
+                                $selectors: append($selectors, $extended-selector, 'comma');
                             }
-                            $selectors: append($selectors, $extended-selector, 'comma');
                         }
                         // create index of already used modifiers
                         $checklist-of-used-modifiers: map-merge($checklist-of-used-modifiers, ($original-modifier-name+' '+$extension: true));
+                        // END - SAME BLOCK -----------------------------------------------------------------------------------------------------------
                     }
                 }
             }
-            @if length($selectors)==0 and length($medias)==0 and length($containers)==0 {
+            @if length($selectors)==0 and length($medias)==0 and length($containers)==0 and $bool-count==0 {
                 // @feature Forcing to register all modifiers at first
                 @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/wrong-modifier-type - the modifier '"+$identifier+"' is not registered in component '"+&+"' as "+$modifier-name+". Check it out!";
             }
@@ -363,6 +391,7 @@
         @else {
             @if ($modifiers!=null and map-has-key($modifiers, $identifier)) or $_current-component-mode=='draft' {
                 $extension: $identifier;
+                // START - SAME BLOCK -----------------------------------------------------------------------------------------------------------
                 $extended-selector: '';
                 @if str-index($extension, '@media')==1 {
                     $medias: append($medias, str-replace(str-replace($extension, '@media ', ''), ' &', ''), 'comma');
@@ -383,12 +412,13 @@
                         }
                     }
                     @else {
-                        $extended-selector: _extend_component_selector(&, $component-to-extend, $extension);
+                        $extended-selector: _extend-component-selector(&, $component-to-extend, $extension);
                     }
                     $selectors: append($selectors, $extended-selector, 'comma');
                 }
                 // create index of already used modifiers
                 $checklist-of-used-modifiers: map-merge($checklist-of-used-modifiers, ($original-modifier-name+' '+$extension: true));
+                // END - SAME BLOCK -----------------------------------------------------------------------------------------------------------
             }
             @else {
                 // @feature Forcing to register all modifiers at first
@@ -410,7 +440,8 @@
     @each $single-selector in $selectors {
         $i: $i + 1;
         $single-selector: _wrap-into-media-selector( _wrap-into-container-selector( str-replace($single-selector+'', '&', &) ) )+$second-param-index;
-        @if index($_already-used-selectors, $single-selector) {
+        // do not throw error if $was-expression-instead-of-selector, because it will use same selector for multiple TRUE themes
+        @if index($_already-used-selectors, $single-selector) and $was-expression-instead-of-selector==false {
             @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/already-used-modifier - the "+$original-modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }
         $_already-used-selectors: append($_already-used-selectors, $single-selector) !global;
@@ -429,7 +460,7 @@
         $_current-media-stack: pop($_current-media-stack) !global;
     }
 
-    @else if length($containers)>0 {
+    @if length($containers)>0 {
         // store current container selector (into stack)
         $_current-container-stack: append($_current-container-stack, $containers, 'space') !global;
         
@@ -440,7 +471,7 @@
         $_current-container-stack: pop($_current-container-stack) !global;
     }
 
-    @else if length($selectors)>0 {
+    @if length($selectors)>0 {
         @at-root #{$selectors} {
             @content;
         }

@@ -18,12 +18,12 @@
 
 @media only screen and (max-width: 600px), only screen and (max-width: 600px) {
   my-component {
-    property: value;
+    property: value-X;
   }
 }
 
 html.grayscale my-component {
-  property: value;
+  property: value-X;
 }
 
 my-component-2 {
@@ -43,6 +43,38 @@ my-component-2:hover {
 
 @media only screen and (max-width: 360px) and (max-width: 600px), only screen and (max-width: 360px) and (max-width: 600px) {
   html.grayscale my-component-2 {
-    property: value;
+    property: value-Y;
+  }
+}
+
+my-component-3 {
+  display: block;
+}
+
+@container (max-width: 1024px) {
+  my-component-3 {
+    display: table;
+  }
+}
+
+@container (min-width: 700px) {
+  my-component-3 {
+    display: flex;
+  }
+}
+
+@container nickname (min-width: 450px) {
+  my-component-3 {
+    display: grid;
+  }
+}
+
+my-component-3:hover .wrapper {
+  color: blue;
+}
+
+@container nickname (min-width: 450px) {
+  my-component-3:hover .wrapper {
+    color: green;
   }
 }

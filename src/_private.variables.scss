@@ -277,6 +277,13 @@ $_registered-global-responsives: ();
 $_registered-global-contexts: ();
 
 
+/// List of registered global-theme(s).
+/// @group Global
+/// @access private
+/// @type Map
+$_registered-global-themes: ();
+
+
 /// List of registered global-browser(s).
 /// @group Global
 /// @access private

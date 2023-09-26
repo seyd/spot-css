@@ -1,0 +1,96 @@
+@import "./src/spot-css"
+
+
++component("my-component")
+    +register
+        +theme('@media only screen and (max-width: 800px)')
+        +theme('{mobile}', '@media only screen and (max-width: 360px)')
+        +theme('{multiple}', '@media only screen and (max-width: 600px), only screen and (max-width: 600px)')
+        +theme('{grayscale}', 'html.grayscale')
+        +theme('{theme 1}', true)
+        +theme('{theme 2}', false)
+        +theme('{theme 3}', true)
+
+    +default
+
+    +theme('@media only screen and (max-width: 800px)')
+        property: value
+    
+    // alias
+    +theme('{mobile}')
+        property: value
+
+    // multiple @media queries
+    +theme('{multiple}')
+        property: value-X
+
+    // mixed @media and html.class context
+    +theme('{multiple}', '{grayscale}')
+        property: value-Y
+
+    // expression - should be included
+    +theme('{theme 1}')
+        property: value-1
+
+    // expression - should be omited
+    +theme('{theme 2}')
+        property: value-2
+
+    // other theme but duplicit value 'true'
+    +theme('{theme 3}')
+        property: value-3
+
+    // one is TRUE and other is FALSE => should generate
+    +theme('{theme 1}', '{theme 2}')
+        property: value-4
+
+    // one context, next is TRUE and other is FALSE => should generate
+    +theme('{grayscale}', '{theme 1}', '{theme 2}')
+        property: value-5
+
+
+
+    
+
++global-theme('{mobile}', '@media only screen and (max-width: 360px)')
++global-theme('{multiple}', '@media only screen and (max-width: 600px), only screen and (max-width: 600px)')
++global-theme('{grayscale}', 'html.grayscale')
++global-theme('{theme 1}', true)
++global-theme('{theme 2}', false)
++global-theme('{theme 3}', true)
+
+
++component("my-component-2")
+    +register
+        +theme('{mobile}')
+        +theme('{multiple}')
+        +theme('{grayscale}')
+        +theme('{theme 1}')
+        +theme('{theme 2}')
+        +theme('{theme 3}')
+
+    +default
+    
+    // alias
+    +theme('{mobile}')
+        property: value
+
+    // multiple @media queries
+    +theme('{multiple}')
+        property: value-X
+
+    // mixed @media and html.class context
+    +theme('{multiple}', '{grayscale}')
+        property: value-Y
+
+    // expression - should be included
+    +theme('{theme 1}')
+        property: value-1
+
+    // expression - should be omited
+    +theme('{theme 2}')
+        property: value-2
+
+    // other theme but duplicit value 'true'
+    +theme('{theme 3}')
+        property: value-3

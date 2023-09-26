@@ -1,0 +1,73 @@
+@media only screen and (max-width: 800px) {
+  my-component {
+    property: value;
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  my-component {
+    property: value;
+  }
+}
+
+@media only screen and (max-width: 600px), only screen and (max-width: 600px) {
+  my-component {
+    property: value-X;
+  }
+}
+
+@media only screen and (max-width: 600px), only screen and (max-width: 600px) {
+  my-component {
+    property: value-Y;
+  }
+}
+
+html.grayscale my-component {
+  property: value-Y;
+}
+
+my-component {
+  property: value-1;
+}
+
+my-component {
+  property: value-3;
+}
+
+my-component {
+  property: value-4;
+}
+
+html.grayscale my-component, my-component {
+  property: value-5;
+}
+
+@media only screen and (max-width: 360px) {
+  my-component-2 {
+    property: value;
+  }
+}
+
+@media only screen and (max-width: 600px), only screen and (max-width: 600px) {
+  my-component-2 {
+    property: value-X;
+  }
+}
+
+@media only screen and (max-width: 600px), only screen and (max-width: 600px) {
+  my-component-2 {
+    property: value-Y;
+  }
+}
+
+html.grayscale my-component-2 {
+  property: value-Y;
+}
+
+my-component-2 {
+  property: value-1;
+}
+
+my-component-2 {
+  property: value-3;
+}
