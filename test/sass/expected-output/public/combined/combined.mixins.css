@@ -1,0 +1,13 @@
+html.loading test-component:hover {
+  prop: val-1;
+}
+
+test-component.priority:hover, test-component.secondary:hover, test-component[color="red"]:hover, test-component.small:hover {
+  prop: val-2;
+}
+
+@media (min-width: 576px) {
+  test-component {
+    prop: val-3;
+  }
+}

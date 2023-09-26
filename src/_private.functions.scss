@@ -545,3 +545,106 @@
 @function _is-char-right-selector-separator($char) {
     @return $char==' ' or $char=='>' or $char=='+' or $char=='~' or $char==':' or $char=='#' or $char=='.' or $char=='[';
 }
+
+// Inputs e.g.: 'state(":hover")'  or 'theme("{xxx}", "sss")'
+@function _parse-modifier-from-mutation($str-mutation) {
+    @if str-index($str-mutation, 'state(')==1 {
+        @return 'state';
+    }
+    @if str-index($str-mutation, 'variant(')==1 {
+        @return 'variant';
+    }
+    @if str-index($str-mutation, 'context(')==1 {
+        @return 'context &';
+    }
+    @if str-index($str-mutation, 'browser(')==1 {
+        @return 'browser &';
+    }
+    @if str-index($str-mutation, 'responsive(')==1 {
+        @return 'responsive &';
+    }
+    @if str-index($str-mutation, 'theme(')==1 {
+        @return 'theme &';
+    }
+    @return null;
+}
+
+@function _parse-args-from-mutation($str-mutation) {
+    $str-mutation: unquote($str-mutation);
+    $first-closure: str-index($str-mutation, '(');
+    @if $first-closure==null {
+        @return null;
+    }
+    $args: str-slice($str-mutation, $first-closure+2, -3); // trim mutation name and closures () and first and last " or '
+    // now split by ", " | ", ' | ', " | ', '
+    @return _split-separated-strings($args);
+}
+
+
+// split by ", " | ", ' | ', " | ', '
+@function _split-separated-strings($str) {
+    $parts: ();
+    $len: str-length($str);    
+    $i: 1;
+    $was-escape-slash-before: false;
+    $state: 0;
+    $last-index: 1;
+
+    @while $i<=$len {
+        $char: str-slice($str, $i, $i);
+        
+        
+        @if $state==1 {
+            @if $char==',' {
+                $state: 2;
+            }
+            @else {
+                $state: 0;
+            }
+        }
+        @else if $state==2 {
+            @if $char==' ' {
+                $state: 3;
+            }
+            @else {
+                $state: 0;
+            }
+        }
+        @else if $state==3 {
+            @if $char=='"' or $char=="'" {
+                $parts: append($parts, str-slice($str, $last-index, $i - 4), 'comma');
+                $last-index: $i + 1;
+            }
+            $state: 0;
+        }
+
+
+        @if $state==0 {
+            @if $char=='\\' {
+                $was-escape-slash-before: true;
+            }
+
+            @if ($char=='"' or $char=="'") and $was-escape-slash-before==false {
+                $state: 1;
+            }
+        }
+        
+        $i: $i + 1;
+
+        @if $state!=0 {
+            $was-escape-slash-before: false;
+        }
+    }
+
+    // last one
+    @if $i>1 {
+        $parts: append($parts, str-slice($str, $last-index, $len), 'comma');
+    }
+
+
+    @if length($parts)==0 {
+        @return null;
+    }
+    
+    @return $parts;
+}

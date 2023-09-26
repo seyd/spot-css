@@ -1,0 +1,23 @@
+@import "./src/spot-css"
+
+
++component('test-component')
+    +register
+        +state(':hover')
+        +variant('{priority}', '.priority', '.secondary')
+        +variant('[color="red"]')
+        +variant('.small')
+        +context('html.loading')
+        +responsive('{sm}', '@media (min-width:  576px)')
+        +theme('{dark}', true)
+
+    +default
+
+    +combined(state(':hover'), context('html.loading'))
+        prop: val-1
+
+    +combined(variant('{priority}', '[color="red"]', '.small'), state(':hover'))
+        prop: val-2
+    
+    +combined(responsive('{sm}'), theme('{dark}'))
+        prop: val-3

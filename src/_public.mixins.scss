@@ -1632,6 +1632,55 @@
     }
 }
 
+@mixin combined($args...) {
+    $len: length($args);
+    @if $len<2 {
+        @error $SPOT_ERROR_PREFIX + "combined/at-least-2 - expected at least 2 mutations to be combined.";
+    }
+    @if $len>5 {
+        @error $SPOT_ERROR_PREFIX + "combined/max-5 - mixin `combined` is hard coded to support max 5 mutations. If you need more please contact support.";
+    }
+    
+    $modifiers: ();
+    $arguments: ();
+    @each $mutation in $args {
+        $modifier: _parse-modifier-from-mutation($mutation);
+        @if $modifier==null {
+            @error $SPOT_ERROR_PREFIX + "combined/unknown-mutation - given mutation '"+$mutation+"' was not recognized.";
+        }
+        $modifiers: append($modifiers, $modifier, 'comma');
+
+        $mut-args: _parse-args-from-mutation($mutation);
+        @if length($mut-args)==0 {
+            @error $SPOT_ERROR_PREFIX + "combined/no-args - given mutation '"+$mutation+"' have to have at least one argument.";
+        }
+        $arguments: append($arguments, $mut-args, 'comma');
+    }
+
+    // this has to be hardcoded this way (because @content)
+    // (or I just don't know how to do dynamically)
+    @if $len==2 {
+        @include _combined-2-mutations(nth($modifiers, 1), nth($arguments, 1), nth($modifiers, 2), nth($arguments, 2)) {
+            @content;
+        }
+    }
+    @else if $len==3 {
+        @include _combined-3-mutations(nth($modifiers, 1), nth($arguments, 1), nth($modifiers, 2), nth($arguments, 2), nth($modifiers, 3), nth($arguments, 3)) {
+            @content;
+        }
+    }
+    @else if $len==4 {
+        @include _combined-4-mutations(nth($modifiers, 1), nth($arguments, 1), nth($modifiers, 2), nth($arguments, 2), nth($modifiers, 3), nth($arguments, 3), nth($modifiers, 4), nth($arguments, 4)) {
+            @content;
+        }
+    }
+    @else if $len==5 {
+        @include _combined-5-mutations(nth($modifiers, 1), nth($arguments, 1), nth($modifiers, 2), nth($arguments, 2), nth($modifiers, 3), nth($arguments, 3), nth($modifiers, 4), nth($arguments, 4), nth($modifiers, 5), nth($arguments, 5)) {
+            @content;
+        }
+    }
+}
+
 
 @mixin print($message: 'print current selector info') {
     $text: '_______________________\a';

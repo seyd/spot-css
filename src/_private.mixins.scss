@@ -462,6 +462,64 @@
 }
 
 
+@mixin _combined-2-mutations($modifier1, $args1, $modifier2, $args2) {
+    @include _apply-modifier($modifier1, $args1...) {
+        @include default;
+        @include _apply-modifier($modifier2, $args2...) {
+            @content;
+        }
+    }
+}
+
+
+@mixin _combined-3-mutations($modifier1, $args1, $modifier2, $args2, $modifier3, $args3) {
+    @include _apply-modifier($modifier1, $args1...) {
+        @include default;
+        @include _apply-modifier($modifier2, $args2...) {
+            @include default;
+            @include _apply-modifier($modifier3, $args3...) {
+                @content;
+            }
+        }
+    }
+}
+
+
+@mixin _combined-4-mutations($modifier1, $args1, $modifier2, $args2, $modifier3, $args3, $modifier4, $args4) {
+    @include _apply-modifier($modifier1, $args1...) {
+        @include default;
+        @include _apply-modifier($modifier2, $args2...) {
+            @include default;
+            @include _apply-modifier($modifier3, $args3...) {
+                @include default;
+                @include _apply-modifier($modifier4, $args4...) {
+                    @content;
+                }
+            }
+        }
+    }
+}
+
+
+@mixin _combined-5-mutations($modifier1, $args1, $modifier2, $args2, $modifier3, $args3, $modifier4, $args4, $modifier5, $args5) {
+    @include _apply-modifier($modifier1, $args1...) {
+        @include default;
+        @include _apply-modifier($modifier2, $args2...) {
+            @include default;
+            @include _apply-modifier($modifier3, $args3...) {
+                @include default;
+                @include _apply-modifier($modifier4, $args4...) {
+                    @include default;
+                    @include _apply-modifier($modifier5, $args5...) {
+                        @content;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 /// Sets flag that register was already called in component.
 /// @access private
 /// @output Nothing.
