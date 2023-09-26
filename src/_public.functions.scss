@@ -114,6 +114,17 @@
 }
 
 
+/// Return theme name(s) and validate if exist(s).
+/// @group Component
+/// @access public
+/// @param { String } $args...
+/// @return { String } theme string identifier.
+@function theme($args...) {
+    /// @todo validate if exist 
+    @return 'theme(' + $args + ')';
+}
+
+
 /// Tests if given selector contains pseudo element e.g. ::before or ::after.
 /// @access public
 /// @param { String } $selector - single selector
