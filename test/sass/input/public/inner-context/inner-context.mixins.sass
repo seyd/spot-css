@@ -60,6 +60,7 @@
     +register
         +element('.days')
             +element('.day')
+        +element('> .q-banner')
 
     +________________________
     +element('.days')
@@ -70,6 +71,23 @@
 
             +inner-context('.insert +')
                 prop: val
+
+    +_________________________
+    +element('> .q-banner')
+        +default
+            prop: val-1
+
+        +inner-context('.q-banner +') // special case - should generate '> .q-banner + .q-banner'
+            prop: val-2
+
+        +inner-context('+ .q-banner') // special case - should still generate '> .q-banner + .q-banner'
+            prop: val-3
+
+        +inner-context('.q-banner ~') // special case - should generate '> .q-banner + .q-banner'
+            prop: val-4
+
+        +inner-context('~ .q-banner') // special case - should still generate '> .q-banner + .q-banner'
+            prop: val-5
 
 
 // // @TODO - registered +inner-context with alias

@@ -663,7 +663,7 @@
     }   
 }
 
-/// Prepend inner context to sub element of the component.
+/// Prepend inner context before current sub element of the component.
 /// @group Component
 /// @access public
 /// @param { String } $selectors Context selector with "+" or "~" combinator selector, it could be multiple selectors.
@@ -677,7 +677,7 @@
         @error $SPOT_ERROR_PREFIX + "inner-context/in-register - the mixin inner-context doesn't have to be registered in register mixin in component '"+component()+"'.";
     }
     @else {
-        // @TODO should contain "+" or "~" combinator selector (at the end of the selctor)
+        // @TODO should contain "+" or "~" combinator selector (at the end of the selector)
 
         // @TODO should not be used in root element of component.
 
@@ -691,8 +691,26 @@
 
             $output: (); // not []; because error "Expected identifier." @at-root #{$output} of some versions of SASS
             @each $sel in $multiple-selectors {
+                $sel: $sel+'';
+                $current-end-sel: self()+'';
+                
+                // Exception: if current (last selector) contains '>' at the beginning, e.g '> .image'
+                @if str-index($current-end-sel, '>')==1 {
+                    $current-end-sel: str-trim(str-slice($current-end-sel, 2)); // trim the '> ';
 
-                $output: append($output, _replace-component-subselector(&, self(), str-trim($sel+'')+' '+self()), 'comma');
+                    // Exception: if $sel (prepending selector) is '.image +' or '+ image', it will output still the same result
+                    // the first one works fine ('.image +'), but for the other ('+ image') we have to move '+' at the end (same goes for '~')
+                    @if str-index($sel, '+')==1 or str-index($sel, '~')==1 {
+                        $first-char: str-slice($sel, 1, 1);
+                        $rest-sel: str-trim(str-slice($sel+'', 2));
+                        // Constrain: it should be done only when $current-end-sel is equal to $sel (prepending selector) => e.g. resulting to '> .image + .image'
+                        @if $current-end-sel==$rest-sel {
+                            $sel: $rest-sel + ' ' +  $first-char;
+                        }
+                    }
+                }
+
+                $output: append($output, _replace-component-subselector(&, $current-end-sel, str-trim($sel) + ' ' + $current-end-sel), 'comma');
             }
             @at-root #{$output} {
                 @content;

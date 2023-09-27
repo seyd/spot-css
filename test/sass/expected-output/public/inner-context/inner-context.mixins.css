@@ -45,3 +45,23 @@ test:active h4 + .footer-info {
 .test .days .insert + .day {
   prop: val;
 }
+
+.test > .q-banner {
+  prop: val-1;
+}
+
+.test > .q-banner + .q-banner {
+  prop: val-2;
+}
+
+.test > .q-banner + .q-banner {
+  prop: val-3;
+}
+
+.test > .q-banner ~ .q-banner {
+  prop: val-4;
+}
+
+.test > .q-banner ~ .q-banner {
+  prop: val-5;
+}
