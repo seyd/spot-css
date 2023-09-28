@@ -319,6 +319,7 @@
 /// @access public
 /// @param { String } $current-selector - Selector(s) to be strengthen
 /// @param { String } $args... - Selector(s) to override
+/// @throw SPOT CSS: only-for/mutation-fn-args - mutation function should use only one argument in only-for mixin. You have used: ...
 /// @throw SPOT CSS: only-for/already-used-selector - the only-for('selector') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.
 /// @throw SPOT CSS: only-for/pseudo-element - given selector ('selector') is a pseudo selector. Use mixin pseudo-element for this job.
 /// @throw SPOT CSS: only-for/not-found - given branch selector was not found at the end of current selector ('selector').
@@ -354,9 +355,27 @@
         $sel: to-string($sel);
         @each $branch in $args {
             $branch: _remove-mutation-wrapper($branch);
-            @if selector-contains($sel, $branch) {
+            
+            // Exception: +only-for(variant('.primary'))  |  +only-for(state('{special}'))  |  +only-for(theme('{funky}')) 
+            $mutation: _parse-mutation-function($branch);
+            @if length($mutation)>1 {
+                @error $SPOT_ERROR_PREFIX + "only-for/mutation-fn-args - mutation function should use only one argument in only-for mixin. You have used: "+$mutation;
+            }
+            @if $mutation!=null and length($mutation)>0 and first($mutation)!=false {
+                $identifier: first($mutation);
+                @if selector-contains($sel, $identifier) {
+                    $match: true;
+                    $found: true; // not used now
+                    $found-branch: $identifier;
+                    @if $identifier==true {
+                        $_current-themes-as-expression: $_current-themes-as-expression + 'only-for:'+$branch+' ' !global;
+                    }
+                }
+            }
+            // search for sub-selector
+            @else if _is-mutation-function($branch)==false and selector-contains($sel, $branch) {
                 $match: true;
-                $found: true;
+                $found: true; // not used now
                 $found-branch: $branch;
             }
             // Exception: If some of theese selectors, it will apply it on current selector.
@@ -368,13 +387,12 @@
             @else if str-index($branch, ':first-') or str-index($branch, ':last-') or str-index($branch, ':nth-') or str-index($branch, ':only-') or str-index($branch, ':empty') {
                 // except pseudo elements ::first-letter and ::first-line (but check for one ':')
                 @if str-index($branch, '::')==null and str-index($branch, ':first-letter')==null and str-index($branch, ':first-line')==null {
-                    $found: true;
+                    $found: true; // not used now
                     $complete-selector: $sel + $branch;
-                    @if index($_already-used-selectors, $complete-selector) {
+                    @if _is-already-used-selectors($complete-selector) {
                         @error $SPOT_ERROR_PREFIX + "only-for/already-used-selector - the only-for('" + $branch + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.";
                     }
-                    $_already-used-selectors: append($_already-used-selectors, $complete-selector) !global;
-
+                    $holder: _register-already-used-selectors($complete-selector);
                     $output: append($output, $complete-selector, 'comma');
                 }
                 @else {
@@ -384,17 +402,17 @@
             // special case: +only-for('>')
             @else if length($args)==1 and str-trim(nth($args, 1))=='>' {
                 $output: append($output, _create-direct-child-from-last-element($sel), 'comma');
-                $found: true;
+                $found: true; // not used now
             }
         }
         
         @if $match {
             @if not $found-for-element-branching and not $found-for-component-branching {
-                @if index($_already-used-multiple-selectors, $sel) {
+                @if _is-already-used-multiple-selectors($sel) {
                     @error $SPOT_ERROR_PREFIX + "only-for/already-used-selector - the only-for('" + $found-branch + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every entity.";
                 }
-                $_already-used-selectors: append($_already-used-selectors, $sel) !global;
-                $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sel) !global;
+                $holder: _register-already-used-selectors($sel);
+                $holder: _register-already-used-multiple-selectors($sel);
             }
 
             $output: append($output, $sel, 'comma');
@@ -807,6 +825,11 @@
 /// Finds given sub-selector in given selectors
 /// selector-contains('a.btn div, a div.btnx.zzz', '.zzz.btnx') => true
 @function selector-contains($combinator-selector, $sub-single-selector) {
+    // for bool expression
+    @if type-of($sub-single-selector)=='bool' {
+        @return $sub-single-selector;
+    }
+
     @if $combinator-selector=='' {
         @return false;
     }

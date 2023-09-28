@@ -242,7 +242,7 @@
 /// @return {Boolean} True if mixin register was already called in current selector.
 @function _default-mixin-was-already-called() {
     $current-media-selector: _wrap-into-media-selector(_wrap-into-container-selector(&));
-    @return index($_default-called-on, $current-media-selector) != null;
+    @return _is-already-registered-default-called-on($current-media-selector);
 }
 
 
@@ -546,6 +546,10 @@
     @return $char==' ' or $char=='>' or $char=='+' or $char=='~' or $char==':' or $char=='#' or $char=='.' or $char=='[';
 }
 
+@function _is-mutation-function($str-mutation) {
+    @return _parse-modifier-from-mutation($str-mutation)!=null;
+}
+
 // Inputs e.g.: 'state(":hover")'  or 'theme("{xxx}", "sss")'
 @function _parse-modifier-from-mutation($str-mutation) {
     @if str-index($str-mutation, 'state(')==1 {
@@ -641,10 +645,156 @@
         $parts: append($parts, str-slice($str, $last-index, $len), 'comma');
     }
 
-
     @if length($parts)==0 {
         @return null;
     }
     
     @return $parts;
+}
+
+
+// For debugging @if conditions like @if $something and _debug-true($text) and other-thing() { ... }
+@function _debug-true($text) {
+    @debug $text;
+    @return true;
+}
+@function _debug-false($text) {
+    @debug $text;
+    @return false;
+}
+
+// Examples: "variant('.primary')"  |  "state('{special}')"  |  "theme('{funky}')"  |  "variant('.primary', '.secondary')"
+// @return null if it's not output of mutation function or list of selectors of the mutation function (not alias)
+@function _parse-mutation-function($str) {
+    $output: ();
+    $modifier: _parse-modifier-from-mutation($str);
+    @if $modifier!=null {
+        $args: _parse-args-from-mutation($str);
+        @if $args!=null {
+            @each $arg in $args {
+                $selector: _does-current-component-registered-modifier($modifier, $arg);
+
+                @if $selector==false {
+                    @error $SPOT_ERROR_PREFIX + "only-for/unknown-modifier - the "+$modifier+" '"+$arg+"' is not registered in component '"+top-component()+"'.";
+                }
+
+                // do not generate selector for FALSE value
+                @if str-index($selector, '`false`')==null {
+
+                    @if str-index($selector, '`true`')==1 {
+                        $selector: true;
+                    }
+
+                    $output: append($output, $selector, 'comma');                
+                }
+
+                // @if _is-alias($arg) {
+
+                // }
+                // @else {
+                //     $output: append($output, $arg, 'comma');
+                // }
+            }
+            @return $output;
+        }
+    }
+    @return null;
+}
+
+
+// @return selector or FALSE
+@function _does-current-component-registered-modifier($modifier-name, $modifier-selector) {
+    $component: component();
+    @if _is-modifier-context-like($modifier-name) {
+        $component: top-component();
+    }
+    $original-identifier: $modifier-selector;    
+    $identifier: _add-default-ampersand-if-context($modifier-name, $modifier-selector);
+    $component-with-identifier-alias: _get-component-identifier($component, _normalize-alias($identifier));
+    $component-with-modifier: str-replace(_get-component-modifier($component, $modifier-name), ' &', '');
+    $modifiers: map-get($_registered-modifiers, $component-with-modifier);
+    $is-alias: index($_registered-modifier-aliases, str-replace($component-with-identifier-alias, ' &', ''));        
+
+    // if alias
+    @if $is-alias {
+        @if $modifiers {
+            // find all modifiers with this alias
+            @each $modifier in $modifiers {
+                $alias: map-get(nth($modifier, 2), 'alias');
+                @if $alias==_normalize-alias($original-identifier) {
+                    @return nth($modifier, 1);
+                }
+            }
+        }
+    }
+    // if not alias - just $identifier
+    @else {
+        @if ($modifiers!=null and map-has-key($modifiers, $identifier)) or $_current-component-mode=='draft' {
+            @return $identifier;
+        }
+        // @else {
+        //     @return false;
+        // }
+    }
+    @return false;
+}
+
+// Handles uniqueness of selector if themes as expression are used (which doesn't add any special selector and therefore creates selector duplicities)
+@function _E($selector) {
+    @return $_current-themes-as-expression + $selector;
+}
+
+
+@function _register-already-used-selectors($selector) {
+    $_already-used-selectors: append($_already-used-selectors, _E($selector)) !global;
+    @return $_already-used-selectors;
+}
+
+
+@function _register-already-used-multiple-selectors($selector) {
+    $_already-used-multiple-selectors: append($_already-used-multiple-selectors, _E($selector)) !global;
+    @return $_already-used-multiple-selectors;
+}
+
+
+@function _register-already-used-selectors-for-spot-exception-selector($selector) {
+    $_already-used-selectors-for-spot-exception-selector: append($_already-used-selectors-for-spot-exception-selector, _E($selector)) !global;
+    @return $_already-used-selectors-for-spot-exception-selector;
+}
+
+
+@function _register-already-used-selectors-for-spot-exception-element($selector) {
+    $_already-used-selectors-for-spot-exception-element: append($_already-used-selectors-for-spot-exception-element, _E($selector)) !global;
+    @return $_already-used-selectors-for-spot-exception-element;
+}
+
+
+@function _register-default-called-on($selector) {
+    $_default-called-on: append($_default-called-on, _E($selector)) !global;
+    @return $_default-called-on;
+}
+
+
+@function _is-already-used-selectors($selector) {
+    @return index($_already-used-selectors, _E($selector))!=null;
+}
+
+
+@function _is-already-used-multiple-selectors($selector) {
+    @return index($_already-used-multiple-selectors, _E($selector))!=null;
+}
+
+
+@function _is-already-used-selectors-for-spot-exception-selector($selector) {
+    @return index($_already-used-selectors-for-spot-exception-selector, _E($selector))!=null;
+}
+
+
+@function _is-already-used-selectors-for-spot-exception-element($selector) {
+    @return index($_already-used-selectors-for-spot-exception-element, _E($selector))!=null;
+}
+
+
+@function _is-already-registered-default-called-on($selector) {
+    @return index($_default-called-on, _E($selector))!=null;
 }

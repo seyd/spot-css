@@ -300,3 +300,71 @@ my-component-5 .branch-b::before {
 my-component-5 .branch-b::before {
   property: value-3;
 }
+
+my-component-6 {
+  prop: val-1;
+}
+
+my-component-6:hover, my-component-6:focus {
+  prop: val-2;
+}
+
+my-component-6:hover {
+  prop: val-3;
+}
+
+my-component-6:focus {
+  prop: val-4;
+}
+
+my-component-6 {
+  prop: val-10;
+}
+
+my-component-6:focus {
+  prop: val-11;
+}
+
+my-component-6 {
+  prop: val-12;
+}
+
+my-component-6:hover {
+  prop: val-13;
+}
+
+my-component-7 {
+  prop: val-1;
+}
+
+my-component-7:hover, my-component-7:focus {
+  prop: val-2;
+}
+
+my-component-7:hover {
+  prop: val-3;
+}
+
+my-component-7:focus {
+  prop: val-4;
+}
+
+html.theme-1 my-component-7 {
+  prop: val-5;
+}
+
+my-component-7 {
+  prop: val-10;
+}
+
+my-component-7:focus {
+  prop: val-11;
+}
+
+my-component-7 {
+  prop: val-12;
+}
+
+my-component-7:hover {
+  prop: val-13;
+}

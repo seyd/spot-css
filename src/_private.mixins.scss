@@ -175,6 +175,8 @@
     $super-component-index: 0;
     $search-super-other-way: false;
     $is-expression-and-truthy: false;
+    $there-was-used-theme-expression-with-true: false;
+    $_backup-of-current-themes-as-expression: $_current-themes-as-expression;
 
     @if $last-param-is-number { 
         $last-param-is-number: false;
@@ -376,6 +378,8 @@
                     // generate code block (with selector) only for TRUE value (and for FALSE skip output = @content)
                     @if str-index($extension, '`true`')==1 {
                         $selectors: append($selectors, &, 'comma');
+                        $there-was-used-theme-expression-with-true: true;
+                        $_current-themes-as-expression: $_current-themes-as-expression + 'theme:'+$extension+' ' !global;
                     }
                 }
                 @else {
@@ -409,8 +413,8 @@
     // create index of already used modifiers
     $_checklist-of-used-modifiers: map-merge($_checklist-of-used-modifiers, ($component: $checklist-of-used-modifiers)) !global;
 
-    // for purpose of mixin only-for 
-    $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $selectors) !global;
+    // for purpose of mixin only-for
+    @include _register-already-used-multiple-selectors($selectors);
 
     // check all selectors if wasn't used already
     $i: 0;
@@ -420,13 +424,18 @@
         $i: $i + 1;
         $single-selector: _wrap-into-media-selector( _wrap-into-container-selector( str-replace($single-selector+'', '&', &) ) )+$second-param-index;
         // do not throw error if $was-expression-instead-of-selector, because it will use same selector for multiple TRUE themes
-        @if index($_already-used-selectors, $single-selector) and $was-expression-instead-of-selector==false {
+        @if _is-already-used-selectors($single-selector) and $was-expression-instead-of-selector==false {
             @error $SPOT_ERROR_PREFIX + $original-modifier-name+"/already-used-modifier - the "+$original-modifier-name+"('" + nth($args,$i) + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every variant "+$modifier-name+".";
         }
-        $_already-used-selectors: append($_already-used-selectors, $single-selector) !global;
+        @include _register-already-used-selectors($single-selector);
     }
 
     $_is-modifier-mode: true !global;
+    
+    $_is-in-bool-theme-block-backup: $_is-in-bool-theme-block;    
+    @if $there-was-used-theme-expression-with-true==true {
+        $_is-in-bool-theme-block: true !global;
+    }
 
     @if length($medias)>0 {
         // store current media selector (into stack)
@@ -457,6 +466,11 @@
     }
     // remove current modifier from the stack
     $_current-modifiers-stack: map-merge($_current-modifiers-stack, ($component: $current-modifier-stack-backup)) !global;
+
+    @if $there-was-used-theme-expression-with-true==true {
+        $_is-in-bool-theme-block: $_is-in-bool-theme-block-backup !global;
+        $_current-themes-as-expression: $_backup-of-current-themes-as-expression !global;
+    }
 
     $_is-modifier-mode: false !global;
 }
@@ -525,14 +539,6 @@
 /// @output Nothing.
 @mixin _set_register-mixin-was-already-called() {
     $_register-called-on: append($_register-called-on, component()) !global;
-}
-
-
-/// Sets flag that default was already called in current selector.
-/// @access private
-/// @output Nothing.
-@mixin _set_default-mixin-was-already-called() {
-    $_default-called-on: append($_default-called-on, component()) !global;
 }
 
 
@@ -681,10 +687,10 @@
                 @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/unregistred-sub-element - the "+$sub-element-type+"-element('" + $selector + "') is not registered for component selector '"+component()+"'.";
             }
 
-            @if index($_already-used-selectors, $selector) {
+            @if _is-already-used-selectors($selector) {
                 @error $SPOT_ERROR_PREFIX + $sub-element-type + "-element/already-used - the "+$sub-element-type+"-element('" + $selector + "') is already used somewhere higher! Do not break the SPOT rule and use just single place for every "+$sub-element-type+"-element.";
             }
-            $_already-used-selectors: append($_already-used-selectors, $selector) !global;
+            @include _register-already-used-selectors($selector);
         }
         
         $selectors: append($selectors, $selector, 'comma');
@@ -761,7 +767,7 @@
     $registered-sub-components: map-get($_registered-sub-components, $component);
     @if $registered-sub-components!=null {
         @each $sub-component in $registered-sub-components {            
-            @if index($_already-used-multiple-selectors, $sub-component)==null {
+            @if _is-already-used-multiple-selectors($sub-component)==null {
                 @warn $SPOT_ERROR_PREFIX + "component/unused-element - element '"+$sub-component+"' was registered but never used (in component '"+$component+"').";
             }
         }
@@ -832,11 +838,11 @@
     $registered-sub-components: map-get($_registered-sub-components, top-component());
     @if $registered-sub-components==null { $registered-sub-components: []; }
 
-    @if index($_already-used-selectors, $whole-selector) or index($registered-sub-components, $whole-selector) {
+    @if _is-already-used-selectors($whole-selector) or index($registered-sub-components, $whole-selector) {
         @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
     }
     // store unique sub-component
-    $_already-used-selectors: append($_already-used-selectors, $whole-selector, 'comma') !global;
+    @include _register-already-used-selectors($whole-selector);
     $registered-sub-components: append($registered-sub-components, $whole-selector, 'comma');
     $_registered-sub-components: map-merge($_registered-sub-components, (top-component(): $registered-sub-components)) !global;
 }
@@ -848,11 +854,11 @@
     $registered-sub-components: map-get($_registered-sub-components-for-spot-exception-element, top-component());
     @if $registered-sub-components==null { $registered-sub-components: []; }
 
-    @if index($_already-used-selectors-for-spot-exception-element, $whole-selector) or index($registered-sub-components, $whole-selector) {
+    @if _is-already-used-selectors-for-spot-exception-element($whole-selector) or index($registered-sub-components, $whole-selector) {
         @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
     }
     // store unique sub-component
-    $_already-used-selectors-for-spot-exception-element: append($_already-used-selectors-for-spot-exception-element, $whole-selector, 'comma') !global;
+    @include _register-already-used-selectors-for-spot-exception-element($whole-selector);
     $registered-sub-components: append($registered-sub-components, $whole-selector, 'comma');
     $_registered-sub-components-for-spot-exception-element: map-merge($_registered-sub-components-for-spot-exception-element, (top-component(): $registered-sub-components)) !global;
 }
@@ -863,11 +869,11 @@
     $registered-sub-components: map-get($_registered-sub-components-for-spot-exception-selector, top-component());
     @if $registered-sub-components==null { $registered-sub-components: []; }
 
-    @if index($_already-used-selectors-for-spot-exception-selector, $whole-selector) or index($registered-sub-components, $whole-selector) {
+    @if _is-already-used-selectors-for-spot-exception-selector($whole-selector) or index($registered-sub-components, $whole-selector) {
         @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
     }
     // store unique sub-component
-    $_already-used-selectors-for-spot-exception-selector: append($_already-used-selectors-for-spot-exception-selector, $whole-selector, 'comma') !global;
+    @include _register-already-used-selectors-for-spot-exception-selector($whole-selector);
     $registered-sub-components: append($registered-sub-components, $whole-selector, 'comma');
     $_registered-sub-components-for-spot-exception-selector: map-merge($_registered-sub-components-for-spot-exception-selector, (top-component(): $registered-sub-components)) !global;
 }
@@ -905,4 +911,24 @@
         transform: none !important;
         content: 'SPOT CSS debug message:\a#{join-list-to-string($_component_messages, '\a')}' !important;
     }
+}
+
+@mixin _register-already-used-selectors($sel) {
+    $result: _register-already-used-selectors($sel);
+}
+
+@mixin _register-already-used-multiple-selectors($sel) {
+    $result: _register-already-used-multiple-selectors($sel);
+}
+
+@mixin _register-already-used-selectors-for-spot-exception-selector($sel) {
+    $result: _register-already-used-selectors-for-spot-exception-selector($sel);
+}
+
+@mixin _register-already-used-selectors-for-spot-exception-element($sel) {
+    $result: _register-already-used-selectors-for-spot-exception-element($sel);
+}
+
+@mixin _register-default-called-on($sel) {
+    $result: _register-default-called-on($sel);
 }

@@ -250,3 +250,95 @@
 
       +only-for('.branch-b')
         property: value-3
+
+
+
++component('my-component-6')
+  +register
+    +state(':hover')
+    +state('{focus}', ':focus')
+    +theme('{A}', true)
+    +theme('{B}', false)
+
+  +default
+    prop: val-1
+
+  +state(':hover', ':focus')
+    +default
+      prop: val-2
+
+    +only-for(state(':hover'))
+      prop: val-3
+
+    +only-for(state('{focus}'))
+      prop: val-4
+
+  +theme('{A}', '{B}')
+    +default
+      prop: val-10
+
+    +state(':focus')
+      prop: val-11
+
+    +only-for(theme('{A}'))
+      +default
+        prop: val-12
+
+      +state(':hover')
+        prop: val-13
+
+    +only-for(theme('{B}')) // whis one should be omited
+      prop: val-omited
+
+
+
+
+// test globally registered themes / or other mutations (context, responsive)
+
++global-theme('{my theme 1}', 'html.theme-1')
++global-theme('{my theme 2}', true)
++global-theme('{my theme 3}', false)
++global-theme('{my theme 4}', true)
+
+
++component('my-component-7')
+  +register
+    +state(':hover')
+    +state('{focus}', ':focus')
+    +theme('{my theme 1}')
+    +theme('{my theme 2}')
+    +theme('{my theme 3}')
+    +theme('{my theme 4}')
+
+  +default
+    prop: val-1
+
+  +state(':hover', ':focus')
+    +default
+      prop: val-2
+
+    +only-for(state(':hover'))
+      prop: val-3
+
+    +only-for(state('{focus}'))
+      prop: val-4
+
+  +theme('{my theme 1}')
+    prop: val-5
+
+  +theme('{my theme 2}', '{my theme 3}')
+    +default
+      prop: val-10
+
+    +state(':focus')
+      prop: val-11
+
+    +only-for(theme('{my theme 2}'))
+      +default
+        prop: val-12
+
+      +state(':hover')
+        prop: val-13
+
+    +only-for(theme('{my theme 3}')) // whis one should be omited
+      prop: val-omited

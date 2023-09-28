@@ -111,6 +111,13 @@ $_is-sub-component-mode: false;
 $_is-in-only-for-block: false;
 
 
+/// Flag of theme block - if parser enters mixin theme with boolean value (TRUE).
+/// @group Component
+/// @access private
+/// @type Bool
+$_is-in-bool-theme-block: false;
+
+
 /// Last used modifier name ('variant', 'state', 'context', 'browser' or 'responsive').
 /// @group Component
 /// @access private
@@ -310,6 +317,14 @@ $_current-element-selectors-for-only-for: '';
 /// @access private
 /// @type List
 $_component_messages: [];
+
+
+/// Helpper variable for handle uniqueness of selector if themes as expression are used 
+/// (which doesn't add any special selector and therefore creates selector duplicities)
+/// @group Global
+/// @access private
+/// @type String
+$_current-themes-as-expression: '';
 
 
 // source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element (except of the deprecated but some exceptions)

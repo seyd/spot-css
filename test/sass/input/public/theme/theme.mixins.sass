@@ -62,6 +62,7 @@
 
 +component("my-component-2")
     +register
+        +state(':hover')
         +theme('{mobile}')
         +theme('{multiple}')
         +theme('{grayscale}')
@@ -71,6 +72,9 @@
 
     +default
     
+    +state(':hover')
+        property: value-a
+
     // alias
     +theme('{mobile}')
         property: value
@@ -93,4 +97,8 @@
 
     // other theme but duplicit value 'true'
     +theme('{theme 3}')
-        property: value-3
+        +default
+            property: value-3
+
+        +state(':hover')
+            property: value-a

@@ -221,7 +221,7 @@
     }
     @else {
         // check if sub-component is registered
-        @if not index($_already-used-selectors, $sub-component-selector) and $_current-component-mode!='draft' {
+        @if not _is-already-used-selectors($sub-component-selector) and $_current-component-mode!='draft' {
             @error $SPOT_ERROR_PREFIX + "child-component/unknown-unregistered - given sub-component '"+$selector+"' is not registered in direct parent component ('"+$sub-component-selector+"').";
         }
         // 1)
@@ -232,7 +232,7 @@
         @else {
             // store component selector if is not stored yet
             $_registered-components: append($_registered-components, $sub-component-selector, 'comma') !global;
-            $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sub-component-selector, 'comma') !global;
+            @include _register-already-used-multiple-selectors($sub-component-selector);
         }
 
         // 2)
@@ -318,7 +318,7 @@
     }
     @else {
         // check if sub-component is registered
-        @if not index($_already-used-selectors, $sub-component-selector) and $_current-component-mode!='draft' {
+        @if not _is-already-used-selectors($sub-component-selector) and $_current-component-mode!='draft' {
             @error $SPOT_ERROR_PREFIX + "sub-component/unknown-unregistered - given sub-component '"+$selector+"' is not registered in direct parent component ('"+$sub-component-selector+"').";
         }
         // 1)
@@ -329,7 +329,7 @@
         @else {
             // store component selector if is not stored yet
             $_registered-components: append($_registered-components, $sub-component-selector, 'comma') !global;
-            $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sub-component-selector, 'comma') !global;
+            @include _register-already-used-multiple-selectors($sub-component-selector);
         }
 
         // 2)
@@ -404,10 +404,10 @@
 
     // run only once per component selector
     $current-media-selector: _wrap-into-media-selector(_wrap-into-container-selector(&));
-    @if index($_default-called-on, $current-media-selector) and $_is-in-only-for-block==false {
+    @if _is-already-registered-default-called-on($current-media-selector) and $_is-in-only-for-block==false {
         @error $SPOT_ERROR_PREFIX + "default/already-called - the mixin default was already called for element '"+$current-media-selector+"'.";
     }
-    $_default-called-on: append($_default-called-on, $current-media-selector) !global;
+    @include _register-default-called-on($current-media-selector);
     
     $_is-default-mode: true !global;
     @content;
@@ -880,7 +880,7 @@
             $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
             $sub-component-selector: #{ & + ' ' + str-trim($selector) };
             // check if element is registered
-            @if not index($_already-used-selectors, $sub-component-selector) and $_current-component-mode!='draft' {
+            @if not _is-already-used-selectors($sub-component-selector) and $_current-component-mode!='draft' {
                 @error $SPOT_ERROR_PREFIX + "element/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
             }
             // 1)
@@ -891,7 +891,7 @@
             @else {
                 // store component selector if is not stored yet
                 $_registered-components: append($_registered-components, $sub-component-selector, 'comma') !global;
-                $_already-used-multiple-selectors: append($_already-used-multiple-selectors, $sub-component-selector, 'comma') !global;
+                @include _register-already-used-multiple-selectors($sub-component-selector);
             }
 
             // 2)
@@ -1071,7 +1071,7 @@
             $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
             $sub-component-selector: #{ & + ' ' + str-trim($selector) };
             // check if element is registered
-            @if not index($_already-used-selectors-for-spot-exception-element, $sub-component-selector) and $_current-component-mode!='draft' {
+            @if not _is-already-used-selectors-for-spot-exception-element($sub-component-selector) and $_current-component-mode!='draft' {
                 @error $SPOT_ERROR_PREFIX + "spot-exception-element/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
             }
             // 1)
@@ -1246,7 +1246,7 @@
             $selector: selector-parse($selector)+''; // normalize selector (e.g. ">li" => "> li")
             $sub-component-selector: #{ str-trim($selector) };
             // check if element is registered
-            @if not index($_already-used-selectors-for-spot-exception-selector, $sub-component-selector) and $_current-component-mode!='draft' {
+            @if not _is-already-used-selectors-for-spot-exception-selector($sub-component-selector) and $_current-component-mode!='draft' {
                 @error $SPOT_ERROR_PREFIX + "spot-exception-selector/unknown-unregistered - given element '"+$selector+"' is not registered in direct parent component ('"+component()+"').";
             }
             // 1)
@@ -1438,6 +1438,8 @@
         @error $SPOT_ERROR_PREFIX + "only-for/default-is-missing - the only-for '"+inspect($args)+"' in component '"+component()+"' was used but default mixin wasn't used before it. Add 'default' mixin before all modifiers at first (even if it stays empty).";
     }
 
+    $_backup-of-current-themes-as-expression: $_current-themes-as-expression;
+
     $selector: only-for(&, $args...);
 
     $_is-in-only-for-block: true !global;
@@ -1449,6 +1451,7 @@
     }
 
     $_is-in-only-for-block: false !global;
+    $_current-themes-as-expression: $_backup-of-current-themes-as-expression !global;
 }
 
 
