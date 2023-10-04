@@ -1110,6 +1110,19 @@
 }
 
 
+/// Shortcut for mixin `spot-exception-element` and separator before is not required.
+/// Must be registered.
+/// E.g. +exc('::v-deep')
+@mixin exc($selectors...) {
+    // do not force separator
+    $_was-used-sub-element-separator: true !global;
+
+    @include spot-exception-element($selectors...) {
+        @content;
+    }
+}
+
+
 /// SPOT exception selector mixin to define sub elements in component when SPOT rule is broken.
 /// It doesn't have to be a simle selector!
 /// Aliases must be unique also in +element scope, but selectors can have duplicities with +element (because +spot-exception-element).
