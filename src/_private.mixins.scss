@@ -414,7 +414,9 @@
     $_checklist-of-used-modifiers: map-merge($_checklist-of-used-modifiers, ($component: $checklist-of-used-modifiers)) !global;
 
     // for purpose of mixin only-for
-    @include _register-already-used-multiple-selectors($selectors);
+    @if length($selectors)>0 {
+        @include _register-already-used-multiple-selectors($selectors);
+    }
 
     // check all selectors if wasn't used already
     $i: 0;
