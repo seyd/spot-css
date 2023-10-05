@@ -542,16 +542,22 @@
 /// @throw SPOT CSS: context/no-global-found - you entered only alias of context mutation '{alias}'. No global context found with this alias or maybe you wanted provide second argument with context selector.
 @mixin context($args...) {
     @if $_is-register-mode {
-        // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
-        @if length($args)==1 and _is-alias(first($args)) {
+        @if _is-alias(first($args)) {
             $alias: _normalize-alias(first($args));
-         
+            
             $already-registered-alias: map-get($_registered-global-contexts, $alias);
-            @if $already-registered-alias==null {
-                @error $SPOT_ERROR_PREFIX + "context/no-global-found - you entered only alias of context mutation '"+first($args)+"'. No global context found with this alias or maybe you wanted provide second argument with context selector.";
-            }
+            
+            // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
+            @if length($args)==1 {
+                @if $already-registered-alias==null {
+                    @error $SPOT_ERROR_PREFIX + "context/no-global-found - you entered only alias of context mutation '"+first($args)+"'. No global context found with this alias or maybe you wanted provide second argument with context selector.";
+                }
 
-            $args: append($args, $already-registered-alias);
+                $args: append($args, $already-registered-alias);
+            }
+            @else if $already-registered-alias!=null {
+                 @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-alias - trying to register already registered modifier alias '"+$alias+"' for component '"+component()+"'.";   
+            }    
         }
 
         // ' &' appendix signalize different mode of composing selector
@@ -574,17 +580,23 @@
 /// @content
 /// @throw SPOT CSS: browser/no-global-found - you entered only alias of browser mutation '{alias}'. No global browser found with this alias or maybe you wanted provide second argument with context selector.
 @mixin browser($args...) {
-    @if $_is-register-mode {
-        // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
-        @if length($args)==1 and _is-alias(first($args)) {
+    @if $_is-register-mode {        
+        @if _is-alias(first($args)) {
             $alias: _normalize-alias(first($args));
          
             $already-registered-alias: map-get($_registered-global-browsers, $alias);
-            @if $already-registered-alias==null {
-                @error $SPOT_ERROR_PREFIX + "browser/no-global-found - you entered only alias of browser mutation '"+first($args)+"'. No global browser found with this alias or maybe you wanted provide second argument with context selector.";
-            }
+            
+            // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
+            @if length($args)==1 {
+                @if $already-registered-alias==null {
+                    @error $SPOT_ERROR_PREFIX + "browser/no-global-found - you entered only alias of browser mutation '"+first($args)+"'. No global browser found with this alias or maybe you wanted provide second argument with context selector.";
+                }
 
-            $args: append($args, $already-registered-alias);
+                $args: append($args, $already-registered-alias);
+            }
+            @else if $already-registered-alias!=null {
+                 @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-alias - trying to register already registered modifier alias '"+$alias+"' for component '"+component()+"'.";   
+            }
         }
 
         // ' &' appendix signalize different mode of  composing selector
@@ -608,16 +620,22 @@
 /// @throw SPOT CSS: responsive/no-global-found - you entered only alias of responsive mutation '{alias}'. No global responsive found with this alias or maybe you wanted provide second argument with media query.
 @mixin responsive($args...) {
     @if $_is-register-mode {
-        // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
-        @if length($args)==1 and _is-alias(first($args)) {
+        @if _is-alias(first($args)) {
             $alias: _normalize-alias(first($args));
-         
+            
             $already-registered-alias: map-get($_registered-global-responsives, $alias);
-            @if $already-registered-alias==null {
-                @error $SPOT_ERROR_PREFIX + "responsive/no-global-found - you entered only alias of responsive mutation '"+first($args)+"'. No global responsive found with this alias or maybe you wanted provide second argument with media query.";
-            }
+            
+            // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
+            @if length($args)==1 {
+                @if $already-registered-alias==null {
+                    @error $SPOT_ERROR_PREFIX + "responsive/no-global-found - you entered only alias of responsive mutation '"+first($args)+"'. No global responsive found with this alias or maybe you wanted provide second argument with media query.";
+                }
 
-            $args: append($args, $already-registered-alias);
+                $args: append($args, $already-registered-alias);
+            }
+            @else if $already-registered-alias!=null {
+                 @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-alias - trying to register already registered modifier alias '"+$alias+"' for component '"+component()+"'.";   
+            }
         }
 
         // ' &' appendix signalize different mode of  composing selector
@@ -640,16 +658,22 @@
 /// @throw SPOT CSS: theme/no-global-found - you entered only alias of theme mutation '{alias}'. No global theme found with this alias or maybe you wanted provide second argument with selecotr or media query or expression.
 @mixin theme($args...) {
     @if $_is-register-mode {
-        // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
-        @if length($args)==1 and _is-alias(first($args)) {
+        @if _is-alias(first($args)) {
             $alias: _normalize-alias(first($args));
-         
+            
             $already-registered-alias: map-get($_registered-global-themes, $alias);
-            @if $already-registered-alias==null {
-                @error $SPOT_ERROR_PREFIX + "theme/no-global-found - you entered only alias of theme mutation '"+first($args)+"'. No global theme found with this alias or maybe you wanted provide second argument with selecotr or media query or expression.";
-            }
+            
+            // if only alias is given (one argument), check if it's registered with `global-responsive` mixin
+            @if length($args)==1 {
+                @if $already-registered-alias==null {
+                    @error $SPOT_ERROR_PREFIX + "theme/no-global-found - you entered only alias of theme mutation '"+first($args)+"'. No global theme found with this alias or maybe you wanted provide second argument with selecotr or media query or expression.";
+                }
 
-            $args: append($args, $already-registered-alias);
+                $args: append($args, $already-registered-alias);
+            }
+            @else if $already-registered-alias!=null {
+                 @error $SPOT_ERROR_PREFIX + "register/duplicate-modifier-alias - trying to register already registered modifier alias '"+$alias+"' for component '"+component()+"'.";   
+            }
         }
 
         // ' &' appendix signalize different mode of composing selector
