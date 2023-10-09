@@ -163,7 +163,7 @@
 /// @throw SPOT CSS: modifier/unknown-modifier - the 'modifier-name' 'identifier' is not registered in component 'current selector'. Use mixin register + state() at first!
 /// @output Selector extended by given extensions with given content.
 @mixin _apply-modifier($modifier-name, $args...) {
-    $selectors: ();
+    $selectors: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     $medias: ();
     $containers: ();
     $original-modifier-name: str-replace($modifier-name, ' &', '');
@@ -335,7 +335,7 @@
         $modifiers: map-get($_registered-modifiers, $component-with-modifier);
         $is-alias: index($_registered-modifier-aliases, str-replace($component-with-identifier-alias, ' &', ''));        
 
-        $extensions: ();
+        $extensions: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
 
         // if alias
         @if $is-alias {
@@ -633,7 +633,7 @@
         }
     }
 
-    $selectors: (); 
+    $selectors: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     @each $selector in $sub-selectors {
         $parts: selector-parse($selector);
         // @feature Forcing using only single selector in one selector string. It could be passed more selectors in separate arguments.
@@ -838,7 +838,7 @@
 /// guarding duplicity of sub-selectors
 @mixin _check-duplicity-of-sub-selectors($node-type, $whole-selector, $registering-end-selector) {
     $registered-sub-components: map-get($_registered-sub-components, top-component());
-    @if $registered-sub-components==null { $registered-sub-components: []; }
+    @if $registered-sub-components==null { $registered-sub-components: (); }
 
     @if _is-already-used-selectors($whole-selector) or index($registered-sub-components, $whole-selector) {
         @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
@@ -854,7 +854,7 @@
 /// guarding duplicity of sub-selectors for SPOT exceptions
 @mixin _check-duplicity-of-sub-selectors-for-spot-exception-element($node-type, $whole-selector, $registering-end-selector) {
     $registered-sub-components: map-get($_registered-sub-components-for-spot-exception-element, top-component());
-    @if $registered-sub-components==null { $registered-sub-components: []; }
+    @if $registered-sub-components==null { $registered-sub-components: (); }
 
     @if _is-already-used-selectors-for-spot-exception-element($whole-selector) or index($registered-sub-components, $whole-selector) {
         @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";
@@ -869,7 +869,7 @@
 /// guarding duplicity of sub-selectors for SPOT exceptions
 @mixin _check-duplicity-of-sub-selectors-for-spot-exception-selector($node-type, $whole-selector, $registering-end-selector) {
     $registered-sub-components: map-get($_registered-sub-components-for-spot-exception-selector, top-component());
-    @if $registered-sub-components==null { $registered-sub-components: []; }
+    @if $registered-sub-components==null { $registered-sub-components: (); }
 
     @if _is-already-used-selectors-for-spot-exception-selector($whole-selector) or index($registered-sub-components, $whole-selector) {
         @error $SPOT_ERROR_PREFIX + $node-type+"/already-registered - trying to register already registered element '"+$registering-end-selector+"' to '"+component()+"'.";

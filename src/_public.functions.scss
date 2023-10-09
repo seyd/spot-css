@@ -249,7 +249,7 @@
     $specificities-map: ();
     
     @each $selector in $selectors {
-        $parts: ();
+        $parts: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
         $selector-specificity-map: (a: 0, b: 0, c: 0);
         
         @each $simple-selectors in $selector {
@@ -305,7 +305,7 @@
    
     // for each selector
     $selectors: selector-parse($current-selector);
-    $output: (); 
+    $output: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     @each $selector in $selectors {
         $selector: override-selector-specificity($selector, $id-specificity, $class-specificity, $element-specificity);
         $output: append($output, $selector, 'comma');
@@ -326,7 +326,7 @@
 /// @return { String } Filtered selector(s).
 @function only-for($selector, $args...) {
     $selectors: selector-parse($selector);    
-    $output: (); 
+    $output: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     $found: false;
     $found-branch: '';
 
@@ -455,7 +455,7 @@
     $selector-parts: selector-parse($selectors);
     $subselector-parts: selector-parse($subselectors);
     $extension-parts: selector-parse($extensions);
-    $output: ();
+    $output: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     // for each selector (if more selectors in $selectors) check if extended selector is present
     @each $selector in $selector-parts {
         $found: false;
@@ -519,7 +519,7 @@
 // @description Remove the last item in the list (opposite of append() function).
 // @returns new list, not last item (to do so use last() function)
 @function pop($list) {
-    $result: ();
+    $result: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     $len: length($list);
     @if $len>1 {
         @for $i from 1 through $len - 1 {
@@ -533,7 +533,7 @@
 // @description Remove the first item in the list.
 // @returns new list, not first item (to do so use first() function)
 @function shift($list) {
-    $result: ();
+    $result: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     $len: length($list);
     @if $len>1 {
         @for $i from 2 through $len {
@@ -544,7 +544,7 @@
 }
 
 @function replace-nth($list, $index, $value-or-list) {
-    $result: ();
+    $result: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
 
     @for $i from 1 through length($list) {
         @if $i == $index {
@@ -698,7 +698,7 @@
 /// Remove item from list. Supports also negative index (from the end).
 /// @author Jakob Eriksen (https://gist.github.com/jakob-e)
 @function nth-delete($list, $n) {
-    $result: ();
+    $result: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     $n: if($n < 0, length($list) + $n + 1, $n);
     $bracketed: is-bracketed($list);
     $separator: list-separator($list);

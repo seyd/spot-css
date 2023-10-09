@@ -66,7 +66,7 @@
 // add selector specificity at `given` level
 @function _add-selector-specificity($selector, $n, $not-what-mark) {
     $selectors: selector-parse($selector);
-    $output: ();
+    $output: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     $addon: '';
     @for $i from 1 to $n+1 {
         $addon: $addon + ':not(' + $not-what-mark + ')';
@@ -363,7 +363,7 @@
 /// There was problem with extend() function on "combinator selectors" (e.g. "section > div"), so this is the solution => substitution.
 @function _extend-component-selector($selector, $subselector-to-extend, $extension) {
     $selectors: selector-parse($selector);
-    $output: ();
+    $output: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     
     $is-subselector-extension: is-element-selector($subselector-to-extend);
     $is-element-extension: is-element-selector($extension);
@@ -587,7 +587,7 @@
 
 // split by ", " | ", ' | ', " | ', '
 @function _split-separated-strings($str) {
-    $parts: ();
+    $parts: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     $len: str-length($str);    
     $i: 1;
     $was-escape-slash-before: false;
@@ -666,7 +666,7 @@
 // Examples: "variant('.primary')"  |  "state('{special}')"  |  "theme('{funky}')"  |  "variant('.primary', '.secondary')"
 // @return null if it's not output of mutation function or list of selectors of the mutation function (not alias)
 @function _parse-mutation-function($str) {
-    $output: ();
+    $output: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     $modifier: _parse-modifier-from-mutation($str);
     @if $modifier!=null {
         $args: _parse-args-from-mutation($str);

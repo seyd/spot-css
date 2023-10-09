@@ -713,7 +713,7 @@
         @each $selector in $selectors {
             $multiple-selectors: selector-parse(#{$selector});
 
-            $output: (); // not []; because error "Expected identifier." @at-root #{$output} of some versions of SASS
+            $output: ();  // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
             @each $sel in $multiple-selectors {
                 $sel: $sel+'';
                 $current-end-sel: self()+'';
@@ -1668,7 +1668,7 @@
 
 
 @mixin omit-selector($selectors...) {
-    $output: [];
+    $output: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     
     @each $current-selector in & {
 
@@ -1699,8 +1699,8 @@
         @error $SPOT_ERROR_PREFIX + "combined/max-5 - mixin `combined` is hard coded to support max 5 mutations. If you need more please contact support.";
     }
     
-    $modifiers: ();
-    $arguments: ();
+    $modifiers: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
+    $arguments: (); // when composing selectors, it is better () Map instead of [] List because weird error on different SASS versions.
     @each $mutation in $args {
         $modifier: _parse-modifier-from-mutation($mutation);
         @if $modifier==null {
