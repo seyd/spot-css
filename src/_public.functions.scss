@@ -908,3 +908,20 @@
     }
     @return true;
 }
+
+
+/// Returns stronger selector (+1 class/attribute specificity) to simulate specificity of scoped selectors, e.g. [data-v-8ddc4e28]
+/// @example ".something" => ".something:not([pseudo-scoped])"
+/// @group General
+/// @access public
+/// @param { String } $selectors - Selector(s)
+/// @return { String } Stronger selector(s).
+@function pseudo-scoped($selectors) {
+    $output: ();
+    // for each of multiple selectors
+    $multiple-selectors: selector-parse($selectors);
+    @each $single-selector in $multiple-selectors {
+        $output: append($output, $single-selector+':not([pseudo-scoped])', 'comma');
+    }
+    @return $output;
+}

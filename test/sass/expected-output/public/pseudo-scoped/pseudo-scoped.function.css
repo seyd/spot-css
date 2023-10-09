@@ -1,0 +1,7 @@
+html body:not([pseudo-scoped]) {
+  property: value-1;
+}
+
+.my-component-1:not([pseudo-scoped]), .my-component-2:not([pseudo-scoped]) {
+  property: value-2;
+}
